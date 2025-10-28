@@ -108,22 +108,22 @@ const FlowchartEditor = ({ theme }) => {
         <div className="flex-1 overflow-auto bg-slate-50" data-testid="flowchart-canvas">
           <div className="max-w-5xl mx-auto p-8">
             {/* Legend */}
-            <div className="mb-8 bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm"></div>
-                <span className="text-slate-700">Trigger</span>
+            <div className="mb-8 bg-white rounded-2xl p-5 border border-slate-300/50 shadow-md flex flex-wrap gap-5 text-sm">
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm"></div>
+                <span className="text-slate-700 font-medium">Trigger</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-white border border-emerald-200 shadow-sm"></div>
-                <span className="text-slate-700">Active</span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-lg bg-white border border-emerald-300/60 shadow-sm"></div>
+                <span className="text-slate-700 font-medium">Active</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-white border border-amber-200 shadow-sm"></div>
-                <span className="text-slate-700">Warning</span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-lg bg-white border border-amber-300/60 shadow-sm"></div>
+                <span className="text-slate-700 font-medium">Warning</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
-                <span className="text-slate-700">Critical Gap</span>
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
+                <span className="text-slate-700 font-medium">Critical Gap</span>
               </div>
             </div>
 
