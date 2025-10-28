@@ -138,9 +138,9 @@ const FlowchartEditor = ({ theme }) => {
                   />
                   {idx < process.nodes.length - 1 && (
                     <div className="flex justify-center py-2 arrow-connector">
-                      <svg width="28" height="28" viewBox="0 0 24 24" className="text-slate-400">
-                        <polygon points="12,2 12,18 12,18" stroke="currentColor" strokeWidth="2.5" fill="none" />
-                        <polygon points="12,22 6,14 18,14" fill="currentColor" />
+                      <svg width="24" height="28" viewBox="0 0 24 24" className="text-slate-300">
+                        <polygon points="12,2 12,18 12,18" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                        <polygon points="12,22 7,15 17,15" fill="currentColor" />
                       </svg>
                     </div>
                   )}
