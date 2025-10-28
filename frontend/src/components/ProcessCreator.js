@@ -47,17 +47,20 @@ const ProcessCreator = () => {
 
   const handleGenerate = async () => {
     try {
+      // Get first process from the array (single process case)
+      const processData = extractedData.processes[0];
+      
       const process = {
         id: `process-${Date.now()}`,
-        name: extractedData.processName,
-        description: extractedData.description || '',
-        nodes: extractedData.nodes.map((node, idx) => ({
+        name: processData.processName,
+        description: processData.description || '',
+        nodes: processData.nodes.map((node, idx) => ({
           ...node,
           position: { x: 100, y: 100 + (idx * 150) }
         })),
-        actors: extractedData.actors || [],
-        criticalGaps: extractedData.criticalGaps || [],
-        improvementOpportunities: extractedData.improvementOpportunities || [],
+        actors: processData.actors || [],
+        criticalGaps: processData.criticalGaps || [],
+        improvementOpportunities: processData.improvementOpportunities || [],
         status: 'draft',
         theme: 'minimalist',
         healthScore: 85,
