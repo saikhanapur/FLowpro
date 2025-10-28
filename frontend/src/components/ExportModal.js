@@ -171,29 +171,35 @@ const ExportModal = ({ process, onClose }) => {
                        node.status === 'critical-gap' ? '🚨' : '•';
       
       return `
-        <div class="node-container mb-3 mx-auto" style="max-width: 640px;">
-          <div class="rounded-lg p-4 ${statusClass} shadow-sm cursor-pointer hover:scale-[1.01] transition-all duration-200" onclick="showDetail(${idx})" data-node-id="${idx}">
-            <div class="flex items-start gap-2.5">
-              <span class="text-lg flex-shrink-0">${iconHTML}</span>
+        <div class="node-container mb-4 mx-auto" style="max-width: 680px;">
+          <div class="rounded-lg p-5 pb-6 ${statusClass} shadow-sm cursor-pointer hover:scale-[1.01] transition-all duration-200" onclick="showDetail(${idx})" data-node-id="${idx}" style="min-width: 280px;">
+            <div class="flex items-start gap-3">
+              <span class="text-xl flex-shrink-0 mt-1">${iconHTML}</span>
               <div class="flex-1">
-                <h3 class="text-sm font-bold mb-1.5 leading-tight">${node.title}</h3>
-                <p class="text-xs opacity-90 leading-relaxed">${node.description}</p>
+                <h3 class="text-[15px] font-bold mb-2.5 leading-snug">${node.title}</h3>
+                <p class="text-[13px] opacity-90 leading-relaxed mb-2">${node.description}</p>
                 ${node.actors && node.actors.length > 0 ? `
-                  <div class="mt-2.5 flex flex-wrap gap-1">
+                  <div class="mt-3.5 flex flex-wrap gap-1.5">
                     ${node.actors.map(actor => `
-                      <span class="px-2 py-0.5 rounded-full text-xs font-medium ${
-                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/20' : 'bg-slate-100 text-slate-700'
+                      <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/25 backdrop-blur-sm' : 'bg-slate-100 text-slate-700'
                       }">${actor}</span>
                     `).join('')}
+                  </div>
+                ` : ''}
+                ${node.gap ? `
+                  <div class="mt-3.5 p-2.5 rounded-md bg-black/10 backdrop-blur-sm flex items-start gap-2 text-[12px] font-semibold border border-white/20">
+                    <span class="flex-shrink-0">⚠️</span>
+                    <span class="leading-relaxed">${node.gap}</span>
                   </div>
                 ` : ''}
               </div>
             </div>
           </div>
           ${idx < process.nodes.length - 1 ? `
-            <div class="flex justify-center py-1">
-              <svg width="24" height="24" viewBox="0 0 24 24" class="text-slate-400">
-                <polygon points="12,2 12,18 12,18" stroke="currentColor" stroke-width="2" fill="none" />
+            <div class="flex justify-center py-2">
+              <svg width="28" height="28" viewBox="0 0 24 24" class="text-slate-400">
+                <polygon points="12,2 12,18 12,18" stroke="currentColor" stroke-width="2.5" fill="none" />
                 <polygon points="12,22 6,14 18,14" fill="currentColor" />
               </svg>
             </div>
