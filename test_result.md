@@ -147,11 +147,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Backend endpoints for generating interactive HTML and PDF exports. Need to verify export endpoints are working."
+      - working: "NA"
+        agent: "testing"
+        comment: "⚠️ No dedicated PDF/HTML export endpoints found in backend server.py. The export functionality appears to be handled client-side in the frontend ExportModal component using html2canvas. Backend only provides data via CRUD endpoints. This is not a backend issue - export generation is frontend responsibility."
 
 frontend:
   - task: "Dashboard with Process Listing"
