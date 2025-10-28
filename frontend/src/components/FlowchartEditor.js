@@ -115,11 +115,15 @@ const FlowchartEditor = ({ theme }) => {
               </div>
               <div className="flex items-center gap-2.5">
                 <div className="w-5 h-5 rounded-lg bg-white border border-emerald-300/60 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Active</span>
+                <span className="text-slate-700 font-medium">Active/Current</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <div className="w-5 h-5 rounded-lg bg-white border border-amber-300/60 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Warning</span>
+                <span className="text-slate-700 font-medium">Warning/Issue</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-5 h-5 rounded-lg bg-white border border-slate-300/50 shadow-sm"></div>
+                <span className="text-slate-700 font-medium">Completed</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
