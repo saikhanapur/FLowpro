@@ -115,6 +115,8 @@ class AIService:
 
 {input_text}
 
+CRITICAL: Return ONLY the JSON object, no explanations, no markdown, no code blocks.
+
 Identify:
 1. All process steps (look for: "first", "then", "next", "after", "meanwhile", "if", "when")
 2. Classify each step:
@@ -141,7 +143,7 @@ Identify:
    - "manual process..."
    - "have to chase..."
 
-Return ONLY valid JSON in this exact structure:
+Return this exact JSON structure (and NOTHING else):
 {{
   "processName": "string",
   "description": "brief overview",
@@ -149,28 +151,28 @@ Return ONLY valid JSON in this exact structure:
   "nodes": [
     {{
       "id": "node-1",
-      "type": "trigger|process|decision|gap",
-      "status": "trigger|current|warning|critical-gap",
+      "type": "trigger",
+      "status": "trigger",
       "title": "Short, clear title (max 6 words)",
       "description": "Detailed description",
       "actors": ["who performs this"],
       "subSteps": ["step 1", "step 2"],
-      "dependencies": ["node-id that must complete first"],
-      "parallelWith": ["node-id that happens simultaneously"],
+      "dependencies": [],
+      "parallelWith": [],
       "failures": ["what can go wrong"],
-      "blocking": "what prevents this from proceeding",
+      "blocking": null,
       "currentState": "how it works now",
       "idealState": "how it should work",
-      "gap": "the problem or missing piece",
-      "impact": "low|medium|high",
-      "timeEstimate": "if mentioned"
+      "gap": null,
+      "impact": "medium",
+      "timeEstimate": null
     }}
   ],
   "criticalGaps": ["list of major issues found"],
   "improvementOpportunities": [
     {{
       "description": "what could be improved",
-      "type": "automation|optimization|consolidation",
+      "type": "automation",
       "estimatedSavings": "time/cost if calculable"
     }}
   ]
