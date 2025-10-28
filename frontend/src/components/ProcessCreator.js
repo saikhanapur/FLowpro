@@ -27,7 +27,15 @@ const ProcessCreator = () => {
       const data = await api.parseProcess(input, inputType);
       toast.dismiss(loadingToast);
       setExtractedData(data);
-      toast.success('Process captured successfully!');
+      
+      // Check if multiple processes were detected
+      if (data.multipleProcesses && data.processCount >= 2) {
+        toast.success(`Found ${data.processCount} distinct processes in your document!`, {
+          duration: 5000
+        });
+      } else {
+        toast.success('Process captured successfully!');
+      }
     } catch (error) {
       toast.dismiss(loadingToast);
       toast.error(error.response?.data?.detail || 'Failed to process input. Please try again or use a shorter document.');
