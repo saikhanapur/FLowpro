@@ -71,6 +71,62 @@ const ExportModal = ({ process, onClose }) => {
   };
 
   const generateHTML = (process) => {
+    const nodesHTML = process.nodes.map((node, idx) => {
+      const statusClass = node.status === 'critical-gap' ? 'gradient-rose text-white shadow-lg' : 
+                         node.status === 'trigger' ? 'gradient-blue text-white shadow-lg' :
+                         node.status === 'warning' ? 'bg-white border-2 border-amber-500' :
+                         'bg-white border-2 border-emerald-500';
+      
+      return `
+        <div class="mb-6">
+          <div class="rounded-xl p-6 ${statusClass} cursor-pointer hover:scale-105 transition-all" onclick="toggleDetail(${idx})">
+            <h3 class="text-lg font-bold mb-2">${node.title}</h3>
+            <p class="text-sm opacity-90">${node.description}</p>
+            ${node.actors && node.actors.length > 0 ? `
+              <div class="mt-3 flex flex-wrap gap-1">
+                ${node.actors.map(actor => `<span class="px-2 py-1 bg-white bg-opacity-20 rounded text-xs">${actor}</span>`).join('')}
+              </div>
+            ` : ''}
+            ${node.gap ? `<div class="mt-3 text-sm font-semibold">Gap: ${node.gap}</div>` : ''}
+          </div>
+          
+          <!-- Detail Panel -->
+          <div id="detail-${idx}" class="hidden mt-4 bg-white rounded-xl p-6 border-2 border-slate-200 slide-in">
+            ${node.subSteps && node.subSteps.length > 0 ? `
+              <div class="mb-4">
+                <h4 class="font-semibold text-slate-800 mb-2">Process Steps:</h4>
+                <ul class="space-y-1">
+                  ${node.subSteps.map(step => `<li class="text-sm text-slate-600">→ ${step}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            ${node.currentState ? `
+              <div class="mb-4">
+                <h4 class="font-semibold text-slate-800 mb-2">Current State:</h4>
+                <p class="text-sm text-slate-600">${node.currentState}</p>
+              </div>
+            ` : ''}
+            ${node.idealState ? `
+              <div class="mb-4">
+                <h4 class="font-semibold text-emerald-800 mb-2">Ideal State:</h4>
+                <p class="text-sm text-emerald-600">${node.idealState}</p>
+              </div>
+            ` : ''}
+            ${node.failures && node.failures.length > 0 ? `
+              <div>
+                <h4 class="font-semibold text-rose-800 mb-2">Potential Failures:</h4>
+                <ul class="space-y-1">
+                  ${node.failures.map(f => `<li class="text-sm text-rose-600">⚠ ${f}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+          
+          ${idx < process.nodes.length - 1 ? '<div class="flex justify-center my-2"><div class="w-0.5 h-12 bg-slate-300"></div></div>' : ''}
+        </div>
+      `;
+    }).join('');
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,28 +135,82 @@ const ExportModal = ({ process, onClose }) => {
   <title>${process.name} - FlowForge</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+    }
     .gradient-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
     .gradient-rose { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
+    .gradient-emerald { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-in { animation: slideIn 0.3s ease-out; }
+    
+    .hover\\:scale-105:hover { transform: scale(1.05); }
   </style>
 </head>
-<body class="bg-slate-50 p-8">
+<body class="p-8">
   <div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold text-slate-800 mb-8">${process.name}</h1>
-    <div class="space-y-6">
-      ${process.nodes.map(node => `
-        <div class="rounded-xl p-6 ${node.status === 'critical-gap' ? 'gradient-rose text-white' : 'bg-white border-2 border-slate-200'}">
-          <h3 class="text-lg font-bold mb-2">${node.title}</h3>
-          <p class="text-sm opacity-90">${node.description}</p>
-          ${node.actors && node.actors.length > 0 ? `
-            <div class="mt-3 flex flex-wrap gap-1">
-              ${node.actors.map(actor => `<span class="px-2 py-1 bg-white/20 rounded text-xs">${actor}</span>`).join('')}
-            </div>
-          ` : ''}
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-lg gradient-blue flex items-center justify-center">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
         </div>
-      `).join('')}
+        <div>
+          <h1 class="text-3xl font-bold text-slate-800">${process.name}</h1>
+          <p class="text-slate-600">Created with FlowForge AI</p>
+        </div>
+      </div>
+      ${process.description ? `<p class="text-slate-700 mb-4">${process.description}</p>` : ''}
+      <div class="flex gap-3 text-sm text-slate-600">
+        <span>📋 ${process.nodes.length} steps</span>
+        ${process.actors.length > 0 ? `<span>• 👥 ${process.actors.length} actors</span>` : ''}
+        ${process.criticalGaps.length > 0 ? `<span>• ⚠️ ${process.criticalGaps.length} gaps</span>` : ''}
+      </div>
+    </div>
+
+    <!-- Process Nodes -->
+    <div class="space-y-4">
+      ${nodesHTML}
+    </div>
+
+    <!-- Summary Section -->
+    ${process.criticalGaps.length > 0 ? `
+      <div class="mt-8 bg-rose-50 border-2 border-rose-200 rounded-xl p-6">
+        <h3 class="text-lg font-bold text-rose-900 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          Critical Gaps Identified
+        </h3>
+        <ul class="space-y-2">
+          ${process.criticalGaps.map(gap => `<li class="text-sm text-rose-800">⚠️ ${gap}</li>`).join('')}
+        </ul>
+      </div>
+    ` : ''}
+
+    <!-- Footer -->
+    <div class="mt-12 text-center text-sm text-slate-500 border-t border-slate-200 pt-6">
+      <p>Generated by <strong>FlowForge AI</strong> • Transform your processes into flowcharts in minutes</p>
     </div>
   </div>
+
+  <script>
+    function toggleDetail(idx) {
+      const detail = document.getElementById('detail-' + idx);
+      if (detail.classList.contains('hidden')) {
+        detail.classList.remove('hidden');
+      } else {
+        detail.classList.add('hidden');
+      }
+    }
+  </script>
 </body>
 </html>`;
   };
