@@ -106,105 +106,119 @@ class AIService:
     def _preprocess_and_detect_boundaries(self, text: str) -> Dict[str, Any]:
         """
         Preprocess text to detect process boundaries using pattern matching.
-        This is faster and more reliable than AI for documents with clear headers.
+        Conservative approach to avoid false positives.
         """
         process_titles = []
         
-        # Pattern 1: Look for common process title patterns
-        # Matches: "Process Name Process", "Process Name - Detail", "Process Name (All)", etc.
+        # More conservative patterns - must have clear process indicators
         patterns = [
-            r'^([A-Z][^\n]{15,120}?(?:Process|Workflow|Procedure|Requisition))$',  # "Standard Requisition Process"
-            r'^([A-Z][^\n]{15,120}?)\s*[-–]\s*([A-Z][^\n]{5,60})$',  # "Job Posting - Security" or "Job Posting – Security"
-            r'^([A-Z][^\n]{15,120}?)\s+([A-Z][^\n]{5,60})$',  # "Manage Applications Security" (no dash)
-            r'^([A-Z][^\n]{15,120}?)\s*\(([^)]+)\)$',  # "Onboarding (All)"
-            r'==Start of OCR for page \d+==\s*([A-Z][^\n]{15,120})',  # After page markers
+            # Pattern 1: Explicit "Process" keyword
+            r'^([A-Z][A-Za-z\s&/\-–()]{20,120}?Process)$',
+            # Pattern 2: Title with dash/en-dash separator (e.g., "Job Posting - Security")
+            r'^([A-Z][A-Za-z\s&/()]{15,80}?)\s*[-–]\s*([A-Za-z\s/&()]{3,40})$',
+            # Pattern 3: Title with (All) or similar suffix
+            r'^([A-Z][A-Za-z\s&/\-–]{15,80}?)\s*\(All\)$',
+            # Pattern 4: Title ending with "Admin" or specific keywords
+            r'^([A-Z][A-Za-z\s&/\-–]{15,80}?(?:Admin|Employee))\s*\(All\)$',
         ]
         
         lines = text.split('\n')
         seen_titles = set()
+        seen_normalized = set()
         
         for i, line in enumerate(lines):
             line = line.strip()
-            if not line or len(line) < 15:  # Skip very short lines
+            if not line or len(line) < 20 or len(line) > 150:  # Strict length bounds
                 continue
             
-            # Check each pattern
+            # Skip lines that are clearly not process titles
+            skip_keywords = ['candidate', 'recruiter', 'hiring manager', 'approved', 'requisition administrator', 
+                           'hrmm', 'hmm', 'wh ', 'hra', 'hrbp', 'page', '==']
+            if any(skip.lower() in line.lower() for skip in skip_keywords):
+                continue
+            
+            matched = False
             for pattern in patterns:
                 match = re.match(pattern, line, re.MULTILINE)
                 if match:
                     # Extract the full title
                     if len(match.groups()) > 1 and match.group(2):
-                        # Pattern with two groups (e.g., "Title - Detail" or "Title Detail")
+                        # Pattern with two groups (e.g., "Title - Detail")
                         title = f"{match.group(1).strip()} {match.group(2).strip()}"
                     else:
                         title = match.group(1).strip()
                     
-                    # Clean up title - remove duplicates within the title itself
-                    # e.g., "Younity Onboarding (All)Younity Onboarding" -> "Younity Onboarding (All)"
-                    words = title.split()
-                    if len(words) > 4:
-                        # Check if second half repeats first half
-                        mid = len(words) // 2
-                        first_half = ' '.join(words[:mid])
-                        second_half = ' '.join(words[mid:])
-                        if first_half in title and second_half in title and first_half == second_half.replace('(All)', '').strip():
-                            title = first_half  # Use first occurrence
+                    # Normalize for duplicate checking (remove extra spaces, standardize separators)
+                    normalized = ' '.join(title.lower().split())
+                    normalized = normalized.replace('–', '-')  # Standardize dashes
                     
-                    # Filter out obviously non-process lines
-                    if len(title) > 15 and title not in seen_titles:
-                        # Check if it looks like a real process title
-                        keywords = ['process', 'workflow', 'procedure', 'requisition', 'posting', 'onboarding', 
-                                  'offer', 'application', 'recruit', 'hiring', 'manage', 'admin', 'standard', 'master']
-                        title_lower = title.lower()
-                        if any(keyword in title_lower for keyword in keywords):
-                            # Additional check: avoid adding near-duplicates
-                            is_duplicate = False
-                            for existing_title in process_titles:
-                                # Check similarity - if 80% of words match, it's a duplicate
-                                existing_words = set(existing_title.lower().split())
-                                new_words = set(title_lower.split())
-                                if len(existing_words & new_words) / max(len(existing_words), len(new_words)) > 0.8:
-                                    # But allow if it has distinguishing suffix like "Security" vs "Group"
-                                    if not any(suffix in title_lower for suffix in ['security', 'group', 'parking', 'casual', 'master']):
-                                        is_duplicate = True
-                                        break
-                            
-                            if not is_duplicate:
-                                process_titles.append(title)
-                                seen_titles.add(title)
-                                logger.debug(f"Found potential process title: {title}")
-                    break
-        
-        # Pattern 2: Look for compound titles that might be on multiple lines or split
-        # Search for lines like "Manage Applications & Offer" followed by "Security" or "Parking/Group"
-        for i in range(len(lines) - 1):
-            line = lines[i].strip()
-            next_line = lines[i + 1].strip() if i + 1 < len(lines) else ""
+                    # Check if we've seen this title (or very similar)
+                    if normalized in seen_normalized:
+                        continue
+                    
+                    # Must contain at least one strong process keyword
+                    strong_keywords = ['process', 'requisition', 'posting', 'onboarding', 'offer', 'application']
+                    if not any(keyword in title.lower() for keyword in strong_keywords):
+                        continue
+                    
+                    # Additional validation: check context - next few lines should have content
+                    has_content = False
+                    for j in range(i+1, min(i+5, len(lines))):
+                        next_line = lines[j].strip()
+                        if len(next_line) > 30:  # Has substantial content nearby
+                            has_content = True
+                            break
+                    
+                    if has_content and title not in seen_titles:
+                        process_titles.append(title)
+                        seen_titles.add(title)
+                        seen_normalized.add(normalized)
+                        logger.debug(f"Found process title: {title}")
+                        matched = True
+                        break
             
-            # Check for split titles
-            if ('Manage' in line or 'Applications' in line) and len(next_line) < 30 and next_line:
-                combined = f"{line} {next_line}".strip()
-                if len(combined) > 15 and combined not in seen_titles:
-                    keywords = ['offer', 'application', 'security', 'parking', 'group']
-                    if any(keyword in combined.lower() for keyword in keywords):
-                        process_titles.append(combined)
-                        seen_titles.add(combined)
-                        logger.debug(f"Found compound process title: {combined}")
+            # Special handling for compound titles (e.g., "Manage Applications & Offer" + "Security")
+            if not matched and len(line) > 20 and len(line) < 60:
+                # Check if this looks like a base title that might have variants
+                if ('manage' in line.lower() and 'offer' in line.lower()) or \
+                   ('raise' in line.lower() and 'requisition' in line.lower()):
+                    # Look at next line to see if it's a variant (Security, Group, etc.)
+                    if i + 1 < len(lines):
+                        next_line = lines[i + 1].strip()
+                        variant_keywords = ['security', 'parking', 'group', 'casual']
+                        if any(kw in next_line.lower() for kw in variant_keywords) and len(next_line) < 40:
+                            # This is a split title
+                            combined = f"{line} {next_line}".strip()
+                            normalized = ' '.join(combined.lower().split()).replace('–', '-')
+                            if normalized not in seen_normalized and len(combined) > 20:
+                                # Validate it's a real process
+                                strong_keywords = ['requisition', 'posting', 'offer', 'application', 'manage']
+                                if any(keyword in combined.lower() for keyword in strong_keywords):
+                                    process_titles.append(combined)
+                                    seen_titles.add(combined)
+                                    seen_normalized.add(normalized)
+                                    logger.debug(f"Found compound process title: {combined}")
         
-        # Remove duplicates while preserving order
-        unique_titles = []
+        # Final cleanup: Remove any title that's a substring of another (keep the longer one)
+        filtered_titles = []
         for title in process_titles:
-            if title not in unique_titles:
-                unique_titles.append(title)
+            is_subset = False
+            for other in process_titles:
+                if title != other and title in other:
+                    is_subset = True
+                    break
+            if not is_subset:
+                filtered_titles.append(title)
         
-        process_count = len(unique_titles)
-        high_confidence = process_count >= 2 and any('process' in t.lower() or 'requisition' in t.lower() for t in unique_titles)
+        process_count = len(filtered_titles)
+        high_confidence = process_count >= 2 and any('process' in t.lower() or 'requisition' in t.lower() for t in filtered_titles)
         
-        logger.info(f"Preprocessing found {process_count} unique process titles")
+        print(f"[DEBUG] Preprocessing found {process_count} processes: {filtered_titles}", flush=True)
+        logger.info(f"Preprocessing found {process_count} unique process titles: {filtered_titles}")
         
         return {
             'process_count': process_count,
-            'process_titles': unique_titles,
+            'process_titles': filtered_titles,
             'high_confidence': high_confidence
         }
     
