@@ -438,12 +438,15 @@ async def get_comments(process_id: str):
 @api_router.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
     """Upload and extract text from documents"""
+    if not DOCUMENT_SUPPORT:
+        raise HTTPException(status_code=501, detail="Document processing not available")
+    
     try:
         content = await file.read()
         text = ""
         
         if file.filename.endswith('.pdf'):
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
+            pdf_reader = pypdf.PdfReader(io.BytesIO(content))
             for page in pdf_reader.pages:
                 text += page.extract_text() + "\n"
         
