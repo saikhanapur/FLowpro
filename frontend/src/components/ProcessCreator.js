@@ -68,14 +68,22 @@ const ProcessCreator = () => {
   if (processing) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <h2 className="text-2xl font-bold text-slate-800 mb-3">
             Analyzing Your Process...
           </h2>
-          <p className="text-slate-600">
+          <p className="text-slate-600 mb-4">
             AI is extracting steps, actors, and dependencies
           </p>
+          <div className="bg-blue-50 rounded-lg p-4 text-left">
+            <p className="text-sm text-blue-800 mb-2">
+              <strong>This may take 1-2 minutes</strong> for large documents
+            </p>
+            <p className="text-xs text-blue-700">
+              Claude AI is carefully analyzing your process to identify gaps, dependencies, and improvement opportunities.
+            </p>
+          </div>
         </div>
       </div>
     );
