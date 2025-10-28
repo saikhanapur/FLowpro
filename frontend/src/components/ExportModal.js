@@ -160,10 +160,10 @@ const ExportModal = ({ process, onClose }) => {
 
   const generateHTML = (process) => {
     const nodesHTML = process.nodes.map((node, idx) => {
-      const statusClass = node.status === 'critical-gap' ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg border border-rose-400/30' : 
-                         node.status === 'trigger' ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg border border-blue-400/30' :
-                         node.status === 'warning' ? 'bg-white border border-amber-200 shadow-sm hover:shadow-md' :
-                         'bg-white border border-emerald-200 shadow-sm hover:shadow-md';
+      const statusClass = node.status === 'critical-gap' ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg' : 
+                         node.status === 'trigger' ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg' :
+                         node.status === 'warning' ? 'bg-white border border-amber-300/60 shadow-md hover:shadow-lg' :
+                         'bg-white border border-emerald-300/60 shadow-md hover:shadow-lg';
       
       const iconHTML = node.status === 'trigger' ? '⚡' :
                        node.status === 'current' ? '✓' :
@@ -171,27 +171,27 @@ const ExportModal = ({ process, onClose }) => {
                        node.status === 'critical-gap' ? '🚨' : '•';
       
       return `
-        <div class="node-container mb-4 mx-auto" style="max-width: 680px;">
-          <div class="rounded-xl p-5 pb-6 ${statusClass} cursor-pointer hover:scale-[1.02] transition-all duration-300" onclick="showDetail(${idx})" data-node-id="${idx}" style="min-width: 280px;">
-            <div class="flex items-start gap-3">
-              <span class="text-xl flex-shrink-0 mt-1">${iconHTML}</span>
+        <div class="node-container mb-4 mx-auto" style="max-width: 700px;">
+          <div class="rounded-2xl p-6 ${statusClass} cursor-pointer hover:scale-[1.01] transition-all duration-300" onclick="showDetail(${idx})" data-node-id="${idx}" style="min-width: 300px;">
+            <div class="flex items-start gap-3.5">
+              <span class="text-xl flex-shrink-0 mt-0.5">${iconHTML}</span>
               <div class="flex-1">
-                <h3 class="text-[15px] font-semibold mb-2.5 leading-snug tracking-tight">${node.title}</h3>
-                <p class="text-[13px] opacity-85 leading-relaxed mb-2 font-normal">${node.description}</p>
+                <h3 class="text-base font-semibold mb-2 leading-tight tracking-tight">${node.title}</h3>
+                <p class="text-sm opacity-80 leading-relaxed mb-2 font-normal">${node.description}</p>
                 ${node.actors && node.actors.length > 0 ? `
-                  <div class="mt-3.5 flex flex-wrap gap-1.5">
+                  <div class="mt-3 flex flex-wrap gap-2">
                     ${node.actors.map(actor => `
-                      <span class="px-2.5 py-1 rounded-lg text-[11px] font-medium ${
-                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/20 backdrop-blur-sm border border-white/30' : 'bg-slate-50 text-slate-700 border border-slate-200'
+                      <span class="px-3 py-1.5 rounded-full text-xs font-medium ${
+                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/25 backdrop-blur-sm' : 'bg-slate-100 text-slate-700 border border-slate-200'
                       }">${actor}</span>
                     `).join('')}
                   </div>
                 ` : ''}
                 ${node.gap ? `
-                  <div class="mt-3.5 p-3 rounded-lg flex items-start gap-2 text-[12px] font-medium border ${
-                    node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/15 backdrop-blur-sm border-white/30' : 'bg-amber-50/80 backdrop-blur-sm border-amber-200'
+                  <div class="mt-3 p-3 rounded-xl flex items-start gap-2.5 text-xs font-medium border ${
+                    node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/20 backdrop-blur-sm border-white/40' : 'bg-amber-50 border-amber-300/50'
                   }">
-                    <span class="flex-shrink-0">⚠️</span>
+                    <span class="flex-shrink-0 mt-0.5">⚠️</span>
                     <span class="leading-relaxed">${node.gap}</span>
                   </div>
                 ` : ''}
@@ -199,10 +199,10 @@ const ExportModal = ({ process, onClose }) => {
             </div>
           </div>
           ${idx < process.nodes.length - 1 ? `
-            <div class="flex justify-center py-2">
-              <svg width="24" height="28" viewBox="0 0 24 24" class="text-slate-300">
-                <polygon points="12,2 12,18 12,18" stroke="currentColor" stroke-width="1.5" fill="none" />
-                <polygon points="12,22 7,15 17,15" fill="currentColor" />
+            <div class="flex justify-center py-3">
+              <svg width="20" height="32" viewBox="0 0 20 32" class="text-slate-400">
+                <line x1="10" y1="0" x2="10" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <polygon points="10,32 4,22 16,22" fill="currentColor" />
               </svg>
             </div>
           ` : ''}
