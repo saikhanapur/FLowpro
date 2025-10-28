@@ -80,37 +80,18 @@
   background: #94a3b8;
 }
 
-/* Arrow animations and styles */
-.arrow-connector svg {
-  transition: all 0.3s ease;
-}
-
-.arrow-connector:hover svg {
-  transform: scale(1.1);
-}
-
-@keyframes arrowPulse {
-  0%, 100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.arrow-connector svg {
-  animation: arrowPulse 2s ease-in-out infinite;
-}
-
-/* PDF Export - Prevent node splitting */
-.node-container {
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-
+/* Arrow styles - minimalist */
 .arrow-connector {
   page-break-inside: avoid;
   break-inside: avoid;
+}
+
+.arrow-connector svg {
+  transition: color 0.2s ease;
+}
+
+.arrow-connector:hover svg {
+  color: #3b82f6;
 }
 
 
