@@ -128,24 +128,20 @@ const FlowchartEditor = ({ theme }) => {
             </div>
 
             {/* Flowchart Nodes */}
-            <div className="space-y-0">
+            <div className="flex flex-col items-center space-y-0">
               {process.nodes?.map((node, idx) => (
-                <div key={node.id} className="node-container">
+                <div key={node.id} className="node-container w-full max-w-2xl">
                   <FlowNode
                     node={node}
                     onClick={() => setSelectedNode(node)}
                     isSelected={selectedNode?.id === node.id}
                   />
                   {idx < process.nodes.length - 1 && (
-                    <div className="flex justify-center py-2 arrow-connector">
-                      <div className="flex flex-col items-center">
-                        <svg width="3" height="32" viewBox="0 0 3 32" className="text-slate-400">
-                          <line x1="1.5" y1="0" x2="1.5" y2="32" stroke="currentColor" strokeWidth="2" />
-                        </svg>
-                        <svg width="16" height="12" viewBox="0 0 16 12" className="text-slate-400 -mt-1">
-                          <path d="M 8 0 L 16 12 L 8 10 L 0 12 Z" fill="currentColor" />
-                        </svg>
-                      </div>
+                    <div className="flex justify-center py-1 arrow-connector">
+                      <svg width="24" height="24" viewBox="0 0 24 24" className="text-slate-400">
+                        <polygon points="12,2 12,18 12,18" stroke="currentColor" strokeWidth="2" fill="none" />
+                        <polygon points="12,22 6,14 18,14" fill="currentColor" />
+                      </svg>
                     </div>
                   )}
                 </div>
