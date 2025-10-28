@@ -63,22 +63,63 @@ const Dashboard = () => {
   return (
     <div className="max-w-7xl mx-auto px-6 py-8" data-testid="dashboard">
       {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold heading-font text-slate-800 mb-4">
-          Transform Your Process into a Flowchart in 2 Minutes
+      <div className="text-center mb-16 relative">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+        </div>
+
+        <h1 className="text-6xl md:text-7xl font-bold heading-font mb-6 leading-tight">
+          <span className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent">
+            Turn Chaos into Clarity
+          </span>
+          <br />
+          <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+            in 2 Minutes
+          </span>
         </h1>
-        <p className="text-xl text-slate-600 mb-8">
+        
+        <p className="text-xl md:text-2xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
           Document, visualize, and improve your workflows with AI
         </p>
-        <Button
-          size="lg"
-          onClick={() => navigate('/create')}
-          className="gradient-blue text-white text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all btn-hover"
-          data-testid="create-process-btn"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Create New Process
-        </Button>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+          <Button
+            size="lg"
+            onClick={() => navigate('/create')}
+            className="gradient-blue text-white text-lg px-10 py-7 rounded-2xl shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 btn-hover group"
+            data-testid="create-process-btn"
+          >
+            <Plus className="w-6 h-6 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+            Create Your First Process
+          </Button>
+          
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={() => navigate('/templates')}
+            className="text-lg px-10 py-7 rounded-2xl border-2 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300"
+          >
+            Browse Templates
+          </Button>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-600">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span>Voice, Document, or Chat Input</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <span>AI-Powered Gap Detection</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+            <span>Export Anywhere</span>
+          </div>
+        </div>
       </div>
 
       {/* Search and Filters */}
