@@ -100,10 +100,10 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
           )}
         </div>
 
-        {/* Actors */}
+        {/* Responsible */}
         {node.actors && node.actors.length > 0 && (
           <div>
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Actors/Systems</label>
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Responsible</label>
             <div className="flex flex-wrap gap-2">
               {node.actors.map((actor, idx) => (
                 <Badge key={idx} variant="outline" className="text-xs">{actor}</Badge>
