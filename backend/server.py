@@ -105,10 +105,16 @@ class AIService:
     async def parse_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
         """Parse input text and extract process structure using Claude"""
         try:
+            # Limit input size to prevent extremely long processing
+            max_length = 15000  # characters
+            if len(input_text) > max_length:
+                logger.warning(f"Input text too long ({len(input_text)} chars), truncating to {max_length}")
+                input_text = input_text[:max_length] + "\n\n[Document truncated due to length]"
+            
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"parse_{uuid.uuid4()}",
-                system_message="You are FlowForge AI, an expert at understanding and structuring business processes."
+                system_message="You are FlowForge AI, an expert at understanding and structuring business processes. Be concise and extract only the most important steps."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
             prompt = f"""Extract a complete process structure from this {input_type}:
