@@ -106,40 +106,59 @@ class AIService:
         """Parse input text and extract process structure using Claude - can detect multiple processes"""
         try:
             # Limit input size to prevent extremely long processing
-            max_length = 15000  # Increased to handle multi-process documents
+            max_length = 20000  # Increased to handle multi-process documents
             if len(input_text) > max_length:
                 logger.warning(f"Input text too long ({len(input_text)} chars), truncating to {max_length}")
-                input_text = input_text[:max_length] + "\n\n[Document truncated due to length. Focus on main processes.]"
+                input_text = input_text[:max_length] + "\n\n[Document truncated. Analyze visible processes.]"
+            
+            logger.info(f"Starting process detection for {input_type} with {len(input_text)} characters")
             
             # First, detect if document contains multiple processes
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"detect_{uuid.uuid4()}",
-                system_message="You are FlowForge AI. Detect if document contains multiple distinct processes. Return valid JSON only."
+                system_message="You are an expert at identifying process workflows in documents. Analyze carefully and detect ALL distinct processes."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            detection_prompt = f"""Analyze this {input_type} and determine if it contains MULTIPLE distinct processes or just ONE process.
+            detection_prompt = f"""CRITICAL TASK: Analyze this {input_type} to detect if it contains MULTIPLE DISTINCT PROCESS WORKFLOWS.
 
 {input_text}
 
-CRITICAL: Return ONLY valid JSON. No markdown. No explanations.
+YOU MUST:
+1. Look for MULTIPLE separate process flowcharts or workflow descriptions
+2. Check for section headers like "Process 1:", "Process Map 2:", different workflow titles
+3. Identify if different pages/sections describe DIFFERENT workflows (not steps of ONE workflow)
+4. Each distinct process has its own START and END, own actors, own purpose
 
-Look for:
-- Multiple clear section headers/titles indicating separate processes
-- Distinct workflows with different purposes
-- Clear separations between process descriptions
+EXAMPLES of MULTIPLE processes:
+- "Recruitment Process" AND "Onboarding Process" (separate workflows)
+- "Standard Requisition Process" AND "High Volume Recruitment" (different approaches)
+- "Job Posting Process" AND "Offer Management Process" (distinct phases as separate processes)
+- Multiple process maps on different pages with different titles
 
-Return this JSON:
+EXAMPLES of SINGLE process:
+- One workflow with multiple steps (even if 10+ steps)
+- Sequential phases within ONE end-to-end process
+- One flowchart with decision branches
+
+Return ONLY this JSON (no markdown, no explanations):
 {{
-  "multipleProcesses": true/false,
-  "processCount": number,
-  "processTitles": ["Process 1 Title", "Process 2 Title", ...]
+  "multipleProcesses": true or false,
+  "processCount": exact number,
+  "processTitles": ["Exact Title 1 from Document", "Exact Title 2 from Document", ...],
+  "confidence": "high" or "medium" or "low",
+  "reasoning": "brief explanation"
 }}
 
-If only ONE process or unclear, return: {{"multipleProcesses": false, "processCount": 1, "processTitles": []}}"""
+If ONLY ONE workflow detected, return:
+{{"multipleProcesses": false, "processCount": 1, "processTitles": [], "confidence": "high", "reasoning": "Single end-to-end process"}}
+
+BE THOROUGH. Check the ENTIRE document."""
             
             detection_message = UserMessage(text=detection_prompt)
             detection_response = await chat.send_message(detection_message)
+            
+            logger.info(f"Detection response: {detection_response[:500]}")
             
             # Parse detection response
             detection_text = detection_response.strip()
@@ -150,12 +169,15 @@ If only ONE process or unclear, return: {{"multipleProcesses": false, "processCo
                     detection_text = detection_text[start:end+1]
             
             detection_result = json.loads(detection_text)
+            logger.info(f"Detection result: {detection_result}")
             
             # If multiple processes detected (≥2), parse them separately
             if detection_result.get('multipleProcesses') and detection_result.get('processCount', 0) >= 2:
+                logger.info(f"Multiple processes detected: {detection_result.get('processCount')}")
                 return await self._parse_multiple_processes(input_text, input_type, detection_result)
             else:
                 # Single process - use existing logic
+                logger.info("Single process detected, using standard parsing")
                 return await self._parse_single_process(input_text, input_type)
                 
         except Exception as e:
