@@ -137,15 +137,15 @@ const FlowchartEditor = ({ theme }) => {
                     isSelected={selectedNode?.id === node.id}
                   />
                   {idx < process.nodes.length - 1 && (
-                    <div className="flex justify-center py-3 arrow-connector">
-                      <svg width="4" height="48" viewBox="0 0 4 48" className="text-slate-400 hover:text-blue-500 transition-colors duration-200">
-                        <defs>
-                          <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto">
-                            <path d="M 0 0 L 12 6 L 0 12 z" fill="currentColor" />
-                          </marker>
-                        </defs>
-                        <line x1="2" y1="0" x2="2" y2="44" stroke="currentColor" strokeWidth="3" strokeDasharray="0" markerEnd="url(#arrowhead)" />
-                      </svg>
+                    <div className="flex justify-center py-2 arrow-connector">
+                      <div className="flex flex-col items-center">
+                        <svg width="3" height="32" viewBox="0 0 3 32" className="text-slate-400">
+                          <line x1="1.5" y1="0" x2="1.5" y2="32" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                        <svg width="16" height="12" viewBox="0 0 16 12" className="text-slate-400 -mt-1">
+                          <path d="M 8 0 L 16 12 L 8 10 L 0 12 Z" fill="currentColor" />
+                        </svg>
+                      </div>
                     </div>
                   )}
                 </div>
