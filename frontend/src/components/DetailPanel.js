@@ -53,10 +53,10 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
   };
 
   return (
-    <div className="w-96 bg-white border-l border-slate-200 overflow-y-auto slide-in-right" data-testid="detail-panel">
+    <div className="w-96 bg-white border-l border-slate-200 overflow-y-auto flex-shrink-0" data-testid="detail-panel" style={{animation: 'slideInRight 0.3s ease-out'}}>
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-800">Node Details</h3>
+      <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between z-10">
+        <h3 className="text-lg font-bold text-slate-800">Step Details</h3>
         <Button variant="ghost" size="sm" onClick={onClose} data-testid="close-detail-panel">
           <X className="w-5 h-5" />
         </Button>
@@ -65,47 +65,48 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
       <div className="p-6 space-y-6">
         {/* Status Badge */}
         <div>
-          <Badge variant={node.status === 'critical-gap' ? 'destructive' : 'secondary'}>
-            {node.status}
+          <Badge variant={node.status === 'critical-gap' ? 'destructive' : node.status === 'current' ? 'default' : 'secondary'} className="text-xs">
+            {node.status.toUpperCase()}
           </Badge>
         </div>
 
         {/* Title */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Title</label>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Title</label>
           {isEditing ? (
             <input
               type="text"
               value={editedNode.title}
               onChange={(e) => setEditedNode({...editedNode, title: e.target.value})}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
             />
           ) : (
-            <div className="font-medium text-slate-800">{node.title}</div>
+            <div className="font-semibold text-slate-800">{node.title}</div>
           )}
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Description</label>
           {isEditing ? (
             <Textarea
               value={editedNode.description}
               onChange={(e) => setEditedNode({...editedNode, description: e.target.value})}
               rows={4}
+              className="text-sm"
             />
           ) : (
-            <div className="text-sm text-slate-600">{node.description}</div>
+            <div className="text-sm text-slate-700 leading-relaxed">{node.description}</div>
           )}
         </div>
 
         {/* Actors */}
         {node.actors && node.actors.length > 0 && (
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Actors</label>
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Actors/Systems</label>
             <div className="flex flex-wrap gap-2">
               {node.actors.map((actor, idx) => (
-                <Badge key={idx} variant="outline">{actor}</Badge>
+                <Badge key={idx} variant="outline" className="text-xs">{actor}</Badge>
               ))}
             </div>
           </div>
@@ -114,11 +115,11 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
         {/* Sub-steps */}
         {node.subSteps && node.subSteps.length > 0 && (
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Process Steps</label>
-            <ul className="space-y-1">
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Process Steps</label>
+            <ul className="space-y-2">
               {node.subSteps.map((step, idx) => (
-                <li key={idx} className="text-sm text-slate-600 flex items-start gap-2">
-                  <span className="text-blue-600 font-bold">→</span>
+                <li key={idx} className="text-sm text-slate-700 flex items-start gap-2 leading-relaxed">
+                  <span className="text-blue-600 font-bold mt-0.5">→</span>
                   {step}
                 </li>
               ))}
@@ -128,26 +129,30 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
 
         {/* Current vs Ideal State */}
         {(node.currentState || node.idealState) && (
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Current State</label>
-            <div className="text-sm text-slate-600 mb-3">{node.currentState}</div>
+          <div className="space-y-4">
+            {node.currentState && (
+              <div className="bg-slate-50 rounded-lg p-4">
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Current State</label>
+                <div className="text-sm text-slate-700 leading-relaxed">{node.currentState}</div>
+              </div>
+            )}
             
             {node.idealState && (
-              <>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Ideal State</label>
-                <div className="text-sm text-emerald-600">{node.idealState}</div>
-              </>
+              <div className="bg-emerald-50 rounded-lg p-4">
+                <label className="block text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Ideal State</label>
+                <div className="text-sm text-emerald-800 leading-relaxed">{node.idealState}</div>
+              </div>
             )}
           </div>
         )}
 
         {/* Gap */}
         {node.gap && (
-          <div className="bg-rose-50 border border-rose-200 rounded-lg p-4">
-            <label className="block text-sm font-semibold text-rose-900 mb-2">Gap Identified</label>
-            <div className="text-sm text-rose-800">{node.gap}</div>
+          <div className="bg-rose-50 border-l-4 border-rose-500 rounded-lg p-4">
+            <label className="block text-xs font-semibold text-rose-900 uppercase tracking-wide mb-2">Gap Identified</label>
+            <div className="text-sm text-rose-800 leading-relaxed">{node.gap}</div>
             {node.impact && (
-              <div className="mt-2">
+              <div className="mt-3">
                 <Badge variant="destructive" className="text-xs">
                   Impact: {node.impact}
                 </Badge>
@@ -157,7 +162,7 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
         )}
 
         {/* Edit/Save Button */}
-        <div>
+        <div className="pt-4 border-t border-slate-200">
           {isEditing ? (
             <Button onClick={handleSave} className="w-full" data-testid="save-node-btn">
               <Save className="w-4 h-4 mr-2" />
@@ -172,17 +177,17 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
         </div>
 
         {/* Comments Section */}
-        <div className="border-t border-slate-200 pt-6">
+        <div className="pt-4 border-t border-slate-200">
           <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
             <MessageSquare className="w-4 h-4" />
             Comments ({comments.length})
           </h4>
 
-          <div className="space-y-3 mb-4">
+          <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
             {comments.map((comment) => (
               <div key={comment.id} className="bg-slate-50 rounded-lg p-3">
-                <div className="text-sm text-slate-700">{comment.content}</div>
-                <div className="text-xs text-slate-500 mt-1">
+                <div className="text-sm text-slate-700 leading-relaxed">{comment.content}</div>
+                <div className="text-xs text-slate-500 mt-2">
                   {new Date(comment.createdAt).toLocaleString()}
                 </div>
               </div>
@@ -196,6 +201,7 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
               onChange={(e) => setNewComment(e.target.value)}
               rows={3}
               data-testid="comment-input"
+              className="text-sm"
             />
             <Button onClick={handleAddComment} size="sm" className="w-full" data-testid="add-comment-btn">
               Add Comment
