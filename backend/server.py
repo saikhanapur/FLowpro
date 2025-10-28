@@ -179,10 +179,23 @@ Return ONLY valid JSON in this exact structure:
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
             
-            # Parse JSON from response
-            parsed = json.loads(response)
+            # Parse JSON from response - handle markdown code blocks
+            response_text = response.strip()
+            
+            # Remove markdown code blocks if present
+            if response_text.startswith('```'):
+                # Find the first { and last }
+                start = response_text.find('{')
+                end = response_text.rfind('}')
+                if start != -1 and end != -1:
+                    response_text = response_text[start:end+1]
+            
+            parsed = json.loads(response_text)
             return parsed
             
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON parsing error: {e}. Response: {response[:500]}")
+            raise HTTPException(status_code=500, detail=f"AI returned invalid JSON format")
         except Exception as e:
             logger.error(f"Error parsing process: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to parse process: {str(e)}")
