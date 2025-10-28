@@ -33,21 +33,24 @@ const ExportModal = ({ process, onClose }) => {
       let pageNumber = 1;
       
       // Add Title Header on first page
-      pdf.setFontSize(20);
+      pdf.setFontSize(22);
       pdf.setTextColor(30, 41, 59); // slate-800
+      pdf.setFont(undefined, 'bold');
       pdf.text(process.name, margin, currentY);
       currentY += 10;
       
       // Add metadata
       pdf.setFontSize(10);
+      pdf.setFont(undefined, 'normal');
       pdf.setTextColor(100, 116, 139); // slate-500
       pdf.text(`Version ${process.version} • ${process.nodes?.length || 0} steps • Generated ${new Date().toLocaleDateString()}`, margin, currentY);
-      currentY += 12;
+      currentY += 14;
       
       // Add divider line
       pdf.setDrawColor(203, 213, 225); // slate-300
+      pdf.setLineWidth(0.5);
       pdf.line(margin, currentY, pageWidth - margin, currentY);
-      currentY += 8;
+      currentY += 10;
       
       // Get all node containers
       const nodeContainers = document.querySelectorAll('.node-container');
@@ -55,38 +58,51 @@ const ExportModal = ({ process, onClose }) => {
       for (let i = 0; i < nodeContainers.length; i++) {
         const container = nodeContainers[i];
         
-        // Force container to render its full height
+        // Store original styles
         const originalOverflow = container.style.overflow;
         const originalHeight = container.style.height;
+        const originalMinHeight = container.style.minHeight;
+        
+        // Force container to render its full height with proper spacing
         container.style.overflow = 'visible';
         container.style.height = 'auto';
+        container.style.minHeight = 'auto';
         
         // Wait for layout to settle
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 150));
         
-        // Capture the node with high quality and full content
+        // Capture the node with enhanced quality settings
         const canvas = await html2canvas(container, {
-          scale: 2.5,
+          scale: 3,
           useCORS: true,
           logging: false,
           backgroundColor: '#f8fafc',
-          scrollY: 0,
-          scrollX: 0,
+          scrollY: -window.scrollY,
+          scrollX: -window.scrollX,
           windowWidth: container.scrollWidth,
           windowHeight: container.scrollHeight,
           width: container.scrollWidth,
-          height: container.scrollHeight
+          height: container.scrollHeight,
+          onclone: (clonedDoc) => {
+            // Enhance text rendering in the cloned document
+            const clonedContainer = clonedDoc.querySelector('.node-container');
+            if (clonedContainer) {
+              clonedContainer.style.fontSmoothing = 'antialiased';
+              clonedContainer.style.webkitFontSmoothing = 'antialiased';
+            }
+          }
         });
         
         // Restore original styles
         container.style.overflow = originalOverflow;
         container.style.height = originalHeight;
+        container.style.minHeight = originalMinHeight;
         
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/png', 1.0);
         const imgWidth = contentWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        // Check if we need a new page (leave space at bottom for page numbers)
+        // Check if we need a new page (leave space at bottom for page numbers and header on new page)
         if (currentY + imgHeight > pageHeight - 25) {
           // Add page number before moving to next page
           pdf.setFontSize(9);
@@ -96,11 +112,24 @@ const ExportModal = ({ process, onClose }) => {
           pdf.addPage();
           pageNumber++;
           currentY = margin;
+          
+          // Add process name header on new page
+          pdf.setFontSize(12);
+          pdf.setTextColor(100, 116, 139);
+          pdf.setFont(undefined, 'bold');
+          pdf.text(process.name, margin, currentY);
+          currentY += 10;
+          
+          // Add divider
+          pdf.setDrawColor(203, 213, 225);
+          pdf.setLineWidth(0.3);
+          pdf.line(margin, currentY, pageWidth - margin, currentY);
+          currentY += 8;
         }
         
-        // Add the image
+        // Add the image with higher quality
         pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight, undefined, 'FAST');
-        currentY += imgHeight + 5; // Add spacing between nodes
+        currentY += imgHeight + 6; // Add slightly more spacing between nodes
       }
       
       // Add page number on last page
