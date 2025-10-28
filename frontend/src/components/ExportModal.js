@@ -371,7 +371,7 @@ const ExportModal = ({ process, onClose }) => {
       if (node.actors && node.actors.length > 0) {
         html += \`
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Actors/Systems</label>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Responsible</label>
             <div class="flex flex-wrap gap-2">
               \${node.actors.map(actor => \`<span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">\${actor}</span>\`).join('')}
             </div>
