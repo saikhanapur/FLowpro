@@ -26,7 +26,7 @@ const ExportModal = ({ process, onClose }) => {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 15;
+      const margin = 12;
       const contentWidth = pageWidth - (2 * margin);
       
       let currentY = margin;
@@ -37,20 +37,20 @@ const ExportModal = ({ process, onClose }) => {
       pdf.setTextColor(30, 41, 59); // slate-800
       pdf.setFont(undefined, 'bold');
       pdf.text(process.name, margin, currentY);
-      currentY += 10;
+      currentY += 8;
       
       // Add metadata
       pdf.setFontSize(10);
       pdf.setFont(undefined, 'normal');
       pdf.setTextColor(100, 116, 139); // slate-500
       pdf.text(`Version ${process.version} • ${process.nodes?.length || 0} steps • Generated ${new Date().toLocaleDateString()}`, margin, currentY);
-      currentY += 14;
+      currentY += 10;
       
       // Add divider line
       pdf.setDrawColor(203, 213, 225); // slate-300
       pdf.setLineWidth(0.5);
       pdf.line(margin, currentY, pageWidth - margin, currentY);
-      currentY += 10;
+      currentY += 8;
       
       // Get all node containers
       const nodeContainers = document.querySelectorAll('.node-container');
@@ -103,39 +103,39 @@ const ExportModal = ({ process, onClose }) => {
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
         // Check if we need a new page (leave space at bottom for page numbers and header on new page)
-        if (currentY + imgHeight > pageHeight - 25) {
+        if (currentY + imgHeight > pageHeight - 20) {
           // Add page number before moving to next page
           pdf.setFontSize(9);
           pdf.setTextColor(148, 163, 184);
-          pdf.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+          pdf.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
           
           pdf.addPage();
           pageNumber++;
           currentY = margin;
           
           // Add process name header on new page
-          pdf.setFontSize(12);
+          pdf.setFontSize(11);
           pdf.setTextColor(100, 116, 139);
           pdf.setFont(undefined, 'bold');
           pdf.text(process.name, margin, currentY);
-          currentY += 10;
+          currentY += 8;
           
           // Add divider
           pdf.setDrawColor(203, 213, 225);
           pdf.setLineWidth(0.3);
           pdf.line(margin, currentY, pageWidth - margin, currentY);
-          currentY += 8;
+          currentY += 6;
         }
         
         // Add the image with higher quality
         pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight, undefined, 'FAST');
-        currentY += imgHeight + 6; // Add slightly more spacing between nodes
+        currentY += imgHeight + 3; // Reduced spacing between nodes
       }
       
       // Add page number on last page
       pdf.setFontSize(9);
       pdf.setTextColor(148, 163, 184);
-      pdf.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      pdf.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
       
       pdf.save(`${process.name}.pdf`);
       toast.success(`PDF exported successfully with ${pageNumber} page(s)!`);
