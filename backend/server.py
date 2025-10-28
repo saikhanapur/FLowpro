@@ -192,18 +192,32 @@ Return this exact JSON structure (and NOTHING else):
             
             # Remove markdown code blocks if present
             if response_text.startswith('```'):
-                # Find the first { and last }
                 start = response_text.find('{')
                 end = response_text.rfind('}')
                 if start != -1 and end != -1:
                     response_text = response_text[start:end+1]
             
-            parsed = json.loads(response_text)
+            # Try to fix common JSON issues
+            try:
+                parsed = json.loads(response_text)
+            except json.JSONDecodeError as e:
+                logger.error(f"JSON parsing error: {e}. Attempting to fix...")
+                # Try to find the last complete object by finding the last }
+                last_brace = response_text.rfind('}')
+                if last_brace != -1:
+                    response_text = response_text[:last_brace+1]
+                    parsed = json.loads(response_text)
+                else:
+                    raise
+            
             return parsed
             
         except json.JSONDecodeError as e:
             logger.error(f"JSON parsing error: {e}. Response: {response[:500]}")
-            raise HTTPException(status_code=500, detail=f"AI returned invalid JSON format")
+            raise HTTPException(
+                status_code=500, 
+                detail=f"AI response was too large or malformed. Please try with a shorter document or simpler description."
+            )
         except Exception as e:
             logger.error(f"Error parsing process: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to parse process: {str(e)}")
