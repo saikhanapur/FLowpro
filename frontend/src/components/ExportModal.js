@@ -24,13 +24,36 @@ const ExportModal = ({ process, onClose }) => {
     setExporting(true);
     try {
       const canvas = document.querySelector('[data-testid="flowchart-canvas"]');
-      const imgData = await html2canvas(canvas);
-      const pdf = new jsPDF();
-      pdf.addImage(imgData.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
+      const imgData = await html2canvas(canvas, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        scrollY: -window.scrollY,
+        scrollX: -window.scrollX
+      });
+      
+      const imgWidth = 190;
+      const pageHeight = 277;
+      const imgHeight = (imgData.height * imgWidth) / imgData.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.addImage(imgData.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
       pdf.save(`${process.name}.pdf`);
       toast.success('Exported as PDF');
     } catch (error) {
       toast.error('Failed to export PDF');
+      console.error(error);
     } finally {
       setExporting(false);
     }
