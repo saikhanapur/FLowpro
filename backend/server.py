@@ -117,69 +117,48 @@ class AIService:
                 system_message="You are FlowForge AI. Extract ONLY the 5-8 most critical steps. Be concise. Return valid JSON only."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            prompt = f"""Extract a complete process structure from this {input_type}:
+            prompt = f"""Extract ONLY the 5-8 most critical steps from this {input_type}. Be concise.
 
 {input_text}
 
-CRITICAL: Return ONLY the JSON object, no explanations, no markdown, no code blocks.
+CRITICAL: Return ONLY valid JSON. No markdown. No explanations.
 
-Identify:
-1. All process steps (look for: "first", "then", "next", "after", "meanwhile", "if", "when")
-2. Classify each step:
-   - trigger: Initiates the process
-   - process: Standard operational step
-   - decision: Conditional branch (if/else)
-   - gap: Missing information or identified problem
+Extract:
+- Main process steps (5-8 max)
+- Key actors
+- Critical gaps only
 
-3. Determine step status:
-   - trigger: Starting point
-   - current: Working as intended
-   - warning: Has issues but not critical
-   - critical-gap: Major problem requiring attention
-
-4. Extract:
-   - Actors/Systems involved in each step
-   - Failure scenarios
-   - Current state vs desired state
-   - Dependencies and parallel processes
-
-5. Look for gap indicators like:
-   - "we don't know when..."
-   - "no visibility on..."
-   - "manual process..."
-   - "have to chase..."
-
-Return this exact JSON structure (and NOTHING else):
+Return this JSON structure:
 {{
   "processName": "string",
-  "description": "brief overview",
+  "description": "brief",
   "actors": ["actor1", "actor2"],
   "nodes": [
     {{
       "id": "node-1",
       "type": "trigger",
       "status": "trigger",
-      "title": "Short, clear title (max 6 words)",
-      "description": "Detailed description",
-      "actors": ["who performs this"],
+      "title": "Clear title (max 6 words)",
+      "description": "Brief description",
+      "actors": ["who"],
       "subSteps": ["step 1", "step 2"],
       "dependencies": [],
       "parallelWith": [],
-      "failures": ["what can go wrong"],
+      "failures": [],
       "blocking": null,
-      "currentState": "how it works now",
-      "idealState": "how it should work",
+      "currentState": "brief",
+      "idealState": "brief",
       "gap": null,
       "impact": "medium",
       "timeEstimate": null
     }}
   ],
-  "criticalGaps": ["list of major issues found"],
+  "criticalGaps": ["gap 1"],
   "improvementOpportunities": [
     {{
-      "description": "what could be improved",
+      "description": "brief",
       "type": "automation",
-      "estimatedSavings": "time/cost if calculable"
+      "estimatedSavings": "time"
     }}
   ]
 }}"""
