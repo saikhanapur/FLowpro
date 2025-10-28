@@ -195,6 +195,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Implemented fixes: FlowNode text wrapping with break-words, whitespace-normal. ExportModal html2canvas config improved with scale:2.5, forced overflow:visible, height:auto before capture. Need to test if text clipping is resolved in actual PDF export."
+      - working: "NA"
+        agent: "main"
+        comment: "User confirmed PDF export is much better but requested further improvements. Implemented comprehensive enhancements: 1) Typography - increased font sizes (15px titles, 13px descriptions), better line heights (leading-snug, leading-relaxed) 2) Spacing - more padding in nodes (p-5 pb-6), better gap between elements, minimum width of 280px 3) Gap Messages - enhanced with bg-black/10 backdrop, border, larger icon (4x4) 4) Actor Badges - larger (px-2.5 py-1), font-semibold, better contrast with backdrop-blur 5) PDF Quality - increased html2canvas scale to 3, PNG quality 1.0, better scroll handling, 150ms render wait, font smoothing in cloned doc 6) Page Headers - added process name on continuation pages with dividers 7) Arrows - thicker (28x28, stroke-width 2.5) 8) Enhanced spacing between nodes (6mm instead of 5mm). Ready for user testing."
 
   - task: "Process Creation Flow (Voice, Document, Chat)"
     implemented: true
