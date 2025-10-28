@@ -18,12 +18,18 @@ const ProcessCreator = () => {
 
   const handleInputComplete = async (input, inputType) => {
     setProcessing(true);
+    
+    // Show toast with progress indicator
+    const loadingToast = toast.loading('AI is analyzing your input... This may take 1-2 minutes for large documents.');
+    
     try {
       const data = await api.parseProcess(input, inputType);
+      toast.dismiss(loadingToast);
       setExtractedData(data);
       toast.success('Process captured successfully!');
     } catch (error) {
-      toast.error('Failed to process input');
+      toast.dismiss(loadingToast);
+      toast.error(error.response?.data?.detail || 'Failed to process input. Please try again or use a shorter document.');
       console.error(error);
     } finally {
       setProcessing(false);
