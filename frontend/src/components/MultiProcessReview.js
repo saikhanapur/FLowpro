@@ -61,12 +61,12 @@ const MultiProcessReview = ({ processesData, onBack }) => {
       }
 
       toast.dismiss(loadingToast);
-      toast.success(`Successfully created ${createdProcesses.length} process(es)!`);
+      toast.success(`Successfully created ${createdProcesses.length} process(es)! Redirecting to dashboard...`);
       
-      // Navigate to first created process
-      if (createdProcesses.length > 0) {
-        navigate(`/edit/${createdProcesses[0].id}`);
-      }
+      // Navigate to dashboard to show all created processes
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
     } catch (error) {
       toast.dismiss(loadingToast);
       toast.error('Failed to create processes');
