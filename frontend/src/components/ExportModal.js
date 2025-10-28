@@ -289,22 +289,22 @@ const ExportModal = ({ process, onClose }) => {
         ${process.description ? `<p class="text-slate-700 mb-4">${process.description}</p>` : ''}
         
         <!-- Legend -->
-        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap gap-4 text-sm">
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm"></div>
-            <span class="text-slate-700">Trigger</span>
+        <div class="bg-white rounded-2xl p-5 border border-slate-300/50 shadow-md flex flex-wrap gap-5 text-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="w-5 h-5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm"></div>
+            <span class="text-slate-700 font-medium">Trigger</span>
           </div>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-white border border-emerald-200 shadow-sm"></div>
-            <span class="text-slate-700">Active</span>
+          <div class="flex items-center gap-2.5">
+            <div class="w-5 h-5 rounded-lg bg-white border border-emerald-300/60 shadow-sm"></div>
+            <span class="text-slate-700 font-medium">Active</span>
           </div>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-white border border-amber-200 shadow-sm"></div>
-            <span class="text-slate-700">Warning</span>
+          <div class="flex items-center gap-2.5">
+            <div class="w-5 h-5 rounded-lg bg-white border border-amber-300/60 shadow-sm"></div>
+            <span class="text-slate-700 font-medium">Warning</span>
           </div>
-          <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
-            <span class="text-slate-700">Critical Gap</span>
+          <div class="flex items-center gap-2.5">
+            <div class="w-5 h-5 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
+            <span class="text-slate-700 font-medium">Critical Gap</span>
           </div>
         </div>
       </div>
