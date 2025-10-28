@@ -55,22 +55,39 @@ const ExportModal = ({ process, onClose }) => {
       for (let i = 0; i < nodeContainers.length; i++) {
         const container = nodeContainers[i];
         
-        // Capture the node with high quality and extra padding
+        // Force container to render its full height
+        const originalOverflow = container.style.overflow;
+        const originalHeight = container.style.height;
+        container.style.overflow = 'visible';
+        container.style.height = 'auto';
+        
+        // Wait for layout to settle
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Capture the node with high quality and full content
         const canvas = await html2canvas(container, {
-          scale: 2,
+          scale: 2.5,
           useCORS: true,
           logging: false,
           backgroundColor: '#f8fafc',
-          windowHeight: container.scrollHeight + 20,
-          height: container.scrollHeight + 20
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: container.scrollWidth,
+          windowHeight: container.scrollHeight,
+          width: container.scrollWidth,
+          height: container.scrollHeight
         });
+        
+        // Restore original styles
+        container.style.overflow = originalOverflow;
+        container.style.height = originalHeight;
         
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = contentWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
         // Check if we need a new page (leave space at bottom for page numbers)
-        if (currentY + imgHeight > pageHeight - 20) {
+        if (currentY + imgHeight > pageHeight - 25) {
           // Add page number before moving to next page
           pdf.setFontSize(9);
           pdf.setTextColor(148, 163, 184);
@@ -83,7 +100,7 @@ const ExportModal = ({ process, onClose }) => {
         
         // Add the image
         pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight, undefined, 'FAST');
-        currentY += imgHeight + 4; // Add spacing between nodes
+        currentY += imgHeight + 5; // Add spacing between nodes
       }
       
       // Add page number on last page
