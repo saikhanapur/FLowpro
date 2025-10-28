@@ -195,7 +195,7 @@ const ProcessCreator = () => {
               Process Steps ({processData.nodes?.length || 0})
             </label>
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {extractedData.nodes?.map((node, i) => (
+              {processData.nodes?.map((node, i) => (
                 <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
                   <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
                     {i + 1}
