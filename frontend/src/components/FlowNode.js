@@ -35,7 +35,7 @@ const FlowNode = ({ node, onClick, isSelected }) => {
   return (
     <div
       onClick={onClick}
-      className={`rounded-lg p-4 cursor-pointer transition-all duration-200 hover:scale-[1.01] mx-auto w-full ${getStatusStyles()} ${
+      className={`rounded-lg p-4 pb-5 cursor-pointer transition-all duration-200 hover:scale-[1.01] mx-auto w-full ${getStatusStyles()} ${
         isSelected ? 'ring-4 ring-blue-400 ring-offset-2 scale-[1.01]' : ''
       }`}
       data-testid={`flow-node-${node.id}`}
@@ -46,7 +46,7 @@ const FlowNode = ({ node, onClick, isSelected }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-bold mb-1.5 leading-tight">{node.title}</h3>
-          <p className="text-xs opacity-90 leading-relaxed">{node.description}</p>
+          <p className="text-xs opacity-90 leading-relaxed mb-0.5">{node.description}</p>
           
           {node.actors && node.actors.length > 0 && (
             <div className="mt-2.5 flex flex-wrap gap-1">
@@ -66,7 +66,7 @@ const FlowNode = ({ node, onClick, isSelected }) => {
           )}
 
           {node.gap && (
-            <div className="mt-2.5 flex items-start gap-1.5 text-xs font-semibold">
+            <div className="mt-2.5 mb-0.5 flex items-start gap-1.5 text-xs font-semibold">
               <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
               <span className="line-clamp-2">{node.gap}</span>
             </div>
