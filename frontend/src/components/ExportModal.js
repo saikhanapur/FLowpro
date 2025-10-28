@@ -123,17 +123,17 @@ const ExportModal = ({ process, onClose }) => {
                        node.status === 'critical-gap' ? '🚨' : '•';
       
       return `
-        <div class="node-container mb-4">
-          <div class="rounded-xl p-5 ${statusClass} shadow-sm cursor-pointer hover:scale-[1.02] transition-all duration-200" onclick="showDetail(${idx})" data-node-id="${idx}">
-            <div class="flex items-start gap-3">
-              <span class="text-xl flex-shrink-0">${iconHTML}</span>
+        <div class="node-container mb-3 mx-auto" style="max-width: 640px;">
+          <div class="rounded-lg p-4 ${statusClass} shadow-sm cursor-pointer hover:scale-[1.01] transition-all duration-200" onclick="showDetail(${idx})" data-node-id="${idx}">
+            <div class="flex items-start gap-2.5">
+              <span class="text-lg flex-shrink-0">${iconHTML}</span>
               <div class="flex-1">
-                <h3 class="text-base font-bold mb-2 leading-tight">${node.title}</h3>
-                <p class="text-sm opacity-90 leading-relaxed">${node.description}</p>
+                <h3 class="text-sm font-bold mb-1.5 leading-tight">${node.title}</h3>
+                <p class="text-xs opacity-90 leading-relaxed">${node.description}</p>
                 ${node.actors && node.actors.length > 0 ? `
-                  <div class="mt-3 flex flex-wrap gap-1.5">
+                  <div class="mt-2.5 flex flex-wrap gap-1">
                     ${node.actors.map(actor => `
-                      <span class="px-2.5 py-1 rounded-full text-xs font-medium ${
+                      <span class="px-2 py-0.5 rounded-full text-xs font-medium ${
                         node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/20' : 'bg-slate-100 text-slate-700'
                       }">${actor}</span>
                     `).join('')}
@@ -143,15 +143,11 @@ const ExportModal = ({ process, onClose }) => {
             </div>
           </div>
           ${idx < process.nodes.length - 1 ? `
-            <div class="flex justify-center py-2">
-              <div class="flex flex-col items-center">
-                <svg width="3" height="32" viewBox="0 0 3 32" class="text-slate-400">
-                  <line x1="1.5" y1="0" x2="1.5" y2="32" stroke="currentColor" stroke-width="2" />
-                </svg>
-                <svg width="16" height="12" viewBox="0 0 16 12" class="text-slate-400 -mt-1">
-                  <path d="M 8 0 L 16 12 L 8 10 L 0 12 Z" fill="currentColor" />
-                </svg>
-              </div>
+            <div class="flex justify-center py-1">
+              <svg width="24" height="24" viewBox="0 0 24 24" class="text-slate-400">
+                <polygon points="12,2 12,18 12,18" stroke="currentColor" stroke-width="2" fill="none" />
+                <polygon points="12,22 6,14 18,14" fill="currentColor" />
+              </svg>
             </div>
           ` : ''}
         </div>
