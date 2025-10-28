@@ -146,11 +146,11 @@ const ProcessCreator = () => {
             />
           </div>
 
-          {/* Actors */}
+          {/* Responsible Parties */}
           {extractedData.actors?.length > 0 && (
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Actors/Systems Involved
+                Responsible Parties
               </label>
               <div className="flex flex-wrap gap-2">
                 {extractedData.actors.map((actor, i) => (
