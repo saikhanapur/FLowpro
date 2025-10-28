@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import VoiceRecorder from './VoiceRecorder';
 import DocumentUploader from './DocumentUploader';
 import ChatInterface from './ChatInterface';
+import MultiProcessReview from './MultiProcessReview';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
