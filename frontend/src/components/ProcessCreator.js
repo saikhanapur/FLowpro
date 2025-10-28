@@ -215,10 +215,12 @@ const ProcessCreator = () => {
         </Button>
 
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold heading-font text-slate-800 mb-4">
-            Create Your Process Flowchart
+          <h1 className="text-5xl md:text-6xl font-bold heading-font mb-6 leading-tight">
+            <span className="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+              Create Your Process Flowchart
+            </span>
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
             Choose how you'd like to document your process
           </p>
         </div>
