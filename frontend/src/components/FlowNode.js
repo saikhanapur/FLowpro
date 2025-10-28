@@ -7,9 +7,12 @@ const FlowNode = ({ node, onClick, isSelected }) => {
       case 'trigger':
         return 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg';
       case 'current':
+      case 'active':  // Support AI-generated "active" status
         return 'bg-white border border-emerald-300/60 text-slate-800 shadow-md hover:shadow-lg';
       case 'warning':
         return 'bg-white border border-amber-300/60 text-slate-800 shadow-md hover:shadow-lg';
+      case 'completed':  // Support AI-generated "completed" status
+        return 'bg-white border border-slate-300/50 text-slate-800 shadow-md hover:shadow-lg';
       case 'critical-gap':
         return 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg';
       default:
@@ -22,13 +25,16 @@ const FlowNode = ({ node, onClick, isSelected }) => {
       case 'trigger':
         return <Zap className="w-4 h-4" />;
       case 'current':
+      case 'active':  // Support AI-generated "active" status
         return <CheckCircle className="w-4 h-4 text-emerald-600" />;
       case 'warning':
         return <AlertTriangle className="w-4 h-4 text-amber-600" />;
+      case 'completed':  // Support AI-generated "completed" status
+        return <CheckCircle className="w-4 h-4 text-slate-500" />;
       case 'critical-gap':
         return <AlertCircle className="w-4 h-4" />;
       default:
-        return null;
+        return <CheckCircle className="w-4 h-4 text-slate-500" />;
     }
   };
 
