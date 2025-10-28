@@ -214,6 +214,8 @@ Return this exact JSON structure (and NOTHING else):
             prompt = f"""Given this process with identified gaps:
 {json.dumps(process_data, indent=2)}
 
+CRITICAL: Return ONLY the JSON object, no explanations, no markdown, no code blocks.
+
 Generate a comprehensive "Ideal State" vision that:
 1. Groups improvements into 3-5 clear categories
 2. For each category:
@@ -223,14 +225,14 @@ Generate a comprehensive "Ideal State" vision that:
 3. Prioritizes by impact (mark CRITICAL items)
 4. Estimates time/cost savings where possible
 
-Return JSON:
+Return this exact JSON structure (and NOTHING else):
 {{
   "vision": "One paragraph describing the fully optimized process",
   "categories": [
     {{
       "title": "Category Name",
-      "icon": "emoji",
-      "priority": "critical|high|medium",
+      "icon": "🎯",
+      "priority": "critical",
       "improvements": ["Specific improvement 1", "Specific improvement 2"]
     }}
   ],
@@ -248,11 +250,26 @@ Return JSON:
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
             
-            return json.loads(response)
+            # Parse JSON from response - handle markdown code blocks
+            response_text = response.strip()
+            
+            # Remove markdown code blocks if present
+            if response_text.startswith('```'):
+                start = response_text.find('{')
+                end = response_text.rfind('}')
+                if start != -1 and end != -1:
+                    response_text = response_text[start:end+1]
+            
+            return json.loads(response_text)
             
         except Exception as e:
             logger.error(f"Error generating ideal state: {e}")
-            return {"vision": "Unable to generate ideal state at this time.", "categories": []}
+            return {
+                "vision": "Unable to generate ideal state. Please check your API credits.",
+                "categories": [],
+                "expectedOutcomes": {"operational": [], "business": []},
+                "estimatedImpact": {}
+            }
     
     async def chat_message(self, conversation_history: List[Dict[str, str]], user_message: str) -> str:
         """Handle interactive chat for process documentation"""
