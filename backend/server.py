@@ -103,7 +103,106 @@ class AIService:
     def __init__(self):
         self.api_key = os.environ.get('EMERGENT_LLM_KEY')
     
-    async def parse_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
+    def _preprocess_and_detect_boundaries(self, text: str) -> Dict[str, Any]:
+        """
+        Preprocess text to detect process boundaries using pattern matching.
+        This is faster and more reliable than AI for documents with clear headers.
+        """
+        process_titles = []
+        
+        # Pattern 1: Look for common process title patterns
+        # Matches: "Process Name Process", "Process Name - Detail", "Process Name (All)", etc.
+        patterns = [
+            r'^([A-Z][^\n]{10,100}?(?:Process|Workflow|Procedure))$',  # "Standard Requisition Process"
+            r'^([A-Z][^\n]{10,100}?)\s*-\s*([A-Z][^\n]{5,50})$',  # "Job Posting - Security"
+            r'^([A-Z][^\n]{10,100}?)\s*\(([^)]+)\)$',  # "Onboarding (All)"
+            r'==Start of OCR for page \d+==\s*([A-Z][^\n]{10,100})',  # After page markers
+        ]
+        
+        lines = text.split('\n')
+        seen_titles = set()
+        
+        for i, line in enumerate(lines):
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Check each pattern
+            for pattern in patterns:
+                match = re.match(pattern, line, re.MULTILINE)
+                if match:
+                    title = match.group(1).strip()
+                    # Filter out obviously non-process lines
+                    if len(title) > 10 and title not in seen_titles:
+                        # Check if it looks like a real process title
+                        keywords = ['process', 'workflow', 'procedure', 'requisition', 'posting', 'onboarding', 
+                                  'offer', 'application', 'recruit', 'hiring', 'manage', 'admin']
+                        if any(keyword in title.lower() for keyword in keywords):
+                            process_titles.append(title)
+                            seen_titles.add(title)
+                            logger.debug(f"Found potential process title: {title}")
+        
+        # Pattern 2: Look for repeated section headers (indicates multiple processes)
+        # Matches lines that appear to be headers (Title Case, Short, Followed by content)
+        potential_headers = []
+        for i, line in enumerate(lines):
+            line = line.strip()
+            if (len(line) > 15 and len(line) < 100 and 
+                line[0].isupper() and 
+                not line.endswith('.') and
+                not line.startswith('*') and
+                i + 1 < len(lines) and len(lines[i + 1].strip()) > 20):
+                # Check if next few lines have content (not another header)
+                if not lines[i + 1].strip()[0].isupper() or len(lines[i + 1].strip()) > 100:
+                    potential_headers.append(line)
+        
+        # If we didn't find explicit process titles, use potential headers
+        if len(process_titles) < 2 and len(potential_headers) >= 2:
+            process_titles.extend([h for h in potential_headers if h not in seen_titles][:10])
+        
+        # Remove duplicates while preserving order
+        unique_titles = []
+        for title in process_titles:
+            if title not in unique_titles:
+                unique_titles.append(title)
+        
+        process_count = len(unique_titles)
+        high_confidence = process_count >= 2 and any('process' in t.lower() for t in unique_titles)
+        
+        return {
+            'process_count': process_count,
+            'process_titles': unique_titles,
+            'high_confidence': high_confidence
+        }
+    
+    def _smart_truncate(self, text: str, max_length: int, process_titles: List[str]) -> str:
+        """
+        Smart truncation that tries to preserve process boundaries.
+        """
+        if len(text) <= max_length:
+            return text
+        
+        # Try to find a good truncation point near a process boundary
+        truncated = text[:max_length]
+        
+        # Look for the last process title before max_length
+        best_cut = max_length
+        for title in process_titles:
+            last_occurrence = truncated.rfind(title)
+            if last_occurrence > max_length * 0.7:  # If title is in last 30%
+                # Find the end of that process (next title or end)
+                next_title_pos = max_length
+                for other_title in process_titles:
+                    if other_title != title:
+                        pos = text.find(other_title, last_occurrence + len(title))
+                        if pos != -1 and pos < next_title_pos:
+                            next_title_pos = pos
+                
+                if next_title_pos < len(text):
+                    best_cut = min(next_title_pos, max_length)
+                    break
+        
+        return text[:best_cut] + "\n\n[Document truncated. Multiple processes may follow.]"
         """Parse input text and extract process structure using Claude - can detect multiple processes"""
         try:
             # First, preprocess to detect clear process boundaries
