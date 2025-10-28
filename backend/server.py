@@ -350,15 +350,11 @@ Return this exact structure:
 ]
 
 Extract ALL {process_count} processes from the document."""
-        "type": "automation",
-        "estimatedSavings": "time"
-      }}
-    ]
-  }}
-]"""
             
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
+            
+            logger.info(f"Multi-process parse response length: {len(response)}")
             
             # Parse JSON array from response
             response_text = response.strip()
@@ -369,10 +365,15 @@ Extract ALL {process_count} processes from the document."""
                     response_text = response_text[start:end+1]
             
             processes_array = json.loads(response_text)
+            logger.info(f"Successfully parsed {len(processes_array)} processes")
             
             # Ensure it's a list
             if not isinstance(processes_array, list):
                 processes_array = [processes_array]
+            
+            # Validate we got the expected number
+            if len(processes_array) < process_count:
+                logger.warning(f"Expected {process_count} processes but got {len(processes_array)}")
             
             return {
                 "multipleProcesses": True,
