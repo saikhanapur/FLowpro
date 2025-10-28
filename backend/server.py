@@ -203,6 +203,8 @@ class AIService:
                     break
         
         return text[:best_cut] + "\n\n[Document truncated. Multiple processes may follow.]"
+    
+    async def parse_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
         """Parse input text and extract process structure using Claude - can detect multiple processes"""
         try:
             # First, preprocess to detect clear process boundaries
