@@ -94,6 +94,12 @@
   color: #3b82f6;
 }
 
+/* PDF Export - Prevent node splitting */
+.node-container {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
 
 /* Gradient backgrounds */
 .gradient-blue {
