@@ -467,7 +467,11 @@ Return this JSON structure:
 RELEVANT TEXT:
 {process_text[:5000]}
 
-Extract 3-5 key steps. Be CONCISE.
+Extract 3-5 key steps. Be CONCISE. Assign varied status for visual distinction:
+- First node: "trigger" status
+- Active/current steps: "current" status  
+- Steps with issues: "warning" status
+- Last step: "current" or "completed" status
 
 Return ONLY this JSON (no markdown):
 {{
@@ -492,13 +496,31 @@ Return ONLY this JSON (no markdown):
       "gap": null,
       "impact": "medium",
       "timeEstimate": null
+    }},
+    {{
+      "id": "node-2",
+      "type": "step",
+      "status": "current",
+      "title": "Step 2",
+      "description": "Brief",
+      "actors": ["Who"],
+      "subSteps": [],
+      "dependencies": [],
+      "parallelWith": [],
+      "failures": [],
+      "blocking": null,
+      "currentState": "",
+      "idealState": "",
+      "gap": "Describe issue if exists",
+      "impact": "medium",
+      "timeEstimate": null
     }}
   ],
   "criticalGaps": [],
   "improvementOpportunities": []
 }}
 
-Return only 3-5 nodes. Keep it under 150 words total."""
+Use status values: "trigger", "current", "warning" for variety. Include gaps where appropriate."""
                     
                     message = UserMessage(text=prompt)
                     response = await chat.send_message(message)
