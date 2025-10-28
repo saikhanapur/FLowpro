@@ -289,22 +289,22 @@ const ExportModal = ({ process, onClose }) => {
         ${process.description ? `<p class="text-slate-700 mb-4">${process.description}</p>` : ''}
         
         <!-- Legend -->
-        <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-wrap gap-4 text-sm">
+        <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-wrap gap-4 text-sm">
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded gradient-blue"></div>
-            <span>Trigger</span>
+            <div class="w-4 h-4 rounded bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm"></div>
+            <span class="text-slate-700">Trigger</span>
           </div>
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-white border-2 border-emerald-500"></div>
-            <span>Active</span>
+            <div class="w-4 h-4 rounded bg-white border border-emerald-200 shadow-sm"></div>
+            <span class="text-slate-700">Active</span>
           </div>
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded bg-white border-2 border-amber-500"></div>
-            <span>Warning</span>
+            <div class="w-4 h-4 rounded bg-white border border-amber-200 shadow-sm"></div>
+            <span class="text-slate-700">Warning</span>
           </div>
           <div class="flex items-center gap-2">
-            <div class="w-4 h-4 rounded gradient-rose"></div>
-            <span>Critical Gap</span>
+            <div class="w-4 h-4 rounded bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
+            <span class="text-slate-700">Critical Gap</span>
           </div>
         </div>
       </div>
