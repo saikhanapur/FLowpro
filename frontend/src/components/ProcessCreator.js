@@ -228,61 +228,79 @@ const ProcessCreator = () => {
         <div className="grid md:grid-cols-3 gap-8">
           {/* Voice Option */}
           <Card
-            className="p-8 border-2 hover:border-blue-500 hover:shadow-xl transition-all cursor-pointer group"
+            className="p-8 border-2 border-slate-200 hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer group relative overflow-hidden"
             onClick={() => setMethod('voice')}
             data-testid="method-voice"
           >
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform">
-              <Mic className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">
-              Voice Recording
-            </h3>
-            <p className="text-slate-600 text-sm leading-relaxed text-center">
-              Simply explain your process out loud. Our AI will transcribe and structure it automatically.
-            </p>
-            <div className="mt-6 text-blue-600 font-medium text-center">
-              ~2-3 minutes →
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                <Mic className="w-10 h-10 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3 text-center group-hover:text-blue-600 transition-colors">
+                Voice Recording
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed text-center mb-6">
+                Simply explain your process out loud. Our AI will transcribe and structure it automatically.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center gap-2 text-blue-600 font-semibold group-hover:gap-3 transition-all">
+                  ~2-3 minutes
+                  <span className="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </div>
             </div>
           </Card>
 
           {/* Document Option */}
           <Card
-            className="p-8 border-2 hover:border-emerald-500 hover:shadow-xl transition-all cursor-pointer group"
+            className="p-8 border-2 border-slate-200 hover:border-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 cursor-pointer group relative overflow-hidden"
             onClick={() => setMethod('document')}
             data-testid="method-document"
           >
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform">
-              <Upload className="w-8 h-8 text-emerald-600" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">
-              Upload Document
-            </h3>
-            <p className="text-slate-600 text-sm leading-relaxed text-center">
-              Have existing documentation? Upload PDFs, Word docs, or even emails and we'll extract the process.
-            </p>
-            <div className="mt-6 text-emerald-600 font-medium text-center">
-              ~1 minute →
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative">
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                <Upload className="w-10 h-10 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3 text-center group-hover:text-emerald-600 transition-colors">
+                Upload Document
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed text-center mb-6">
+                Have existing documentation? Upload PDFs, Word docs, or even emails and we'll extract the process.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center gap-2 text-emerald-600 font-semibold group-hover:gap-3 transition-all">
+                  ~1 minute
+                  <span className="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </div>
             </div>
           </Card>
 
           {/* Chat Option */}
           <Card
-            className="p-8 border-2 hover:border-amber-500 hover:shadow-xl transition-all cursor-pointer group"
+            className="p-8 border-2 border-slate-200 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300 cursor-pointer group relative overflow-hidden"
             onClick={() => setMethod('chat')}
             data-testid="method-chat"
           >
-            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform">
-              <MessageSquare className="w-8 h-8 text-amber-600" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-3 text-center">
-              Chat with AI
-            </h3>
-            <p className="text-slate-600 text-sm leading-relaxed text-center">
-              Answer questions interactively. Our AI will guide you through documenting your process step-by-step.
-            </p>
-            <div className="mt-6 text-amber-600 font-medium text-center">
-              ~5 minutes →
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative">
+              <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                <MessageSquare className="w-10 h-10 text-amber-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3 text-center group-hover:text-amber-600 transition-colors">
+                Chat with AI
+              </h3>
+              <p className="text-slate-600 text-sm leading-relaxed text-center mb-6">
+                Answer questions interactively. Our AI will guide you through documenting your process step-by-step.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center gap-2 text-amber-600 font-semibold group-hover:gap-3 transition-all">
+                  ~5 minutes
+                  <span className="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                </span>
+              </div>
             </div>
           </Card>
         </div>
