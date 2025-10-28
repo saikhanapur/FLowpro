@@ -122,7 +122,7 @@ const ProcessCreator = () => {
               <div className="text-3xl font-bold text-emerald-600 mb-1">
                 {extractedData.actors?.length || 0}
               </div>
-              <div className="text-sm text-emerald-800">Actors/Systems</div>
+              <div className="text-sm text-emerald-800">People/Systems</div>
             </div>
             <div className="bg-rose-50 rounded-lg p-4">
               <div className="text-3xl font-bold text-rose-600 mb-1">
