@@ -137,10 +137,10 @@ const FlowchartEditor = ({ theme }) => {
                     isSelected={selectedNode?.id === node.id}
                   />
                   {idx < process.nodes.length - 1 && (
-                    <div className="flex justify-center py-2 arrow-connector">
-                      <svg width="24" height="28" viewBox="0 0 24 24" className="text-slate-300">
-                        <polygon points="12,2 12,18 12,18" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                        <polygon points="12,22 7,15 17,15" fill="currentColor" />
+                    <div className="flex justify-center py-3 arrow-connector">
+                      <svg width="20" height="32" viewBox="0 0 20 32" className="text-slate-400">
+                        <line x1="10" y1="0" x2="10" y2="24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <polygon points="10,32 4,22 16,22" fill="currentColor" />
                       </svg>
                     </div>
                   )}
