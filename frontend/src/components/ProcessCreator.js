@@ -105,6 +105,19 @@ const ProcessCreator = () => {
   }
 
   if (extractedData) {
+    // If multiple processes detected, show MultiProcessReview
+    if (extractedData.multipleProcesses && extractedData.processCount >= 2) {
+      return (
+        <MultiProcessReview 
+          processesData={extractedData}
+          onBack={() => setExtractedData(null)}
+        />
+      );
+    }
+
+    // Single process - show regular review
+    const processData = extractedData.processes[0];
+    
     return (
       <div className="max-w-4xl mx-auto px-6 py-12" data-testid="extraction-summary">
         <Card className="p-8">
@@ -126,19 +139,19 @@ const ProcessCreator = () => {
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="text-3xl font-bold text-blue-600 mb-1">
-                {extractedData.nodes?.length || 0}
+                {processData.nodes?.length || 0}
               </div>
               <div className="text-sm text-blue-800">Process Steps</div>
             </div>
             <div className="bg-emerald-50 rounded-lg p-4">
               <div className="text-3xl font-bold text-emerald-600 mb-1">
-                {extractedData.actors?.length || 0}
+                {processData.actors?.length || 0}
               </div>
               <div className="text-sm text-emerald-800">People/Systems</div>
             </div>
             <div className="bg-rose-50 rounded-lg p-4">
               <div className="text-3xl font-bold text-rose-600 mb-1">
-                {extractedData.criticalGaps?.length || 0}
+                {processData.criticalGaps?.length || 0}
               </div>
               <div className="text-sm text-rose-800">Critical Gaps</div>
             </div>
@@ -151,21 +164,25 @@ const ProcessCreator = () => {
             </label>
             <input
               type="text"
-              value={extractedData.processName}
-              onChange={(e) => setExtractedData({...extractedData, processName: e.target.value})}
+              value={processData.processName}
+              onChange={(e) => {
+                const updated = {...extractedData};
+                updated.processes[0].processName = e.target.value;
+                setExtractedData(updated);
+              }}
               className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none"
               data-testid="process-name-input"
             />
           </div>
 
           {/* Responsible Parties */}
-          {extractedData.actors?.length > 0 && (
+          {processData.actors?.length > 0 && (
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Responsible Parties
               </label>
               <div className="flex flex-wrap gap-2">
-                {extractedData.actors.map((actor, i) => (
+                {processData.actors.map((actor, i) => (
                   <Badge key={i} variant="secondary">{actor}</Badge>
                 ))}
               </div>
@@ -175,7 +192,7 @@ const ProcessCreator = () => {
           {/* Steps Preview */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Process Steps ({extractedData.nodes?.length || 0})
+              Process Steps ({processData.nodes?.length || 0})
             </label>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {extractedData.nodes?.map((node, i) => (
