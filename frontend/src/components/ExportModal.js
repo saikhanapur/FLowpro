@@ -160,10 +160,10 @@ const ExportModal = ({ process, onClose }) => {
 
   const generateHTML = (process) => {
     const nodesHTML = process.nodes.map((node, idx) => {
-      const statusClass = node.status === 'critical-gap' ? 'gradient-rose text-white' : 
-                         node.status === 'trigger' ? 'gradient-blue text-white' :
-                         node.status === 'warning' ? 'bg-white border-2 border-amber-500' :
-                         'bg-white border-2 border-emerald-500';
+      const statusClass = node.status === 'critical-gap' ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg border border-rose-400/30' : 
+                         node.status === 'trigger' ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg border border-blue-400/30' :
+                         node.status === 'warning' ? 'bg-white border border-amber-200 shadow-sm hover:shadow-md' :
+                         'bg-white border border-emerald-200 shadow-sm hover:shadow-md';
       
       const iconHTML = node.status === 'trigger' ? '⚡' :
                        node.status === 'current' ? '✓' :
@@ -172,23 +172,25 @@ const ExportModal = ({ process, onClose }) => {
       
       return `
         <div class="node-container mb-4 mx-auto" style="max-width: 680px;">
-          <div class="rounded-lg p-5 pb-6 ${statusClass} shadow-sm cursor-pointer hover:scale-[1.01] transition-all duration-200" onclick="showDetail(${idx})" data-node-id="${idx}" style="min-width: 280px;">
+          <div class="rounded-xl p-5 pb-6 ${statusClass} cursor-pointer hover:scale-[1.02] transition-all duration-300" onclick="showDetail(${idx})" data-node-id="${idx}" style="min-width: 280px;">
             <div class="flex items-start gap-3">
               <span class="text-xl flex-shrink-0 mt-1">${iconHTML}</span>
               <div class="flex-1">
-                <h3 class="text-[15px] font-bold mb-2.5 leading-snug">${node.title}</h3>
-                <p class="text-[13px] opacity-90 leading-relaxed mb-2">${node.description}</p>
+                <h3 class="text-[15px] font-semibold mb-2.5 leading-snug tracking-tight">${node.title}</h3>
+                <p class="text-[13px] opacity-85 leading-relaxed mb-2 font-normal">${node.description}</p>
                 ${node.actors && node.actors.length > 0 ? `
                   <div class="mt-3.5 flex flex-wrap gap-1.5">
                     ${node.actors.map(actor => `
-                      <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/25 backdrop-blur-sm' : 'bg-slate-100 text-slate-700'
+                      <span class="px-2.5 py-1 rounded-lg text-[11px] font-medium ${
+                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/20 backdrop-blur-sm border border-white/30' : 'bg-slate-50 text-slate-700 border border-slate-200'
                       }">${actor}</span>
                     `).join('')}
                   </div>
                 ` : ''}
                 ${node.gap ? `
-                  <div class="mt-3.5 p-2.5 rounded-md bg-black/10 backdrop-blur-sm flex items-start gap-2 text-[12px] font-semibold border border-white/20">
+                  <div class="mt-3.5 p-3 rounded-lg flex items-start gap-2 text-[12px] font-medium border ${
+                    node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/15 backdrop-blur-sm border-white/30' : 'bg-amber-50/80 backdrop-blur-sm border-amber-200'
+                  }">
                     <span class="flex-shrink-0">⚠️</span>
                     <span class="leading-relaxed">${node.gap}</span>
                   </div>
@@ -198,9 +200,9 @@ const ExportModal = ({ process, onClose }) => {
           </div>
           ${idx < process.nodes.length - 1 ? `
             <div class="flex justify-center py-2">
-              <svg width="28" height="28" viewBox="0 0 24 24" class="text-slate-400">
-                <polygon points="12,2 12,18 12,18" stroke="currentColor" stroke-width="2.5" fill="none" />
-                <polygon points="12,22 6,14 18,14" fill="currentColor" />
+              <svg width="24" height="28" viewBox="0 0 24 24" class="text-slate-300">
+                <polygon points="12,2 12,18 12,18" stroke="currentColor" stroke-width="1.5" fill="none" />
+                <polygon points="12,22 7,15 17,15" fill="currentColor" />
               </svg>
             </div>
           ` : ''}
