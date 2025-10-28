@@ -101,3 +101,125 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  FlowForge AI is a workflow-to-flowchart platform that captures processes via voice, documents, or chat,
+  generates visual flowcharts, and enables collaboration. The current issue is PDF export text clipping
+  where words cut off within flowchart boxes. Recent fixes have been implemented to address this:
+  - Improved text wrapping in FlowNode components with break-words and whitespace-normal classes
+  - Enhanced html2canvas configuration for better content capture
+  - Dynamic box sizing to fit content
+
+backend:
+  - task: "Process CRUD API endpoints"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "API endpoints for getting processes, creating, updating, deleting. Need to verify all endpoints are working correctly."
+
+  - task: "AI Processing with Claude API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Claude API integration for parsing process input, gap detection, ideal state generation. Previous issues with budget and truncated responses. Need to test if AI endpoints are stable."
+
+  - task: "PDF/HTML Export Generation"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Backend endpoints for generating interactive HTML and PDF exports. Need to verify export endpoints are working."
+
+frontend:
+  - task: "Dashboard with Process Listing"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/Dashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Dashboard is rendering correctly with hero section, process cards showing EROAD and InTime processes. Search and filters visible."
+
+  - task: "Flowchart Editor and Visualization"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/FlowchartEditor.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Flowchart editor is rendering properly with nodes, arrows, legend. EROAD process displays correctly with trigger, active, warning nodes. Text is visible in UI."
+
+  - task: "PDF Export with Proper Text Rendering"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ExportModal.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported text clipping in PDF exports - words cutting off in flowchart boxes"
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented fixes: FlowNode text wrapping with break-words, whitespace-normal. ExportModal html2canvas config improved with scale:2.5, forced overflow:visible, height:auto before capture. Need to test if text clipping is resolved in actual PDF export."
+
+  - task: "Process Creation Flow (Voice, Document, Chat)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ProcessCreator.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Three input methods implemented. Need to test document upload and AI processing flow."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "PDF Export with Proper Text Rendering"
+    - "Process CRUD API endpoints"
+    - "AI Processing with Claude API"
+  stuck_tasks:
+    - "PDF Export with Proper Text Rendering"
+  test_all: false
+  test_priority: "stuck_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Initial test setup complete. The main issue is PDF export text clipping.
+      Recent fixes implemented to FlowNode and ExportModal. 
+      Priority: Test PDF export functionality first to verify text clipping is resolved.
+      Backend API endpoints need verification as well, especially AI processing endpoints.
+      Frontend UI is working correctly based on screenshots.
