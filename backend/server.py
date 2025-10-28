@@ -103,14 +103,69 @@ class AIService:
         self.api_key = os.environ.get('EMERGENT_LLM_KEY')
     
     async def parse_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
-        """Parse input text and extract process structure using Claude"""
+        """Parse input text and extract process structure using Claude - can detect multiple processes"""
         try:
             # Limit input size to prevent extremely long processing
-            max_length = 10000  # Reduced from 15000 to prevent response truncation
+            max_length = 15000  # Increased to handle multi-process documents
             if len(input_text) > max_length:
                 logger.warning(f"Input text too long ({len(input_text)} chars), truncating to {max_length}")
-                input_text = input_text[:max_length] + "\n\n[Document truncated due to length. Focus on main steps.]"
+                input_text = input_text[:max_length] + "\n\n[Document truncated due to length. Focus on main processes.]"
             
+            # First, detect if document contains multiple processes
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"detect_{uuid.uuid4()}",
+                system_message="You are FlowForge AI. Detect if document contains multiple distinct processes. Return valid JSON only."
+            ).with_model("anthropic", "claude-4-sonnet-20250514")
+            
+            detection_prompt = f"""Analyze this {input_type} and determine if it contains MULTIPLE distinct processes or just ONE process.
+
+{input_text}
+
+CRITICAL: Return ONLY valid JSON. No markdown. No explanations.
+
+Look for:
+- Multiple clear section headers/titles indicating separate processes
+- Distinct workflows with different purposes
+- Clear separations between process descriptions
+
+Return this JSON:
+{{
+  "multipleProcesses": true/false,
+  "processCount": number,
+  "processTitles": ["Process 1 Title", "Process 2 Title", ...]
+}}
+
+If only ONE process or unclear, return: {{"multipleProcesses": false, "processCount": 1, "processTitles": []}}"""
+            
+            detection_message = UserMessage(text=detection_prompt)
+            detection_response = await chat.send_message(detection_message)
+            
+            # Parse detection response
+            detection_text = detection_response.strip()
+            if detection_text.startswith('```'):
+                start = detection_text.find('{')
+                end = detection_text.rfind('}')
+                if start != -1 and end != -1:
+                    detection_text = detection_text[start:end+1]
+            
+            detection_result = json.loads(detection_text)
+            
+            # If multiple processes detected (≥2), parse them separately
+            if detection_result.get('multipleProcesses') and detection_result.get('processCount', 0) >= 2:
+                return await self._parse_multiple_processes(input_text, input_type, detection_result)
+            else:
+                # Single process - use existing logic
+                return await self._parse_single_process(input_text, input_type)
+                
+        except Exception as e:
+            logger.error(f"Error in parse_process: {e}")
+            # Fallback to single process parsing
+            return await self._parse_single_process(input_text, input_type)
+    
+    async def _parse_single_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
+        """Parse a single process from input text"""
+        try:
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"parse_{uuid.uuid4()}",
@@ -166,40 +221,104 @@ Return this JSON structure:
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
             
-            # Parse JSON from response - handle markdown code blocks
+            # Parse JSON from response
             response_text = response.strip()
-            
-            # Remove markdown code blocks if present
             if response_text.startswith('```'):
                 start = response_text.find('{')
                 end = response_text.rfind('}')
                 if start != -1 and end != -1:
                     response_text = response_text[start:end+1]
             
-            # Try to fix common JSON issues
-            try:
-                parsed = json.loads(response_text)
-            except json.JSONDecodeError as e:
-                logger.error(f"JSON parsing error: {e}. Attempting to fix...")
-                # Try to find the last complete object by finding the last }
-                last_brace = response_text.rfind('}')
-                if last_brace != -1:
-                    response_text = response_text[:last_brace+1]
-                    parsed = json.loads(response_text)
-                else:
-                    raise
+            parsed = json.loads(response_text)
+            return {"multipleProcesses": False, "processes": [parsed]}
             
-            return parsed
-            
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON parsing error: {e}. Response: {response[:500]}")
-            raise HTTPException(
-                status_code=500, 
-                detail=f"AI response was too large or malformed. Please try with a shorter document or simpler description."
-            )
         except Exception as e:
-            logger.error(f"Error parsing process: {e}")
+            logger.error(f"Error parsing single process: {e}")
             raise HTTPException(status_code=500, detail=f"Failed to parse process: {str(e)}")
+    
+    async def _parse_multiple_processes(self, input_text: str, input_type: str, detection_result: Dict) -> Dict[str, Any]:
+        """Parse multiple processes from input text"""
+        try:
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"multi_parse_{uuid.uuid4()}",
+                system_message="You are FlowForge AI. Extract multiple distinct processes. Be concise. Return valid JSON only."
+            ).with_model("anthropic", "claude-4-sonnet-20250514")
+            
+            process_titles = detection_result.get('processTitles', [])
+            
+            prompt = f"""This document contains {len(process_titles)} distinct processes:
+{', '.join(process_titles)}
+
+Extract EACH process separately with 5-8 critical steps per process.
+
+{input_text}
+
+CRITICAL: Return ONLY valid JSON array. No markdown. No explanations.
+
+Return this JSON structure:
+[
+  {{
+    "processName": "Exact title from document",
+    "description": "brief",
+    "actors": ["actor1", "actor2"],
+    "nodes": [
+      {{
+        "id": "node-1",
+        "type": "trigger",
+        "status": "trigger",
+        "title": "Clear title (max 6 words)",
+        "description": "Brief description",
+        "actors": ["who"],
+        "subSteps": ["step 1"],
+        "dependencies": [],
+        "parallelWith": [],
+        "failures": [],
+        "blocking": null,
+        "currentState": "brief",
+        "idealState": "brief",
+        "gap": null,
+        "impact": "medium",
+        "timeEstimate": null
+      }}
+    ],
+    "criticalGaps": ["gap 1"],
+    "improvementOpportunities": [
+      {{
+        "description": "brief",
+        "type": "automation",
+        "estimatedSavings": "time"
+      }}
+    ]
+  }}
+]"""
+            
+            message = UserMessage(text=prompt)
+            response = await chat.send_message(message)
+            
+            # Parse JSON array from response
+            response_text = response.strip()
+            if response_text.startswith('```'):
+                start = response_text.find('[')
+                end = response_text.rfind(']')
+                if start != -1 and end != -1:
+                    response_text = response_text[start:end+1]
+            
+            processes_array = json.loads(response_text)
+            
+            # Ensure it's a list
+            if not isinstance(processes_array, list):
+                processes_array = [processes_array]
+            
+            return {
+                "multipleProcesses": True,
+                "processCount": len(processes_array),
+                "processes": processes_array
+            }
+            
+        except Exception as e:
+            logger.error(f"Error parsing multiple processes: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to parse multiple processes: {str(e)}")
     
     async def generate_ideal_state(self, process_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate ideal state vision for a process"""
