@@ -13,10 +13,14 @@ from datetime import datetime, timezone
 import json
 import io
 from emergentintegrations.llm.chat import LlmChat, UserMessage
-import PyPDF2
-import docx
-from PIL import Image
-import pytesseract
+try:
+    import pypdf
+    import docx
+    from PIL import Image
+    import pytesseract
+    DOCUMENT_SUPPORT = True
+except ImportError:
+    DOCUMENT_SUPPORT = False
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
