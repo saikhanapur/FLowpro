@@ -261,53 +261,95 @@ Return this JSON structure:
     async def _parse_multiple_processes(self, input_text: str, input_type: str, detection_result: Dict) -> Dict[str, Any]:
         """Parse multiple processes from input text"""
         try:
+            process_titles = detection_result.get('processTitles', [])
+            process_count = detection_result.get('processCount', len(process_titles))
+            
+            logger.info(f"Parsing {process_count} processes: {process_titles}")
+            
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"multi_parse_{uuid.uuid4()}",
-                system_message="You are FlowForge AI. Extract multiple distinct processes. Be concise. Return valid JSON only."
+                system_message="You are an expert at extracting multiple workflows from documents. Extract each process completely and accurately."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            process_titles = detection_result.get('processTitles', [])
-            
-            prompt = f"""This document contains {len(process_titles)} distinct processes:
-{', '.join(process_titles)}
+            prompt = f"""EXTRACT ALL {process_count} DISTINCT PROCESSES from this document.
 
-Extract EACH process separately with 5-8 critical steps per process.
+Detected process titles:
+{chr(10).join(f'{i+1}. {title}' for i, title in enumerate(process_titles))}
 
+FULL DOCUMENT:
 {input_text}
 
-CRITICAL: Return ONLY valid JSON array. No markdown. No explanations.
+INSTRUCTIONS:
+1. Extract EACH of the {process_count} processes separately
+2. For EACH process, identify 5-8 critical steps
+3. Keep descriptions concise but complete
+4. Extract actors/responsible parties for each process
+5. Identify gaps within each process
 
-Return this JSON structure:
+CRITICAL: Return ONLY a valid JSON array. No markdown. No explanations.
+
+Return this exact structure:
 [
   {{
-    "processName": "Exact title from document",
-    "description": "brief",
-    "actors": ["actor1", "actor2"],
+    "processName": "Exact title from document header",
+    "description": "Brief purpose of this specific process (1-2 sentences)",
+    "actors": ["Actor 1", "Actor 2"],
     "nodes": [
       {{
         "id": "node-1",
         "type": "trigger",
         "status": "trigger",
-        "title": "Clear title (max 6 words)",
-        "description": "Brief description",
-        "actors": ["who"],
-        "subSteps": ["step 1"],
+        "title": "Step title (max 6 words)",
+        "description": "What happens in this step",
+        "actors": ["Who is responsible"],
+        "subSteps": ["Detailed action 1", "Detailed action 2"],
         "dependencies": [],
         "parallelWith": [],
         "failures": [],
         "blocking": null,
-        "currentState": "brief",
-        "idealState": "brief",
+        "currentState": "Current state description",
+        "idealState": "Ideal state description",
+        "gap": "Gap description if exists, else null",
+        "impact": "low/medium/high",
+        "timeEstimate": null
+      }},
+      {{
+        "id": "node-2",
+        "type": "step",
+        "status": "current",
+        "title": "Next step title",
+        "description": "Step description",
+        "actors": ["Responsible party"],
+        "subSteps": [],
+        "dependencies": [],
+        "parallelWith": [],
+        "failures": [],
+        "blocking": null,
+        "currentState": "Current",
+        "idealState": "Ideal",
         "gap": null,
         "impact": "medium",
         "timeEstimate": null
       }}
     ],
-    "criticalGaps": ["gap 1"],
+    "criticalGaps": ["Gap identified across process"],
     "improvementOpportunities": [
       {{
-        "description": "brief",
+        "description": "Improvement suggestion",
+        "type": "automation/training/process",
+        "estimatedSavings": "Time/cost savings"
+      }}
+    ]
+  }},
+  {{
+    "processName": "Second Process Title",
+    "description": "Second process purpose",
+    ...
+  }}
+]
+
+Extract ALL {process_count} processes from the document."""
         "type": "automation",
         "estimatedSavings": "time"
       }}
