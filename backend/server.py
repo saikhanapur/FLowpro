@@ -390,113 +390,95 @@ Return this JSON structure:
             raise HTTPException(status_code=500, detail=f"Failed to parse process: {str(e)}")
     
     async def _parse_multiple_processes(self, input_text: str, input_type: str, detection_result: Dict) -> Dict[str, Any]:
-        """Parse multiple processes from input text"""
+        """Parse multiple processes from input text - ONE AT A TIME to avoid truncation"""
         try:
             process_titles = detection_result.get('processTitles', [])
             process_count = detection_result.get('processCount', len(process_titles))
             
-            print(f"[DEBUG] Starting multi-process parsing for {process_count} processes", flush=True)
-            logger.info(f"Parsing {process_count} processes: {process_titles}")
+            print(f"[DEBUG] Starting ONE-BY-ONE parsing for {process_count} processes", flush=True)
+            logger.info(f"Parsing {process_count} processes ONE AT A TIME: {process_titles}")
             
-            # For large documents with many processes, reduce per-process detail to avoid truncation
-            # Limit to 40k characters but try to include all process sections
-            max_length = 35000  # Reduced from 40k for safety
-            if len(input_text) > max_length:
-                logger.warning(f"Document too large ({len(input_text)} chars), will parse what fits in {max_length}")
-                input_text = self._smart_truncate(input_text, max_length, process_titles)
+            # Parse each process individually to avoid truncation
+            processes_array = []
             
-            chat = LlmChat(
-                api_key=self.api_key,
-                session_id=f"multi_parse_{uuid.uuid4()}",
-                system_message="You are a process extraction expert. Extract multiple processes concisely. Return valid JSON only."
-            ).with_model("anthropic", "claude-4-sonnet-20250514")
-            
-            # Build a more structured prompt that's shorter
-            process_list = '\n'.join(f'{i+1}. "{title}"' for i, title in enumerate(process_titles[:10]))  # Limit to first 10
-            
-            # CRITICAL: Simplify the prompt to reduce response size
-            prompt = f"""Extract ALL {min(process_count, 10)} processes from this document.
+            for i, process_title in enumerate(process_titles):
+                print(f"[DEBUG] Parsing process {i+1}/{process_count}: {process_title}", flush=True)
+                
+                try:
+                    # Extract the section of text relevant to this process
+                    process_text = self._extract_process_section(input_text, process_title, process_titles)
+                    
+                    # Parse this ONE process
+                    chat = LlmChat(
+                        api_key=self.api_key,
+                        session_id=f"parse_{uuid.uuid4()}",
+                        system_message="Extract this single process concisely. Return valid JSON only."
+                    ).with_model("anthropic", "claude-4-sonnet-20250514")
+                    
+                    prompt = f"""Extract ONLY this process: "{process_title}"
 
-PROCESSES TO EXTRACT:
-{process_list}
+RELEVANT TEXT:
+{process_text[:5000]}
 
-DOCUMENT:
-{input_text}
+Extract 3-5 key steps. Be CONCISE.
 
-For EACH process, extract 3-5 key steps only. Be CONCISE.
+Return ONLY this JSON (no markdown):
+{{
+  "processName": "{process_title}",
+  "description": "Brief purpose (1 sentence)",
+  "actors": ["Actor1", "Actor2"],
+  "nodes": [
+    {{
+      "id": "node-1",
+      "type": "trigger",
+      "status": "trigger",
+      "title": "Step title",
+      "description": "Brief",
+      "actors": ["Who"],
+      "subSteps": [],
+      "dependencies": [],
+      "parallelWith": [],
+      "failures": [],
+      "blocking": null,
+      "currentState": "",
+      "idealState": "",
+      "gap": null,
+      "impact": "medium",
+      "timeEstimate": null
+    }}
+  ],
+  "criticalGaps": [],
+  "improvementOpportunities": []
+}}
 
-Return ONLY this JSON array (no markdown, no explanations):
-[
-  {{
-    "processName": "Exact title from list",
-    "description": "Brief purpose (1 sentence)",
-    "actors": ["Actor1", "Actor2"],
-    "nodes": [
-      {{
-        "id": "node-1",
-        "type": "trigger",
-        "status": "trigger",
-        "title": "Step title",
-        "description": "Brief",
-        "actors": ["Who"],
-        "subSteps": [],
-        "dependencies": [],
-        "parallelWith": [],
-        "failures": [],
-        "blocking": null,
-        "currentState": "",
-        "idealState": "",
-        "gap": null,
-        "impact": "medium",
-        "timeEstimate": null
-      }}
-    ],
-    "criticalGaps": [],
-    "improvementOpportunities": []
-  }}
-]
-
-Return ALL {min(process_count, 10)} processes. Keep each response under 200 words."""
+Return only 3-5 nodes. Keep it under 150 words total."""
+                    
+                    message = UserMessage(text=prompt)
+                    response = await chat.send_message(message)
+                    
+                    # Parse this process
+                    response_text = response.strip()
+                    if response_text.startswith('```'):
+                        start = response_text.find('{')
+                        end = response_text.rfind('}')
+                        if start != -1 and end != -1:
+                            response_text = response_text[start:end+1]
+                    
+                    process_data = json.loads(response_text)
+                    processes_array.append(process_data)
+                    print(f"[DEBUG] ✅ Successfully parsed process {i+1}: {process_title}", flush=True)
+                    
+                except Exception as e:
+                    print(f"[DEBUG] ⚠️ Failed to parse process {i+1} ({process_title}): {e}", flush=True)
+                    logger.error(f"Failed to parse process '{process_title}': {e}")
+                    # Continue with next process instead of failing completely
+                    continue
             
-            message = UserMessage(text=prompt)
-            response = await chat.send_message(message)
+            print(f"[DEBUG] Successfully parsed {len(processes_array)}/{process_count} processes", flush=True)
+            logger.info(f"Successfully parsed {len(processes_array)} out of {process_count} processes")
             
-            print(f"[DEBUG] Received response length: {len(response)}", flush=True)
-            logger.info(f"Multi-process parse response length: {len(response)}")
-            
-            # Parse JSON array from response - with better error handling
-            response_text = response.strip()
-            if response_text.startswith('```'):
-                start = response_text.find('[')
-                end = response_text.rfind(']')
-                if start != -1 and end != -1:
-                    response_text = response_text[start:end+1]
-            
-            try:
-                processes_array = json.loads(response_text)
-            except json.JSONDecodeError as e:
-                print(f"[DEBUG] JSON parse error: {e}", flush=True)
-                logger.error(f"JSON parse error, attempting to fix: {e}")
-                # Try to find the last complete object by finding ]
-                last_bracket = response_text.rfind('}]')
-                if last_bracket != -1:
-                    response_text = response_text[:last_bracket+2]
-                    print(f"[DEBUG] Attempting parse with truncated text", flush=True)
-                    processes_array = json.loads(response_text)
-                else:
-                    raise
-            
-            print(f"[DEBUG] Successfully parsed {len(processes_array)} processes", flush=True)
-            logger.info(f"Successfully parsed {len(processes_array)} processes from response")
-            
-            # Ensure it's a list
-            if not isinstance(processes_array, list):
-                processes_array = [processes_array]
-            
-            # Validate we got reasonable output
-            if len(processes_array) < process_count * 0.3:  # Got less than 30% of expected
-                print(f"[DEBUG] WARNING: Only got {len(processes_array)}/{process_count} processes", flush=True)
-                logger.warning(f"Expected {process_count} processes but only got {len(processes_array)}")
+            if len(processes_array) == 0:
+                raise Exception("Failed to parse any processes")
             
             return {
                 "multipleProcesses": True,
@@ -505,12 +487,35 @@ Return ALL {min(process_count, 10)} processes. Keep each response under 200 word
             }
             
         except Exception as e:
-            print(f"[DEBUG] Error in multi-process parsing: {e}", flush=True)
+            print(f"[DEBUG] Critical error in multi-process parsing: {e}", flush=True)
             logger.error(f"Error parsing multiple processes: {e}", exc_info=True)
             # Fallback: try to parse as single process
             print(f"[DEBUG] Falling back to single process parsing", flush=True)
             logger.info("Falling back to single process parsing due to error")
             return await self._parse_single_process(input_text[:30000], input_type)
+    
+    def _extract_process_section(self, full_text: str, process_title: str, all_titles: List[str]) -> str:
+        """Extract the section of text relevant to a specific process"""
+        # Find where this process starts
+        start_pos = full_text.find(process_title)
+        if start_pos == -1:
+            # Try case-insensitive search
+            start_pos = full_text.lower().find(process_title.lower())
+        
+        if start_pos == -1:
+            return full_text[:5000]  # Return first 5k chars as fallback
+        
+        # Find where the next process starts
+        end_pos = len(full_text)
+        for other_title in all_titles:
+            if other_title != process_title:
+                next_pos = full_text.find(other_title, start_pos + len(process_title))
+                if next_pos != -1 and next_pos < end_pos:
+                    end_pos = next_pos
+        
+        # Extract this section with some buffer
+        section = full_text[max(0, start_pos - 100):min(len(full_text), end_pos + 100)]
+        return section
     
     async def generate_ideal_state(self, process_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate ideal state vision for a process"""
