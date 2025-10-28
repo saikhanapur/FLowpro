@@ -23,71 +23,56 @@ const ExportModal = ({ process, onClose }) => {
   const exportAsPDF = async () => {
     setExporting(true);
     try {
-      // Get the canvas element
-      const canvas = document.querySelector('[data-testid="flowchart-canvas"]');
-      if (!canvas) {
-        throw new Error('Canvas not found');
-      }
-
-      // Capture the full canvas with high quality
-      const canvasImage = await html2canvas(canvas, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        windowWidth: canvas.scrollWidth,
-        windowHeight: canvas.scrollHeight,
-        width: canvas.scrollWidth,
-        height: canvas.scrollHeight,
-        x: 0,
-        y: 0
-      });
-
-      // PDF setup
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      const contentWidth = pageWidth - (2 * margin);
       
-      const imgWidth = pdfWidth - 20; // 10mm margin on each side
-      const imgHeight = (canvasImage.height * imgWidth) / canvasImage.width;
-      const pageHeight = pdfHeight - 20; // 10mm margin top/bottom
+      // Get all node containers
+      const nodeContainers = document.querySelectorAll('.node-container');
       
-      let heightLeft = imgHeight;
-      let position = 10; // Start 10mm from top
-      let page = 0;
-
-      // Add first page
-      pdf.addImage(
-        canvasImage.toDataURL('image/png'),
-        'PNG',
-        10,
-        position,
-        imgWidth,
-        imgHeight,
-        undefined,
-        'FAST'
-      );
-      heightLeft -= pageHeight;
-
-      // Add additional pages if needed
-      while (heightLeft > 0) {
-        page++;
-        position = heightLeft - imgHeight + 10;
-        pdf.addPage();
-        pdf.addImage(
-          canvasImage.toDataURL('image/png'),
-          'PNG',
-          10,
-          position,
-          imgWidth,
-          imgHeight,
-          undefined,
-          'FAST'
-        );
-        heightLeft -= pageHeight;
+      let currentY = margin;
+      let pageNumber = 1;
+      
+      for (let i = 0; i < nodeContainers.length; i++) {
+        const container = nodeContainers[i];
+        
+        // Capture the node with high quality
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#f8fafc'
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Check if we need a new page
+        if (currentY + imgHeight > pageHeight - margin) {
+          pdf.addPage();
+          pageNumber++;
+          currentY = margin;
+        }
+        
+        // Add the image
+        pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight, undefined, 'FAST');
+        currentY += imgHeight;
       }
-
+      
+      // Add page numbers
+      const totalPages = pdf.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(10);
+        pdf.setTextColor(148, 163, 184);
+        pdf.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+      
       pdf.save(`${process.name}.pdf`);
-      toast.success(`PDF exported with ${page + 1} page(s)`);
+      toast.success(`PDF exported with ${totalPages} page(s) - no nodes split!`);
     } catch (error) {
       toast.error('Failed to export PDF');
       console.error(error);
