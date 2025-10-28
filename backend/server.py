@@ -105,15 +105,38 @@ class AIService:
     async def parse_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
         """Parse input text and extract process structure using Claude - can detect multiple processes"""
         try:
-            # Limit input size to prevent extremely long processing
-            max_length = 20000  # Increased to handle multi-process documents
+            # First, preprocess to detect clear process boundaries
+            process_detection = self._preprocess_and_detect_boundaries(input_text)
+            
+            logger.info(f"Preprocessing detected {process_detection['process_count']} potential processes")
+            logger.info(f"Process titles: {process_detection['process_titles']}")
+            
+            # If preprocessing found multiple clear processes (≥2), use that directly
+            if process_detection['process_count'] >= 2 and process_detection['high_confidence']:
+                logger.info(f"High confidence multi-process detection: {process_detection['process_count']} processes")
+                return await self._parse_multiple_processes(
+                    input_text, 
+                    input_type, 
+                    {
+                        'multipleProcesses': True,
+                        'processCount': process_detection['process_count'],
+                        'processTitles': process_detection['process_titles']
+                    }
+                )
+            
+            # Otherwise, fall back to AI detection for ambiguous cases
+            logger.info("Using AI detection for process identification")
+            
+            # Limit input size but keep it generous for multi-process documents
+            max_length = 30000  # Increased significantly
+            truncated_text = input_text
             if len(input_text) > max_length:
                 logger.warning(f"Input text too long ({len(input_text)} chars), truncating to {max_length}")
-                input_text = input_text[:max_length] + "\n\n[Document truncated. Analyze visible processes.]"
+                # Try to truncate at a process boundary if possible
+                truncated_text = self._smart_truncate(input_text, max_length, process_detection['process_titles'])
             
-            logger.info(f"Starting process detection for {input_type} with {len(input_text)} characters")
+            logger.info(f"Starting AI detection for {input_type} with {len(truncated_text)} characters")
             
-            # First, detect if document contains multiple processes
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"detect_{uuid.uuid4()}",
@@ -122,24 +145,27 @@ class AIService:
             
             detection_prompt = f"""CRITICAL TASK: Analyze this {input_type} to detect if it contains MULTIPLE DISTINCT PROCESS WORKFLOWS.
 
-{input_text}
+PREPROCESSING HINTS:
+- Preprocessing detected {process_detection['process_count']} potential processes
+- Potential process titles found: {', '.join(process_detection['process_titles'][:5])}
+
+FULL TEXT:
+{truncated_text}
 
 YOU MUST:
 1. Look for MULTIPLE separate process flowcharts or workflow descriptions
-2. Check for section headers like "Process 1:", "Process Map 2:", different workflow titles
-3. Identify if different pages/sections describe DIFFERENT workflows (not steps of ONE workflow)
+2. Check for section headers like "Process:", different workflow titles, page separators "==End of OCR for page X=="
+3. Identify if different sections describe DIFFERENT workflows (not steps of ONE workflow)
 4. Each distinct process has its own START and END, own actors, own purpose
 
 EXAMPLES of MULTIPLE processes:
-- "Recruitment Process" AND "Onboarding Process" (separate workflows)
-- "Standard Requisition Process" AND "High Volume Recruitment" (different approaches)
-- "Job Posting Process" AND "Offer Management Process" (distinct phases as separate processes)
-- Multiple process maps on different pages with different titles
+- Multiple titled sections: "Recruitment Process", "Onboarding Process" (separate workflows)
+- Page breaks with new process headers
+- Different process maps with distinct names
 
 EXAMPLES of SINGLE process:
 - One workflow with multiple steps (even if 10+ steps)
 - Sequential phases within ONE end-to-end process
-- One flowchart with decision branches
 
 Return ONLY this JSON (no markdown, no explanations):
 {{
@@ -150,15 +176,12 @@ Return ONLY this JSON (no markdown, no explanations):
   "reasoning": "brief explanation"
 }}
 
-If ONLY ONE workflow detected, return:
-{{"multipleProcesses": false, "processCount": 1, "processTitles": [], "confidence": "high", "reasoning": "Single end-to-end process"}}
-
-BE THOROUGH. Check the ENTIRE document."""
+BE THOROUGH. The preprocessing hints should guide you."""
             
             detection_message = UserMessage(text=detection_prompt)
             detection_response = await chat.send_message(detection_message)
             
-            logger.info(f"Detection response: {detection_response[:500]}")
+            logger.info(f"AI Detection response: {detection_response[:500]}")
             
             # Parse detection response
             detection_text = detection_response.strip()
@@ -169,16 +192,16 @@ BE THOROUGH. Check the ENTIRE document."""
                     detection_text = detection_text[start:end+1]
             
             detection_result = json.loads(detection_text)
-            logger.info(f"Detection result: {detection_result}")
+            logger.info(f"AI Detection result: {detection_result}")
             
-            # If multiple processes detected (≥2), parse them separately
+            # If AI OR preprocessing detected multiple (≥2), parse them separately
             if detection_result.get('multipleProcesses') and detection_result.get('processCount', 0) >= 2:
-                logger.info(f"Multiple processes detected: {detection_result.get('processCount')}")
+                logger.info(f"AI confirmed multiple processes: {detection_result.get('processCount')}")
                 return await self._parse_multiple_processes(input_text, input_type, detection_result)
             else:
                 # Single process - use existing logic
                 logger.info("Single process detected, using standard parsing")
-                return await self._parse_single_process(input_text, input_type)
+                return await self._parse_single_process(truncated_text, input_type)
                 
         except Exception as e:
             logger.error(f"Error in parse_process: {e}")
