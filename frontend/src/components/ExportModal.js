@@ -55,12 +55,14 @@ const ExportModal = ({ process, onClose }) => {
       for (let i = 0; i < nodeContainers.length; i++) {
         const container = nodeContainers[i];
         
-        // Capture the node with high quality
+        // Capture the node with high quality and extra padding
         const canvas = await html2canvas(container, {
           scale: 2,
           useCORS: true,
           logging: false,
-          backgroundColor: '#f8fafc'
+          backgroundColor: '#f8fafc',
+          windowHeight: container.scrollHeight + 20,
+          height: container.scrollHeight + 20
         });
         
         const imgData = canvas.toDataURL('image/png');
@@ -81,7 +83,7 @@ const ExportModal = ({ process, onClose }) => {
         
         // Add the image
         pdf.addImage(imgData, 'PNG', margin, currentY, imgWidth, imgHeight, undefined, 'FAST');
-        currentY += imgHeight + 3; // Add small spacing between nodes
+        currentY += imgHeight + 4; // Add spacing between nodes
       }
       
       // Add page number on last page
