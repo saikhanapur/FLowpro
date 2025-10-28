@@ -23,34 +23,71 @@ const ExportModal = ({ process, onClose }) => {
   const exportAsPDF = async () => {
     setExporting(true);
     try {
+      // Get the canvas element
       const canvas = document.querySelector('[data-testid="flowchart-canvas"]');
-      const imgData = await html2canvas(canvas, {
+      if (!canvas) {
+        throw new Error('Canvas not found');
+      }
+
+      // Capture the full canvas with high quality
+      const canvasImage = await html2canvas(canvas, {
         scale: 2,
         useCORS: true,
         logging: false,
-        scrollY: -window.scrollY,
-        scrollX: -window.scrollX
+        windowWidth: canvas.scrollWidth,
+        windowHeight: canvas.scrollHeight,
+        width: canvas.scrollWidth,
+        height: canvas.scrollHeight,
+        x: 0,
+        y: 0
       });
-      
-      const imgWidth = 190;
-      const pageHeight = 277;
-      const imgHeight = (imgData.height * imgWidth) / imgData.width;
-      let heightLeft = imgHeight;
-      let position = 10;
 
+      // PDF setup
       const pdf = new jsPDF('p', 'mm', 'a4');
-      pdf.addImage(imgData.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const imgWidth = pdfWidth - 20; // 10mm margin on each side
+      const imgHeight = (canvasImage.height * imgWidth) / canvasImage.width;
+      const pageHeight = pdfHeight - 20; // 10mm margin top/bottom
+      
+      let heightLeft = imgHeight;
+      let position = 10; // Start 10mm from top
+      let page = 0;
+
+      // Add first page
+      pdf.addImage(
+        canvasImage.toDataURL('image/png'),
+        'PNG',
+        10,
+        position,
+        imgWidth,
+        imgHeight,
+        undefined,
+        'FAST'
+      );
       heightLeft -= pageHeight;
 
-      while (heightLeft >= 0) {
+      // Add additional pages if needed
+      while (heightLeft > 0) {
+        page++;
         position = heightLeft - imgHeight + 10;
         pdf.addPage();
-        pdf.addImage(imgData.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
+        pdf.addImage(
+          canvasImage.toDataURL('image/png'),
+          'PNG',
+          10,
+          position,
+          imgWidth,
+          imgHeight,
+          undefined,
+          'FAST'
+        );
         heightLeft -= pageHeight;
       }
 
       pdf.save(`${process.name}.pdf`);
-      toast.success('Exported as PDF');
+      toast.success(`PDF exported with ${page + 1} page(s)`);
     } catch (error) {
       toast.error('Failed to export PDF');
       console.error(error);
