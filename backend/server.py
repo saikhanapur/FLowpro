@@ -210,11 +210,16 @@ class AIService:
             # First, preprocess to detect clear process boundaries
             process_detection = self._preprocess_and_detect_boundaries(input_text)
             
+            print(f"[DEBUG] Preprocessing detected {process_detection['process_count']} potential processes", flush=True)
+            print(f"[DEBUG] Process titles: {process_detection['process_titles'][:5]}", flush=True)
+            print(f"[DEBUG] High confidence: {process_detection['high_confidence']}", flush=True)
+            
             logger.info(f"Preprocessing detected {process_detection['process_count']} potential processes")
             logger.info(f"Process titles: {process_detection['process_titles']}")
             
             # If preprocessing found multiple clear processes (≥2), use that directly
             if process_detection['process_count'] >= 2 and process_detection['high_confidence']:
+                print(f"[DEBUG] HIGH CONFIDENCE MULTI-PROCESS: Parsing {process_detection['process_count']} processes", flush=True)
                 logger.info(f"High confidence multi-process detection: {process_detection['process_count']} processes")
                 return await self._parse_multiple_processes(
                     input_text, 
@@ -227,6 +232,7 @@ class AIService:
                 )
             
             # Otherwise, fall back to AI detection for ambiguous cases
+            print(f"[DEBUG] Using AI detection (low confidence or <2 processes)", flush=True)
             logger.info("Using AI detection for process identification")
             
             # Limit input size but keep it generous for multi-process documents
