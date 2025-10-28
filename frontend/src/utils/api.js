@@ -1,0 +1,69 @@
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+export const api = {
+  // Process endpoints
+  parseProcess: async (text, inputType) => {
+    const res = await axios.post(`${API}/process/parse`, { text, inputType });
+    return res.data;
+  },
+
+  createProcess: async (process) => {
+    const res = await axios.post(`${API}/process`, process);
+    return res.data;
+  },
+
+  getProcesses: async () => {
+    const res = await axios.get(`${API}/process`);
+    return res.data;
+  },
+
+  getProcess: async (id) => {
+    const res = await axios.get(`${API}/process/${id}`);
+    return res.data;
+  },
+
+  updateProcess: async (id, process) => {
+    const res = await axios.put(`${API}/process/${id}`, process);
+    return res.data;
+  },
+
+  deleteProcess: async (id) => {
+    const res = await axios.delete(`${API}/process/${id}`);
+    return res.data;
+  },
+
+  generateIdealState: async (id) => {
+    const res = await axios.post(`${API}/process/${id}/ideal-state`);
+    return res.data;
+  },
+
+  // Chat endpoint
+  chat: async (history, message) => {
+    const res = await axios.post(`${API}/chat`, { history, message });
+    return res.data;
+  },
+
+  // Comment endpoints
+  createComment: async (comment) => {
+    const res = await axios.post(`${API}/comment`, comment);
+    return res.data;
+  },
+
+  getComments: async (processId) => {
+    const res = await axios.get(`${API}/comment/${processId}`);
+    return res.data;
+  },
+
+  // Upload endpoint
+  uploadDocument: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await axios.post(`${API}/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return res.data;
+  }
+};
