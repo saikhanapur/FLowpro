@@ -188,7 +188,7 @@ const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
               <div key={comment.id} className="bg-slate-50 rounded-lg p-3">
                 <div className="text-sm text-slate-700 leading-relaxed">{comment.content}</div>
                 <div className="text-xs text-slate-500 mt-2">
-                  {new Date(comment.createdAt).toLocaleString()}
+                  {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : 'Just now'}
                 </div>
               </div>
             ))}
