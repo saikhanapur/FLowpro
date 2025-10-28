@@ -80,6 +80,17 @@
   background: #94a3b8;
 }
 
+/* PDF Export - Prevent node splitting */
+.node-container {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.arrow-connector {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
 /* Gradient backgrounds */
 .gradient-blue {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
