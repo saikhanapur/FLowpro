@@ -112,143 +112,287 @@ const ExportModal = ({ process, onClose }) => {
 
   const generateHTML = (process) => {
     const nodesHTML = process.nodes.map((node, idx) => {
-      const statusClass = node.status === 'critical-gap' ? 'gradient-rose text-white shadow-lg' : 
-                         node.status === 'trigger' ? 'gradient-blue text-white shadow-lg' :
+      const statusClass = node.status === 'critical-gap' ? 'gradient-rose text-white' : 
+                         node.status === 'trigger' ? 'gradient-blue text-white' :
                          node.status === 'warning' ? 'bg-white border-2 border-amber-500' :
                          'bg-white border-2 border-emerald-500';
       
+      const iconHTML = node.status === 'trigger' ? '⚡' :
+                       node.status === 'current' ? '✓' :
+                       node.status === 'warning' ? '⚠' :
+                       node.status === 'critical-gap' ? '🚨' : '•';
+      
       return `
-        <div class="mb-6">
-          <div class="rounded-xl p-6 ${statusClass} cursor-pointer hover:scale-105 transition-all" onclick="toggleDetail(${idx})">
-            <h3 class="text-lg font-bold mb-2">${node.title}</h3>
-            <p class="text-sm opacity-90">${node.description}</p>
-            ${node.actors && node.actors.length > 0 ? `
-              <div class="mt-3 flex flex-wrap gap-1">
-                ${node.actors.map(actor => `<span class="px-2 py-1 bg-white bg-opacity-20 rounded text-xs">${actor}</span>`).join('')}
+        <div class="node-container mb-4">
+          <div class="rounded-xl p-5 ${statusClass} shadow-sm cursor-pointer hover:scale-[1.02] transition-all duration-200" onclick="showDetail(${idx})" data-node-id="${idx}">
+            <div class="flex items-start gap-3">
+              <span class="text-xl flex-shrink-0">${iconHTML}</span>
+              <div class="flex-1">
+                <h3 class="text-base font-bold mb-2 leading-tight">${node.title}</h3>
+                <p class="text-sm opacity-90 leading-relaxed">${node.description}</p>
+                ${node.actors && node.actors.length > 0 ? `
+                  <div class="mt-3 flex flex-wrap gap-1.5">
+                    ${node.actors.map(actor => `
+                      <span class="px-2.5 py-1 rounded-full text-xs font-medium ${
+                        node.status === 'trigger' || node.status === 'critical-gap' ? 'bg-white/20' : 'bg-slate-100 text-slate-700'
+                      }">${actor}</span>
+                    `).join('')}
+                  </div>
+                ` : ''}
               </div>
-            ` : ''}
-            ${node.gap ? `<div class="mt-3 text-sm font-semibold">Gap: ${node.gap}</div>` : ''}
+            </div>
           </div>
-          
-          <!-- Detail Panel -->
-          <div id="detail-${idx}" class="hidden mt-4 bg-white rounded-xl p-6 border-2 border-slate-200 slide-in">
-            ${node.subSteps && node.subSteps.length > 0 ? `
-              <div class="mb-4">
-                <h4 class="font-semibold text-slate-800 mb-2">Process Steps:</h4>
-                <ul class="space-y-1">
-                  ${node.subSteps.map(step => `<li class="text-sm text-slate-600">→ ${step}</li>`).join('')}
-                </ul>
+          ${idx < process.nodes.length - 1 ? `
+            <div class="flex justify-center py-2">
+              <div class="flex flex-col items-center">
+                <svg width="3" height="32" viewBox="0 0 3 32" class="text-slate-400">
+                  <line x1="1.5" y1="0" x2="1.5" y2="32" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" class="text-slate-400 -mt-1">
+                  <path d="M 8 0 L 16 12 L 8 10 L 0 12 Z" fill="currentColor" />
+                </svg>
               </div>
-            ` : ''}
-            ${node.currentState ? `
-              <div class="mb-4">
-                <h4 class="font-semibold text-slate-800 mb-2">Current State:</h4>
-                <p class="text-sm text-slate-600">${node.currentState}</p>
-              </div>
-            ` : ''}
-            ${node.idealState ? `
-              <div class="mb-4">
-                <h4 class="font-semibold text-emerald-800 mb-2">Ideal State:</h4>
-                <p class="text-sm text-emerald-600">${node.idealState}</p>
-              </div>
-            ` : ''}
-            ${node.failures && node.failures.length > 0 ? `
-              <div>
-                <h4 class="font-semibold text-rose-800 mb-2">Potential Failures:</h4>
-                <ul class="space-y-1">
-                  ${node.failures.map(f => `<li class="text-sm text-rose-600">⚠ ${f}</li>`).join('')}
-                </ul>
-              </div>
-            ` : ''}
-          </div>
-          
-          ${idx < process.nodes.length - 1 ? '<div class="flex justify-center my-2"><div class="w-0.5 h-12 bg-slate-300"></div></div>' : ''}
+            </div>
+          ` : ''}
         </div>
       `;
     }).join('');
+
+    const nodeDetailsData = process.nodes.map((node, idx) => ({
+      id: idx,
+      title: node.title,
+      description: node.description,
+      actors: node.actors || [],
+      subSteps: node.subSteps || [],
+      currentState: node.currentState,
+      idealState: node.idealState,
+      gap: node.gap,
+      impact: node.impact,
+      failures: node.failures || []
+    }));
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${process.name} - FlowForge</title>
+  <title>${process.name} - FlowForge AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-      background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+      margin: 0;
+      padding: 0;
     }
     .gradient-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
     .gradient-rose { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
     .gradient-emerald { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); }
     
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
+    #detailPanel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      width: 400px;
+      background: white;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+      transform: translateX(100%);
+      transition: transform 0.3s ease-out;
+      z-index: 50;
+      overflow-y: auto;
     }
-    .slide-in { animation: slideIn 0.3s ease-out; }
     
-    .hover\\:scale-105:hover { transform: scale(1.05); }
+    #detailPanel.open {
+      transform: translateX(0);
+    }
+    
+    .node-container div[onclick]:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    @media (max-width: 768px) {
+      #detailPanel {
+        width: 100%;
+      }
+    }
   </style>
 </head>
-<body class="p-8">
-  <div class="max-w-4xl mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-12 h-12 rounded-lg gradient-blue flex items-center justify-center">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
+<body class="bg-slate-50">
+  <div class="flex">
+    <!-- Main Content -->
+    <div id="mainContent" class="flex-1 p-8 transition-all duration-300">
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-lg gradient-blue flex items-center justify-center">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-slate-800">${process.name}</h1>
+            <p class="text-slate-600">Generated with FlowForge AI</p>
+          </div>
         </div>
-        <div>
-          <h1 class="text-3xl font-bold text-slate-800">${process.name}</h1>
-          <p class="text-slate-600">Created with FlowForge AI</p>
+        ${process.description ? `<p class="text-slate-700 mb-4">${process.description}</p>` : ''}
+        
+        <!-- Legend -->
+        <div class="bg-white rounded-xl p-4 border border-slate-200 flex flex-wrap gap-4 text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded gradient-blue"></div>
+            <span>Trigger</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-white border-2 border-emerald-500"></div>
+            <span>Active</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-white border-2 border-amber-500"></div>
+            <span>Warning</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded gradient-rose"></div>
+            <span>Critical Gap</span>
+          </div>
         </div>
       </div>
-      ${process.description ? `<p class="text-slate-700 mb-4">${process.description}</p>` : ''}
-      <div class="flex gap-3 text-sm text-slate-600">
-        <span>📋 ${process.nodes.length} steps</span>
-        ${process.actors.length > 0 ? `<span>• 👥 ${process.actors.length} actors</span>` : ''}
-        ${process.criticalGaps.length > 0 ? `<span>• ⚠️ ${process.criticalGaps.length} gaps</span>` : ''}
+
+      <!-- Process Nodes -->
+      <div class="max-w-4xl">
+        ${nodesHTML}
       </div>
+
+      <!-- Summary Sections -->
+      ${process.criticalGaps && process.criticalGaps.length > 0 ? `
+        <div class="mt-8 bg-rose-50 border-2 border-rose-200 rounded-xl p-6 max-w-4xl">
+          <h3 class="text-lg font-bold text-rose-900 mb-4">Critical Gaps (${process.criticalGaps.length})</h3>
+          <ul class="space-y-2">
+            ${process.criticalGaps.map(gap => `<li class="text-sm text-rose-800"><strong>•</strong> ${gap}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+
+      ${process.improvementOpportunities && process.improvementOpportunities.length > 0 ? `
+        <div class="mt-4 bg-blue-50 border-2 border-blue-200 rounded-xl p-6 max-w-4xl">
+          <h3 class="text-lg font-bold text-blue-900 mb-4">Improvement Opportunities</h3>
+          <ul class="space-y-2">
+            ${process.improvementOpportunities.map(opp => `<li class="text-sm text-blue-800">• ${opp.description}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
     </div>
 
-    <!-- Process Nodes -->
-    <div class="space-y-4">
-      ${nodesHTML}
-    </div>
-
-    <!-- Summary Section -->
-    ${process.criticalGaps.length > 0 ? `
-      <div class="mt-8 bg-rose-50 border-2 border-rose-200 rounded-xl p-6">
-        <h3 class="text-lg font-bold text-rose-900 mb-4 flex items-center gap-2">
+    <!-- Detail Panel (Slides from Right) -->
+    <div id="detailPanel">
+      <div class="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-800">Step Details</h3>
+        <button onclick="closeDetail()" class="p-2 hover:bg-slate-100 rounded-lg transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
-          Critical Gaps Identified
-        </h3>
-        <ul class="space-y-2">
-          ${process.criticalGaps.map(gap => `<li class="text-sm text-rose-800">⚠️ ${gap}</li>`).join('')}
-        </ul>
+        </button>
       </div>
-    ` : ''}
-
-    <!-- Footer -->
-    <div class="mt-12 text-center text-sm text-slate-500 border-t border-slate-200 pt-6">
-      <p>Generated by <strong>FlowForge AI</strong> • Transform your processes into flowcharts in minutes</p>
+      
+      <div id="detailContent" class="p-6">
+        <!-- Content loaded dynamically -->
+      </div>
     </div>
   </div>
 
   <script>
-    function toggleDetail(idx) {
-      const detail = document.getElementById('detail-' + idx);
-      if (detail.classList.contains('hidden')) {
-        detail.classList.remove('hidden');
-      } else {
-        detail.classList.add('hidden');
+    const nodeData = ${JSON.stringify(nodeDetailsData)};
+    
+    function showDetail(nodeId) {
+      const node = nodeData[nodeId];
+      const panel = document.getElementById('detailPanel');
+      const content = document.getElementById('detailContent');
+      const mainContent = document.getElementById('mainContent');
+      
+      let html = \`
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">\${node.title}</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">\${node.description}</p>
+          </div>
+      \`;
+      
+      if (node.actors && node.actors.length > 0) {
+        html += \`
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Actors/Systems</label>
+            <div class="flex flex-wrap gap-2">
+              \${node.actors.map(actor => \`<span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">\${actor}</span>\`).join('')}
+            </div>
+          </div>
+        \`;
       }
+      
+      if (node.subSteps && node.subSteps.length > 0) {
+        html += \`
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Process Steps</label>
+            <ul class="space-y-2">
+              \${node.subSteps.map(step => \`<li class="text-sm text-slate-700 flex items-start gap-2"><span class="text-blue-600 font-bold">→</span> \${step}</li>\`).join('')}
+            </ul>
+          </div>
+        \`;
+      }
+      
+      if (node.currentState) {
+        html += \`
+          <div class="bg-slate-50 rounded-lg p-4">
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Current State</label>
+            <p class="text-sm text-slate-700 leading-relaxed">\${node.currentState}</p>
+          </div>
+        \`;
+      }
+      
+      if (node.idealState) {
+        html += \`
+          <div class="bg-emerald-50 rounded-lg p-4">
+            <label class="block text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-2">Ideal State</label>
+            <p class="text-sm text-emerald-800 leading-relaxed">\${node.idealState}</p>
+          </div>
+        \`;
+      }
+      
+      if (node.gap) {
+        html += \`
+          <div class="bg-rose-50 border-l-4 border-rose-500 rounded-lg p-4">
+            <label class="block text-xs font-semibold text-rose-900 uppercase tracking-wide mb-2">Gap Identified</label>
+            <p class="text-sm text-rose-800 leading-relaxed">\${node.gap}</p>
+            \${node.impact ? \`<div class="mt-2"><span class="px-2 py-1 bg-rose-600 text-white rounded text-xs font-medium">Impact: \${node.impact}</span></div>\` : ''}
+          </div>
+        \`;
+      }
+      
+      if (node.failures && node.failures.length > 0) {
+        html += \`
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Potential Failures</label>
+            <ul class="space-y-1">
+              \${node.failures.map(f => \`<li class="text-sm text-rose-600">⚠ \${f}</li>\`).join('')}
+            </ul>
+          </div>
+        \`;
+      }
+      
+      html += '</div>';
+      
+      content.innerHTML = html;
+      panel.classList.add('open');
+      
+      // Adjust main content margin on desktop
+      if (window.innerWidth >= 768) {
+        mainContent.style.marginRight = '400px';
+      }
+    }
+    
+    function closeDetail() {
+      const panel = document.getElementById('detailPanel');
+      const mainContent = document.getElementById('mainContent');
+      panel.classList.remove('open');
+      mainContent.style.marginRight = '0';
     }
   </script>
 </body>
