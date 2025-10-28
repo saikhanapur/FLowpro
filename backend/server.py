@@ -389,61 +389,70 @@ Return this JSON structure:
             
             logger.info(f"Parsing {process_count} processes: {process_titles}")
             
+            # For large documents with many processes, we need to be strategic
+            # Limit to 40k characters but try to include all process sections
+            max_length = 40000
+            if len(input_text) > max_length:
+                logger.warning(f"Document too large ({len(input_text)} chars), will parse what fits in {max_length}")
+                input_text = self._smart_truncate(input_text, max_length, process_titles)
+            
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"multi_parse_{uuid.uuid4()}",
                 system_message="You are an expert at extracting multiple workflows from documents. Extract each process completely and accurately."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
+            # Build a more structured prompt that explicitly lists the processes
+            process_list = '\n'.join(f'{i+1}. "{title}"' for i, title in enumerate(process_titles))
+            
             prompt = f"""EXTRACT ALL {process_count} DISTINCT PROCESSES from this document.
 
-Detected process titles:
-{chr(10).join(f'{i+1}. {title}' for i, title in enumerate(process_titles))}
+YOU MUST EXTRACT THESE SPECIFIC PROCESSES:
+{process_list}
 
-FULL DOCUMENT:
+FULL DOCUMENT TEXT:
 {input_text}
 
 INSTRUCTIONS:
-1. Extract EACH of the {process_count} processes separately
-2. For EACH process, identify 5-8 critical steps
-3. Keep descriptions concise but complete
-4. Extract actors/responsible parties for each process
-5. Identify gaps within each process
+1. Find and extract EACH of the {process_count} processes listed above
+2. For EACH process, identify 4-6 most critical steps (keep concise)
+3. Each process should have its own actors/responsible parties
+4. Extract the main workflow, not every tiny detail
 
-CRITICAL: Return ONLY a valid JSON array. No markdown. No explanations.
+CRITICAL: Return ONLY a valid JSON array with {process_count} objects. No markdown. No explanations.
 
 Return this exact structure:
 [
   {{
-    "processName": "Exact title from document header",
-    "description": "Brief purpose of this specific process (1-2 sentences)",
-    "actors": ["Actor 1", "Actor 2"],
+    "processName": "Exact title from list above (e.g., {process_titles[0] if process_titles else 'Process 1'})",
+    "description": "Brief purpose of this process (1-2 sentences)",
+    "actors": ["Actor 1", "Actor 2", "Actor 3"],
     "nodes": [
       {{
         "id": "node-1",
         "type": "trigger",
         "status": "trigger",
-        "title": "Step title (max 6 words)",
-        "description": "What happens in this step",
+        "title": "First step title (max 6 words)",
+        "description": "What happens",
         "actors": ["Who is responsible"],
-        "subSteps": ["Detailed action 1", "Detailed action 2"],
+        "subSteps": [],
         "dependencies": [],
         "parallelWith": [],
         "failures": [],
         "blocking": null,
-        "currentState": "Current state description",
-        "idealState": "Ideal state description",
-        "gap": "Gap description if exists, else null",
-        "impact": "low/medium/high",
+        "currentState": "How it works now",
+        "idealState": "How it should work",
+        "gap": null,
+        "impact": "medium",
         "timeEstimate": null
       }},
       {{
         "id": "node-2",
         "type": "step",
         "status": "current",
-        "title": "Next step title",
-        "description": "Step description",
-        "actors": ["Responsible party"],
+        "title": "Second step",
+        "description": "Description",
+        "actors": ["Responsible"],
         "subSteps": [],
         "dependencies": [],
         "parallelWith": [],
@@ -456,23 +465,12 @@ Return this exact structure:
         "timeEstimate": null
       }}
     ],
-    "criticalGaps": ["Gap identified across process"],
-    "improvementOpportunities": [
-      {{
-        "description": "Improvement suggestion",
-        "type": "automation/training/process",
-        "estimatedSavings": "Time/cost savings"
-      }}
-    ]
-  }},
-  {{
-    "processName": "Second Process Title",
-    "description": "Second process purpose",
-    ...
+    "criticalGaps": [],
+    "improvementOpportunities": []
   }}
 ]
 
-Extract ALL {process_count} processes from the document."""
+YOU MUST RETURN ALL {process_count} PROCESSES. If a process is not clearly described, extract what you can find."""
             
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
@@ -487,16 +485,27 @@ Extract ALL {process_count} processes from the document."""
                 if start != -1 and end != -1:
                     response_text = response_text[start:end+1]
             
-            processes_array = json.loads(response_text)
-            logger.info(f"Successfully parsed {len(processes_array)} processes")
+            try:
+                processes_array = json.loads(response_text)
+            except json.JSONDecodeError as e:
+                logger.error(f"JSON parse error, attempting to fix: {e}")
+                # Try to extract valid JSON from partial response
+                last_bracket = response_text.rfind('}]')
+                if last_bracket != -1:
+                    response_text = response_text[:last_bracket+2]
+                    processes_array = json.loads(response_text)
+                else:
+                    raise
+            
+            logger.info(f"Successfully parsed {len(processes_array)} processes from response")
             
             # Ensure it's a list
             if not isinstance(processes_array, list):
                 processes_array = [processes_array]
             
-            # Validate we got the expected number
-            if len(processes_array) < process_count:
-                logger.warning(f"Expected {process_count} processes but got {len(processes_array)}")
+            # Validate we got reasonable output
+            if len(processes_array) < process_count * 0.5:  # Got less than 50% of expected
+                logger.warning(f"Expected {process_count} processes but only got {len(processes_array)}")
             
             return {
                 "multipleProcesses": True,
@@ -505,8 +514,10 @@ Extract ALL {process_count} processes from the document."""
             }
             
         except Exception as e:
-            logger.error(f"Error parsing multiple processes: {e}")
-            raise HTTPException(status_code=500, detail=f"Failed to parse multiple processes: {str(e)}")
+            logger.error(f"Error parsing multiple processes: {e}", exc_info=True)
+            # Fallback: try to parse as single process
+            logger.info("Falling back to single process parsing due to error")
+            return await self._parse_single_process(input_text[:30000], input_type)
     
     async def generate_ideal_state(self, process_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate ideal state vision for a process"""
