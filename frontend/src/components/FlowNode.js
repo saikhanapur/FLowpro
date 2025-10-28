@@ -5,15 +5,15 @@ const FlowNode = ({ node, onClick, isSelected }) => {
   const getStatusStyles = () => {
     switch (node.status) {
       case 'trigger':
-        return 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg border border-blue-400/30';
+        return 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg';
       case 'current':
-        return 'bg-white border border-emerald-200 text-slate-800 shadow-sm hover:shadow-md';
+        return 'bg-white border border-emerald-300/60 text-slate-800 shadow-md hover:shadow-lg';
       case 'warning':
-        return 'bg-white border border-amber-200 text-slate-800 shadow-sm hover:shadow-md';
+        return 'bg-white border border-amber-300/60 text-slate-800 shadow-md hover:shadow-lg';
       case 'critical-gap':
-        return 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg border border-rose-400/30';
+        return 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg';
       default:
-        return 'bg-white border border-slate-200 text-slate-800 shadow-sm hover:shadow-md';
+        return 'bg-white border border-slate-300/50 text-slate-800 shadow-md hover:shadow-lg';
     }
   };
 
