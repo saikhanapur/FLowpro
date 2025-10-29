@@ -837,7 +837,7 @@ async def require_auth(request: Request) -> Dict:
 
 @api_router.get("/")
 async def root():
-    return {"message": "FlowForge AI API"}
+    return {"message": "SuperHumanly API"}
 
 # ============ Authentication Endpoints ============
 
