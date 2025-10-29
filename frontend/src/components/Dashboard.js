@@ -564,6 +564,64 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Create Workspace Modal */}
+      <Dialog open={showCreateWorkspaceModal} onOpenChange={setShowCreateWorkspaceModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Workspace</DialogTitle>
+            <DialogDescription>
+              Organize your processes into workspaces
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Workspace Name *
+              </label>
+              <Input
+                placeholder="e.g., Marketing Team, Q4 Projects"
+                value={newWorkspaceName}
+                onChange={(e) => setNewWorkspaceName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateWorkspace()}
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">
+                Description (Optional)
+              </label>
+              <Input
+                placeholder="Brief description of this workspace"
+                value={newWorkspaceDesc}
+                onChange={(e) => setNewWorkspaceDesc(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCreateWorkspaceModal(false);
+                setNewWorkspaceName('');
+                setNewWorkspaceDesc('');
+              }}
+              disabled={creatingWorkspace}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateWorkspace}
+              disabled={creatingWorkspace || !newWorkspaceName.trim()}
+              className="bg-gradient-to-r from-blue-600 to-purple-600"
+            >
+              {creatingWorkspace ? 'Creating...' : 'Create Workspace'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
