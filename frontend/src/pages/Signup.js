@@ -17,7 +17,7 @@ const Signup = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
 
@@ -45,7 +45,7 @@ const Signup = () => {
 
     try {
       await signup(email, password, name);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Signup error:', error);
     } finally {
