@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """
-FlowForge AI Backend API Testing Suite
-Tests all backend endpoints systematically
+FlowForge AI Backend API Testing Suite - ENTERPRISE SCALE PRE-AUTHENTICATION REVIEW
+Tests all backend endpoints systematically with focus on:
+- AI consistency and reliability (no hallucinations)
+- Context-enriched process creation
+- Voice transcription API
+- Enterprise-grade security and data integrity
+- Scale testing for 1000s of users
 """
 
 import requests
@@ -9,11 +14,13 @@ import json
 import uuid
 from datetime import datetime, timezone
 import os
+import io
+import time
 from pathlib import Path
 
 # Configuration
 BASE_URL = "https://process-mapper-6.preview.emergentagent.com/api"
-TIMEOUT = 30
+TIMEOUT = 120  # Increased for AI operations
 
 class BackendTester:
     def __init__(self):
