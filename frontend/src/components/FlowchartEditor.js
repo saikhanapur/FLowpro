@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3 } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -29,6 +29,7 @@ const FlowchartEditor = ({ theme }) => {
   const [saving, setSaving] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     loadProcess();
