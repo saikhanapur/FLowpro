@@ -942,7 +942,12 @@ async def login(data: LoginRequest, response: Response):
         
         await db.sessions.insert_one(session_dict)
         
-        # Set httpOnly cookie
+        # CRITICAL: Clear any existing session_token cookies
+        response.delete_cookie(key="session_token", path="/")
+        response.delete_cookie(key="session_token", path="/api")
+        response.delete_cookie(key="session_token")
+        
+        # Set our JWT token as httpOnly cookie
         response.set_cookie(
             key="session_token",
             value=access_token,
