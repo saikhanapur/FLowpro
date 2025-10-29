@@ -3,9 +3,6 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const API = `${BACKEND_URL}/api`;
 
-// Debug logging
-console.log('API Configuration:', { BACKEND_URL, API });
-
 export const api = {
   // Process endpoints
   parseProcess: async (text, inputType) => {
