@@ -1,63 +1,106 @@
 <analysis>
-The AI engineer successfully built FlowForge AI from MVP, addressing critical issues and implementing new features. Initial work focused on React/FastAPI/MongoDB setup and core AI integration. Early challenges included PDF export text clipping, resolved through  adjustments and dynamic node sizing. Design evolved significantly from a dark blue border to a minimalist Apple aesthetic, requiring extensive UI/CSS refinements. A major feature, multi-process detection from documents, was challenging. Initial attempts failed due to LLM response truncation and imprecise prompting. The AI re-architected this to parse processes one-at-a-time, rigorously debugging detection logic to achieve accuracy. Recent development introduced core enterprise features: a Publish mechanism with shareability and versioning, and Workspaces for process organization, now being implemented with backend data models, CRUD APIs, and UI integration. The current work involves adding Move to Workspace functionality.
+The AI engineer successfully progressed FlowForge AI from MVP, addressing critical bugs and implementing significant features. Initial efforts focused on fixing document upload issues (browser  vs. backend 200 OK) and LLM parsing errors (Pydantic validation for  and ). A major Move to Workspace feature was fully implemented and tested. Subsequently, the Add Context workflow (voice/chat) was integrated, including backend transcription and frontend UI. Authentication (email/password, Google OAuth) and a marketing landing page were then built. Key challenges included persistent Google OAuth login issues, which required a complete re-architecture of the frontend authentication state. The current task involves rebranding the application from FlowForge AI to SuperHumanly, updating the landing page and header to reflect this new brand and marketing message.
 </analysis>
 
 <product_requirements>
-FlowForge AI aims to transform complex workflows into interactive flowcharts, offering process capture via voice, documents, or chat, AI-driven parsing (Claude API), and visual flowchart generation. The platform targets enterprise users with features like a Landing Page/Dashboard, Process Creation, an Interactive Flowchart Canvas (customizable nodes, detail panel, ideal state modal), and a robust Output & Export System (HTML, PDF). The current MVP focuses on these core functionalities, deliberately omitting real-time collaboration, GitHub auto-deploy, and advanced analytics for simplified development. So far, the application has implemented core process creation, AI parsing, interactive flowchart display with a refined Apple-inspired minimalist design, multi-process detection from single documents, a Publish feature for official versions and shareability, and a foundational Workspaces feature for organizing processes by department or project.
+FlowForge AI (now SuperHumanly) aims to transform complex workflows into interactive flowcharts, offering process capture via voice, documents, or chat, AI-driven parsing (Claude API), and visual flowchart generation. It targets enterprise users with a Landing Page/Dashboard, Process Creation, Interactive Flowchart Canvas, and Output/Export. Key implemented features include: core process creation, AI parsing with an Apple-inspired UI, multi-process detection from documents, a Publish feature with shareability and versioning, and a foundational Workspaces feature for organizing processes. Recent additions include Move to Workspace functionality, the ability to add voice/chat context during process creation, enterprise authentication (email/password and Google OAuth), and a marketing landing page. The user desires a Superhumanly brand, emphasizing Easy Visualization, Interactive, Dynamic, Simplified for enterprise customers.
 </product_requirements>
 
 <key_technical_concepts>
 -   **Frontend**: React 18 (Hooks), TailwindCSS, Lucide React, React Flow, Framer Motion, Zustand.
--   **Backend/AI**: FastAPI, Claude API (Sonnet 4.5), PyMongo, Pydantic, PDF.js, Mammoth.js, Tesseract.js, , Emergent Persistent Storage.
--   **Voice Processing**: Web Speech API.
--   **Database**: MongoDB (using UUIDs).
+-   **Backend/AI**: FastAPI, Claude API (Sonnet 4.5), PyMongo, Pydantic, PyPDF2, python-docx, pytesseract, lxml, pypdf, litellm, re, OpenAI (Whisper API).
+-   **Authentication**: JWT, Google OAuth, bcrypt, Emergent Social Login.
+-   **Database**: MongoDB (using UUIDs for IDs).
 </key_technical_concepts>
 
 <code_architecture>
 
 
 -   **/app/backend/server.py**: Main FastAPI application.
-    -   **Summary**: Handles AI integration (Claude API for process parsing, ideal state generation), defines Pydantic models for , , and . Manages CRUD operations for processes and workspaces, and includes logic for publishing/unpublishing processes. Contains robust JSON parsing, error handling (LLM budget, truncated responses), and preprocessing for multi-process document parsing.
-    -   **Changes**: Extensive modifications for  logic, refined LLM prompts,  for pattern matching,  model and  in  model, Workspace CRUD APIs,  filtering by ,  field and publish/unpublish endpoints.
--   **/app/backend/requirements.txt**: Lists Python dependencies (To use the fastapi command, please install "fastapi[standard]":
+    -   **Summary**: Handles AI integration, defines Pydantic models, manages CRUD, publishing/unpublishing, user authentication, and voice transcription.
+    -   **Changes**:  logic, LLM prompts refined;  model and  in  model; Workspace CRUD APIs;  filtering;  field; publish/unpublish endpoints;  endpoint made more flexible to accept partial  objects (dict) and normalize  from strings to dicts;  field added to  model;  endpoint added for OpenAI Whisper API; authentication models (, , ), middleware, and endpoints (, , , , ) added;  added to  and  models; XSS sanitization and improved error handling for 400/422 responses.
+-   **/app/backend/requirements.txt**: Updated to include usage: openai [-h] [-v] [-b API_BASE] [-k API_KEY] [-p PROXY [PROXY ...]]
+              [-o ORGANIZATION] [-t {openai,azure}]
+              [--api-version API_VERSION] [--azure-endpoint AZURE_ENDPOINT]
+              [--azure-ad-token AZURE_AD_TOKEN] [-V]
+              {api,tools,migrate,grit} ...
 
-	pip install "fastapi[standard]", , , , , , , , , , ).
--   **/app/backend/migrate_workspaces.py**: New script.
-    -   **Summary**: Created and executed to assign existing processes to a default My Workspace and initialize  and  fields in the database.
+positional arguments:
+  {api,tools,migrate,grit}
+    api                 Direct API calls
+    tools               Client side tools for convenience
+
+options:
+  -h, --help            show this help message and exit
+  -v, --verbose         Set verbosity.
+  -b API_BASE, --api-base API_BASE
+                        What API base url to use.
+  -k API_KEY, --api-key API_KEY
+                        What API key to use.
+  -p PROXY [PROXY ...], --proxy PROXY [PROXY ...]
+                        What proxy to use.
+  -o ORGANIZATION, --organization ORGANIZATION
+                        Which organization to run as (will use your default
+                        organization if not specified)
+  -t {openai,azure}, --api-type {openai,azure}
+                        The backend API to call, must be `openai` or `azure`
+  --api-version API_VERSION
+                        The Azure API version, e.g.
+                        'https://learn.microsoft.com/en-us/azure/ai-
+                        services/openai/reference#rest-api-versioning'
+  --azure-endpoint AZURE_ENDPOINT
+                        The Azure endpoint, e.g.
+                        'https://endpoint.openai.azure.com'
+  --azure-ad-token AZURE_AD_TOKEN
+                        A token from Azure Active Directory,
+                        https://www.microsoft.com/en-
+                        us/security/business/identity-access/microsoft-entra-
+                        id
+  -V, --version         show program's version number and exit, , , .
+-   **/app/backend/migrate_workspaces.py**: Assigns existing processes to a default workspace.
+-   **/app/backend/create_admin_and_migrate.py**: **NEW script**. Creates a default admin user and migrates existing data to include  and  fields.
 -   **/app/frontend/src/App.js**: Root React component.
-    -   **Summary**: Manages application-wide state and routing.
-    -   **Changes**: Updated to manage  state.
+    -   **Summary**: Manages state, routing, and app-wide context.
+    -   **Changes**: Manages  state, wrapped with , implemented  for authenticated routes (e.g., ), configured routes for , ,  (Landing Page).
 -   **/app/frontend/src/App.css**: Global CSS.
-    -   **Summary**: Global styling, animations, responsive design.
-    -   **Changes**: Heavily modified to support new hero animations, header transparency, and detailed styling for flowchart elements (nodes, arrows) to achieve an Apple-inspired minimalist design.
+    -   **Summary**: Styling and animations.
+    -   **Changes**: Heavily modified for Apple-inspired minimalist design, including hero animations, header transparency, flowchart elements, and added CSS animations for the Move to Workspace floating bar.
 -   **/app/frontend/src/utils/api.js**: Centralized API calls.
-    -   **Summary**: Utility for making consistent API calls to FastAPI backend.
-    -   **Changes**: Added , , , , , , ,  calls.
+    -   **Summary**: Utility for consistent API calls.
+    -   **Changes**: Added , , , , , , , , , , , , ,  calls. Global  set, and an interceptor added to send  token from  as a fallback for authentication.  fallback added.
 -   **/app/frontend/src/components/Header.js**: Application header.
-    -   **Summary**: Renders the application header with navigation.
-    -   **Changes**: Modified to include the  component.
+    -   **Summary**: Renders header with navigation.
+    -   **Changes**: Includes  component, displays user profile, and logout functionality. Being updated for SuperHumanly branding.
 -   **/app/frontend/src/components/Dashboard.js**: Main user dashboard.
-    -   **Summary**: Designed to display recent processes.
-    -   **Changes**: Updated to show published status and published date, and to filter processes by the .
+    -   **Summary**: Displays processes.
+    -   **Changes**: Shows published status/date, filters by , integrated Move to Workspace functionality with multi-select, checkboxes, floating action bar, and a workspace modal.
 -   **/app/frontend/src/components/ProcessCreator.js**: Orchestrates input methods.
-    -   **Summary**: Handles selection of input method, displays processing states, and presents extracted data for review.
-    -   **Changes**: Redesigned for improved loading messages/alignment, updated to handle multi-process detection, integrates , and assigns new processes to the .
--   **/app/frontend/src/components/FlowchartEditor.js**: Core flowchart display and interaction.
-    -   **Summary**: Displays and interacts with generated flowcharts.
-    -   **Changes**: Extensively redesigned for EROAD-like layout, node interactions, detail panel, Apple-inspired minimal design, and now includes Publish and Share buttons with associated dialogs.
--   **/app/frontend/src/components/FlowNode.js**: Individual flowchart node.
-    -   **Summary**: Represents a node within the flowchart.
-    -   **Changes**: Redesigned to be compact, symmetrical, visually distinct, with proper text wrapping, lighter borders, subtle shadows, and supports new node statuses ('active', 'completed').
--   **/app/frontend/src/components/DetailPanel.js**: Sidebar for node details.
-    -   **Summary**: Displays detailed information for a selected flowchart node.
-    -   **Changes**: Actors label changed to Responsible.
--   **/app/frontend/src/components/ExportModal.js**: Export options for flowchart.
-    -   **Summary**: Handles various export options (PDF/HTML).
-    -   **Changes**: Modified for improved PDF/HTML export quality, text wrapping, dynamic box sizes, and to match the Apple-inspired minimal design. Actors changed to Responsible in HTML export.
--   **/app/frontend/src/components/MultiProcessReview.js**: **NEW component**.
-    -   **Summary**: Displays and manages multiple processes detected from a single document. Allows reviewing, editing, and batch creation, assigning processes to the .
--   **/app/frontend/src/components/WorkspaceSelector.js**: **NEW component**.
-    -   **Summary**: Displays the active workspace and its process count, and allows switching between workspaces.
+    -   **Summary**: Handles input, processing states, data review.
+    -   **Changes**: Redesigned for improved loading, multi-process detection,  integration, assigns processes to , and now integrates  component to allow adding context before parsing.
+-   **/app/frontend/src/components/MultiProcessReview.js**: Displays/manages multiple processes.
+    -   **Summary**: Allows reviewing, editing, batch creation.
+    -   **Changes**: Ensures processes are assigned to ,  included in process object.
+-   **/app/frontend/src/components/WorkspaceSelector.js**: Displays active workspace.
+    -   **Summary**: Allows switching workspaces.
+    -   **Changes**: N/A, but used as context for .
+-   **/app/frontend/src/components/DocumentUploader.js**: Handles document uploads.
+    -   **Summary**: Manages document input and extraction.
+    -   **Changes**: Modified to ensure correct  handling, leading to  or parsing.
+-   **/app/frontend/src/components/ContextAdder.js**: **NEW component**.
+    -   **Summary**: Intermediate step to allow users to add voice or text context after document upload and before AI processing.
+    -   **Changes**: Displays document text preview, offers Speak (voice) or Type (text) options, displays transcription results, and allows editing of transcribed text.
+-   **/app/frontend/src/contexts/AuthContext.js**: **NEW file**.
+    -   **Summary**: Provides authentication state and functions (, , , , ) to the React app.
+    -   **Changes**: Implemented persistent authentication, using both httpOnly cookies and  for access tokens, with Axios interceptors to handle token attachment. Includes  and  state. Rebuilt for robustness after initial failures.
+-   **/app/frontend/src/pages/Login.js**: **NEW file**.
+    -   **Summary**: Login page for users.
+    -   **Changes**: Includes email/password login and Continue with Google (Emergent OAuth), handles post-login redirection to .
+-   **/app/frontend/src/pages/Signup.js**: **NEW file**.
+    -   **Summary**: Signup page for new users.
+    -   **Changes**: Includes fields for full name, email, password (with strength indicator), and handles post-signup redirection to .
+-   **/app/frontend/src/pages/LandingPage.js**: **NEW file**.
+    -   **Summary**: Marketing splash page for public visitors.
+    -   **Changes**: Features hero section, feature highlights, How It Works, pricing tiers, CTAs, and a footer. Rebranded to SuperHumanly with new marketing copy and removed placeholders for demo video and social proof.
 </code_architecture>
 
 <pending_tasks>
@@ -68,18 +111,14 @@ FlowForge AI aims to transform complex workflows into interactive flowcharts, of
 -   Further polish on Workspaces (Phase 3: workspace settings, navigation, permissions, templates).
 -   Implement the Themes feature.
 -   Implement Templates functionality beyond placeholders.
+-   Ensure AI consistency, prevent hallucination, and establish guard rails.
+-   Complete voice feature UI refinement (showing transcription, editing).
 </pending_tasks>
 
 <current_work>
-The AI engineer is currently in Phase 2 of the Workspaces feature implementation, specifically adding the ability to move existing processes between different workspaces. This involves:
-
-1.  **Backend API**: A new  endpoint has been added to .
-2.  **Frontend API**: A corresponding  function has been added to .
-3.  **UI Integration**: The task immediately before this summary request was to update the  component to incorporate Move to Workspace functionality, allowing users to select a process and assign it to a different workspace. This includes adding the UI elements (e.g., a dropdown or modal) for selecting a target workspace and triggering the move operation.
-
-The preceding work completed Phase 1 (Backend Foundation) and the initial parts of Phase 2 (UI Components) for Workspaces, establishing the data models, API endpoints, and core UI elements like the  and process filtering on the dashboard.
+Immediately before this summary request, the AI engineer was in the process of rebranding the application from FlowForge AI to the new SuperHumanly brand, as per the user's explicit request. This involved updating the marketing landing page () with the new brand name, new taglines (e.g., Superhuman process visualization, Process documentation at superhuman speed), and removing placeholders such as the demo video and Trusted by teams section. Several edits to  were successfully made to apply this new branding and content. The very next step in this rebranding effort is to update the application's  component to also reflect the SuperHumanly brand and potentially the new marketing taglines. This work is part of a broader effort to refine the product's market positioning after significant feature development.
 </current_work>
 
 <optional_next_step>
-Continue implementing the Move to Workspace functionality on the Dashboard component.
+Update the  component with the new SuperHumanly branding.
 </optional_next_step>
