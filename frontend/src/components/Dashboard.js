@@ -72,6 +72,9 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     try {
       const data = await api.getProcesses();
       
+      // Store ALL processes for empty state check
+      setAllProcesses(data);
+      
       // If we have a current workspace, filter by it
       if (currentWorkspace) {
         const filtered = data.filter(p => p.workspaceId === currentWorkspace.id);
