@@ -460,7 +460,7 @@ BE THOROUGH. The preprocessing hints should guide you."""
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"parse_{uuid.uuid4()}",
-                system_message="You are FlowForge AI. Extract ONLY the 5-8 most critical steps. Be concise. Return valid JSON only."
+                system_message="You are SuperHumanly AI. Extract ONLY the 5-8 most critical steps. Be concise. Return valid JSON only."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
             prompt = f"""Extract ONLY the 5-8 most critical steps from this {input_type}. Be concise.
