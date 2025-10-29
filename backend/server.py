@@ -531,8 +531,14 @@ Return ONLY this JSON (no markdown):
       "timeEstimate": null
     }}
   ],
-  "criticalGaps": [],
-  "improvementOpportunities": []
+  "criticalGaps": ["gap description if any"],
+  "improvementOpportunities": [
+    {{
+      "description": "brief improvement description",
+      "type": "automation/standardization/communication",
+      "estimatedSavings": "time saved or benefit"
+    }}
+  ]
 }}
 
 Use status values: "trigger", "current", "warning" for variety. Include gaps where appropriate."""
