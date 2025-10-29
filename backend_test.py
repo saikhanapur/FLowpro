@@ -298,20 +298,34 @@ class BackendTester:
             if response.status_code == 200:
                 result = response.json()
                 # Handle both single and multiple process responses
-                if 'multipleProcesses' in result and result.get('multipleProcesses'):
-                    # Multiple processes response
-                    processes = result.get('processes', [])
-                    if processes and len(processes) > 0:
-                        total_nodes = sum(len(p.get('nodes', [])) for p in processes)
-                        self.log_result("POST AI Parse Process", True, 
-                                      f"Parsed {len(processes)} processes with {total_nodes} total nodes")
-                        return True
+                if 'multipleProcesses' in result:
+                    if result.get('multipleProcesses'):
+                        # Multiple processes response
+                        processes = result.get('processes', [])
+                        if processes and len(processes) > 0:
+                            total_nodes = sum(len(p.get('nodes', [])) for p in processes)
+                            self.log_result("POST AI Parse Process", True, 
+                                          f"Parsed {len(processes)} processes with {total_nodes} total nodes")
+                            return True
+                        else:
+                            self.log_result("POST AI Parse Process", False, 
+                                          f"Multiple processes response but no processes found")
+                            return False
                     else:
-                        self.log_result("POST AI Parse Process", False, 
-                                      f"Multiple processes response but no processes found")
-                        return False
+                        # Single process in multipleProcesses format
+                        processes = result.get('processes', [])
+                        if processes and len(processes) > 0:
+                            process = processes[0]
+                            nodes_count = len(process.get('nodes', []))
+                            self.log_result("POST AI Parse Process", True, 
+                                          f"Parsed process: {process.get('processName', 'Unknown')} with {nodes_count} nodes")
+                            return True
+                        else:
+                            self.log_result("POST AI Parse Process", False, 
+                                          f"Single process response but no processes found")
+                            return False
                 elif 'processName' in result and 'nodes' in result:
-                    # Single process response
+                    # Legacy single process response
                     nodes_count = len(result.get('nodes', []))
                     self.log_result("POST AI Parse Process", True, 
                                   f"Parsed process: {result.get('processName')} with {nodes_count} nodes")
