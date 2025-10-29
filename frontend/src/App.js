@@ -61,9 +61,15 @@ const AppContent = () => {
     <div className="App min-h-screen">
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/" element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />
+        } />
+        <Route path="/login" element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+        } />
+        <Route path="/signup" element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />
+        } />
         
         {/* Protected Routes */}
         <Route path="/dashboard" element={
