@@ -144,15 +144,7 @@ const Login = () => {
           </Button>
         </form>
 
-        {/* Divider - TEMPORARILY HIDDEN FOR DEMO */}
-        {/* <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-slate-500">Or continue with</span>
-          </div>
-        </div> */}
+        {/* Removed divider section */}
 
         {/* Google Sign In - TEMPORARILY HIDDEN FOR DEMO */}
         {/* <Button
