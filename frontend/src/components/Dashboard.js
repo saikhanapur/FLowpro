@@ -162,42 +162,30 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8" data-testid="dashboard">
-      {/* Hero Section */}
-      <div className="text-center mb-16 relative">
-        {/* Animated background gradient */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
-        </div>
-
-        <h1 className="text-6xl md:text-7xl font-bold heading-font mb-6 leading-tight">
-          <span className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent">
-            Turn Chaos into Clarity
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-            in 2 Minutes
-          </span>
-        </h1>
-        
-        <p className="text-xl md:text-2xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-          Document, visualize, and improve your workflows with AI
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+      {/* Welcome Banner (dismissible, shown for users with processes) */}
+      {showWelcomeBanner && processes.length > 0 && (
+        <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl">👋</div>
+            <div>
+              <p className="font-semibold text-slate-900">
+                Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
+              </p>
+              <p className="text-sm text-slate-600">
+                Ready to turn chaos into clarity? Create a new process in 2 minutes.
+              </p>
+            </div>
+          </div>
           <Button
-            size="lg"
-            onClick={() => navigate('/create')}
-            className="gradient-blue text-white text-lg px-10 py-7 rounded-2xl shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 btn-hover group"
-            data-testid="create-process-btn"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowWelcomeBanner(false)}
+            className="text-slate-500 hover:text-slate-700"
           >
-            <Plus className="w-6 h-6 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-            Create Your First Process
+            <X className="w-4 h-4" />
           </Button>
-          
-          <Button
-            size="lg"
-            variant="outline"
+        </div>
+      )}
             onClick={() => navigate('/templates')}
             className="text-lg px-10 py-7 rounded-2xl border-2 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300"
           >
