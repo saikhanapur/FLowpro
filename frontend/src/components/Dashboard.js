@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar, FolderInput } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar, FolderInput, CheckSquare, Square, FolderOpen, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -11,6 +11,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
