@@ -27,7 +27,7 @@ const Login = () => {
           await loginWithGoogle(sessionId);
           // Clean URL
           window.location.hash = '';
-          navigate('/');
+          navigate('/dashboard');
         } catch (error) {
           console.error('Google auth error:', error);
           setProcessingGoogle(false);
