@@ -892,6 +892,21 @@ async def signup(data: SignupRequest):
         
         await db.users.insert_one(user_dict)
         
+        # Create default workspace for new user
+        default_workspace = Workspace(
+            name="My Workspace",
+            description="Your default workspace",
+            userId=user.id,
+            isDefault=True
+        )
+        
+        workspace_dict = default_workspace.model_dump()
+        workspace_dict['createdAt'] = workspace_dict['createdAt'].isoformat()
+        workspace_dict['updatedAt'] = workspace_dict['updatedAt'].isoformat()
+        
+        await db.workspaces.insert_one(workspace_dict)
+        logger.info(f"✅ Created default workspace for new user: {user.email}")
+        
         # Create access token
         access_token = create_access_token(data={"sub": user.id})
         
