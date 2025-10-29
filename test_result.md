@@ -214,6 +214,31 @@ frontend:
         agent: "main"
         comment: "Three input methods implemented. Need to test document upload and AI processing flow."
 
+  - task: "Workspace Move Process API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Backend endpoint PATCH /api/process/{id}/move implemented to move processes between workspaces. Updates workspaceId and processCount."
+
+frontend:
+  - task: "Batch Process Move to Workspace UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/Dashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented complete multi-select and batch move functionality with Apple/Claude-inspired design. Features: 1) Select mode toggle button 2) Checkboxes on process cards with visual selection state (blue ring, blue bg) 3) Beautiful floating action bar at bottom (Apple Mail style) with selection count, clear selection, and move button 4) Elegant workspace picker modal with grid layout 5) Batch move operation handling with toast notifications 6) Smooth animations and transitions. UI verified working via screenshots."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
