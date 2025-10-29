@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, MessageSquare, ArrowRight, X, Sparkles } from 'lucide-react';
+import { Mic, MessageSquare, ArrowRight, X, Sparkles, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
