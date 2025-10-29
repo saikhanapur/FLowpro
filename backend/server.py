@@ -1257,10 +1257,15 @@ async def create_workspace(workspace: Workspace):
         raise HTTPException(status_code=500, detail=f"Failed to create workspace: {str(e)}")
 
 @api_router.get("/workspaces/{workspace_id}", response_model=Workspace)
-async def get_workspace(workspace_id: str):
-    """Get a specific workspace"""
+async def get_workspace(workspace_id: str, request: Request):
+    """Get a specific workspace for the authenticated user"""
     try:
-        workspace = await db.workspaces.find_one({"id": workspace_id})
+        # Get current user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
+        # Filter by userId and workspace_id
+        workspace = await db.workspaces.find_one({"id": workspace_id, "userId": user_id})
         if not workspace:
             raise HTTPException(status_code=404, detail="Workspace not found")
         
