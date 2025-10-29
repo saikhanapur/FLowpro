@@ -368,10 +368,10 @@ const LandingPage = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold">FlowForge AI</span>
+              <span className="text-xl font-bold">SuperHumanly</span>
             </div>
             <div className="text-sm text-slate-400">
-              © 2024 FlowForge AI. All rights reserved.
+              © 2024 SuperHumanly. All rights reserved.
             </div>
           </div>
         </div>
