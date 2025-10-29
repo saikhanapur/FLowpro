@@ -238,6 +238,16 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           {selectMode ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
           Select
         </Button>
+        
+        {/* Create Workspace Button */}
+        <Button
+          variant="outline"
+          onClick={() => setShowCreateWorkspaceModal(true)}
+          className="gap-2"
+        >
+          <FolderPlus className="w-4 h-4" />
+          New Workspace
+        </Button>
       </div>
 
       {/* Process Grid */}
