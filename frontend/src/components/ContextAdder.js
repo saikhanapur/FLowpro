@@ -170,9 +170,9 @@ const ContextAdder = ({ documentText, onContextAdded, onSkip }) => {
             </div>
 
             {/* Voice Recording */}
-            {mode === 'voice' && (
+            {mode === 'voice' && !chatContext && (
               <div className="space-y-4">
-                {!isRecording && !isTranscribing && !chatContext && (
+                {!isRecording && !isTranscribing && (
                   <div className="text-center py-8">
                     <Button
                       onClick={startRecording}
@@ -209,7 +209,7 @@ const ContextAdder = ({ documentText, onContextAdded, onSkip }) => {
                   <div className="text-center py-8">
                     <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-lg font-semibold text-slate-800">Transcribing...</p>
-                    <p className="text-sm text-slate-600">Converting your voice to text</p>
+                    <p className="text-sm text-slate-600">Converting your voice to text with AI</p>
                   </div>
                 )}
               </div>
