@@ -208,11 +208,18 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8" data-testid="dashboard">
-      {/* Dashboard Header with Tagline */}
+      {/* Dashboard Header with Beautiful Tagline */}
       {allProcesses.length > 0 && (
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Dashboard</h1>
-          <p className="text-slate-600">Turn chaos into clarity in 2 minutes</p>
+        <div className="mb-8 text-center">
+          <h1 className="text-5xl font-bold text-slate-900 mb-3">
+            Turn Chaos into{' '}
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Clarity
+            </span>
+          </h1>
+          <p className="text-xl text-slate-600">
+            Document, visualize, and improve workflows — SuperHumanly fast
+          </p>
         </div>
       )}
 
