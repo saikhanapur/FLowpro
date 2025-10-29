@@ -344,13 +344,23 @@ metadata:
 
 test_plan:
   current_focus:
+    - "AI Guard Rails and Validation"
+    - "Context-Enriched Process Creation API"
+    - "Voice Transcription API (Whisper)"
+    - "Context Addition UI (Voice + Chat)"
+    - "Workspace CRUD Operations UI"
     - "Batch Process Move to Workspace UI"
-    - "Workspace Move Process API"
+    - "Publish/Unpublish Process Feature"
     - "PDF Export with Proper Text Rendering"
-  stuck_tasks:
-    - "PDF Export with Proper Text Rendering"
-  test_all: false
+  stuck_tasks: []
+  test_all: true
   test_priority: "high_first"
+  enterprise_requirements:
+    - "Test at scale: 50+ processes, multiple workspaces"
+    - "AI consistency: Same input should produce similar outputs"
+    - "Error handling: Network failures, invalid inputs, timeout scenarios"
+    - "Data integrity: Workspace counts, process ownership, datetime fields"
+    - "Security: SQL injection, XSS, CORS, file upload validation"
 
 agent_communication:
   - agent: "main"
