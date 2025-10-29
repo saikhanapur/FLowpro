@@ -967,16 +967,32 @@ async def delete_workspace(workspace_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to unpublish process: {str(e)}")
 
 @api_router.post("/process", response_model=Process)
-async def create_process(process: Process):
+async def create_process(process_data: dict):
     """Create a new process"""
     try:
+        # Ensure required datetime fields are present
+        now = datetime.now(timezone.utc)
+        if 'createdAt' not in process_data or not process_data['createdAt']:
+            process_data['createdAt'] = now
+        if 'updatedAt' not in process_data or not process_data['updatedAt']:
+            process_data['updatedAt'] = now
+        if 'publishedAt' not in process_data:
+            process_data['publishedAt'] = None
+            
+        # Create and validate Process object
+        process = Process(**process_data)
+        
+        # Convert to dict for MongoDB
         doc = process.model_dump()
-        doc['createdAt'] = doc['createdAt'].isoformat()
-        doc['updatedAt'] = doc['updatedAt'].isoformat()
+        doc['createdAt'] = doc['createdAt'].isoformat() if isinstance(doc['createdAt'], datetime) else doc['createdAt']
+        doc['updatedAt'] = doc['updatedAt'].isoformat() if isinstance(doc['updatedAt'], datetime) else doc['updatedAt']
+        if doc.get('publishedAt'):
+            doc['publishedAt'] = doc['publishedAt'].isoformat() if isinstance(doc['publishedAt'], datetime) else doc['publishedAt']
         
         await db.processes.insert_one(doc)
         return process
     except Exception as e:
+        logger.error(f"Error creating process: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/process", response_model=List[Process])
