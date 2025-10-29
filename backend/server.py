@@ -1213,10 +1213,15 @@ async def move_process_to_workspace(process_id: str, request: dict):
 # ============ Workspace APIs ============
 
 @api_router.get("/workspaces", response_model=List[Workspace])
-async def get_workspaces():
-    """Get all workspaces"""
+async def get_workspaces(request: Request):
+    """Get all workspaces for the authenticated user"""
     try:
-        workspaces = await db.workspaces.find().to_list(length=None)
+        # Get current user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
+        # Filter workspaces by userId
+        workspaces = await db.workspaces.find({"userId": user_id}).to_list(length=None)
         for ws in workspaces:
             ws['_id'] = str(ws['_id'])
             # Convert datetime to ISO string
@@ -1225,6 +1230,8 @@ async def get_workspaces():
             if isinstance(ws.get('updatedAt'), datetime):
                 ws['updatedAt'] = ws['updatedAt'].isoformat()
         return [Workspace(**ws) for ws in workspaces]
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching workspaces: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch workspaces: {str(e)}")
