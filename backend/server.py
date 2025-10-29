@@ -1313,21 +1313,29 @@ async def get_workspaces(request: Request):
         raise HTTPException(status_code=500, detail=f"Failed to fetch workspaces: {str(e)}")
 
 @api_router.post("/workspaces", response_model=Workspace)
-async def create_workspace(workspace: Workspace):
-    """Create a new workspace"""
+async def create_workspace(workspace: Workspace, request: Request):
+    """Create a new workspace for the authenticated user"""
     try:
+        # Get authenticated user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
         workspace_dict = workspace.model_dump()
+        workspace_dict['userId'] = user_id  # CRITICAL: Assign to user
         workspace_dict['createdAt'] = workspace_dict['createdAt'].isoformat()
         workspace_dict['updatedAt'] = workspace_dict['updatedAt'].isoformat()
         
-        # If this is the first workspace, mark it as default
-        existing_count = await db.workspaces.count_documents({})
-        if existing_count == 0:
+        # Check if this is the user's first workspace, mark it as default
+        user_workspace_count = await db.workspaces.count_documents({"userId": user_id})
+        if user_workspace_count == 0:
             workspace_dict['isDefault'] = True
         
         await db.workspaces.insert_one(workspace_dict)
         workspace_dict['_id'] = str(workspace_dict['_id'])
+        logger.info(f"✅ Created workspace '{workspace.name}' for user {user_id}")
         return Workspace(**workspace_dict)
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error creating workspace: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create workspace: {str(e)}")
