@@ -1194,12 +1194,6 @@ class BackendTester:
                                   f"HTTP {response.status_code}: {response.text}")
             except Exception as e:
                 self.log_result("Workspace CRUD (Delete)", False, f"Error: {str(e)}")
-                self.log_result("GET Processes by Workspace", False, 
-                              f"HTTP {response.status_code}: {response.text}")
-                return False
-        except Exception as e:
-            self.log_result("GET Processes by Workspace", False, f"Error: {str(e)}")
-            return False
 
     def test_delete_process(self):
         """Test DELETE /api/process/{id} - Delete process (cleanup)"""
