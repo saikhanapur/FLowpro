@@ -1005,8 +1005,8 @@ async def google_session(data: GoogleSessionRequest, response: Response):
             await db.users.insert_one(user_dict)
             user = user_dict
         
-        # Create access token
-        access_token = session_data.get('session_token') or create_access_token(data={"sub": user['id']})
+        # Create our own access token (don't use Emergent session token)
+        access_token = create_access_token(data={"sub": user['id']})
         
         # Create session
         session = Session(
