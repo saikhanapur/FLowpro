@@ -839,6 +839,243 @@ async def require_auth(request: Request) -> Dict:
 async def root():
     return {"message": "FlowForge AI API"}
 
+# ============ Authentication Endpoints ============
+
+@api_router.post("/auth/signup")
+async def signup(data: SignupRequest):
+    """Register a new user with email and password"""
+    try:
+        # Validate password strength
+        if len(data.password) < 8:
+            raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
+        
+        if not any(c.isupper() for c in data.password):
+            raise HTTPException(status_code=400, detail="Password must contain at least one uppercase letter")
+        
+        if not any(c.isdigit() for c in data.password):
+            raise HTTPException(status_code=400, detail="Password must contain at least one number")
+        
+        # Check if user already exists
+        existing_user = await db.users.find_one({"email": data.email.lower()})
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Create new user
+        user = User(
+            email=data.email.lower(),
+            name=data.name,
+            password_hash=hash_password(data.password),
+            auth_method="email"
+        )
+        
+        user_dict = user.model_dump()
+        user_dict['createdAt'] = user_dict['createdAt'].isoformat()
+        user_dict['updatedAt'] = user_dict['updatedAt'].isoformat()
+        
+        await db.users.insert_one(user_dict)
+        
+        # Create access token
+        access_token = create_access_token(data={"sub": user.id})
+        
+        # Create session
+        session = Session(
+            userId=user.id,
+            token=access_token,
+            expiresAt=datetime.now(timezone.utc) + timedelta(days=JWT_EXPIRATION_DAYS)
+        )
+        
+        session_dict = session.model_dump()
+        session_dict['createdAt'] = session_dict['createdAt'].isoformat()
+        session_dict['expiresAt'] = session_dict['expiresAt'].isoformat()
+        
+        await db.sessions.insert_one(session_dict)
+        
+        return {
+            "access_token": access_token,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name,
+                "picture": user.picture
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Signup error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/auth/login")
+async def login(data: LoginRequest, response: Response):
+    """Login with email and password"""
+    try:
+        # Find user
+        user = await db.users.find_one({"email": data.email.lower()})
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # Verify password
+        if not user.get('password_hash') or not verify_password(data.password, user['password_hash']):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # Create access token
+        access_token = create_access_token(data={"sub": user['id']})
+        
+        # Create session
+        session = Session(
+            userId=user['id'],
+            token=access_token,
+            expiresAt=datetime.now(timezone.utc) + timedelta(days=JWT_EXPIRATION_DAYS)
+        )
+        
+        session_dict = session.model_dump()
+        session_dict['createdAt'] = session_dict['createdAt'].isoformat()
+        session_dict['expiresAt'] = session_dict['expiresAt'].isoformat()
+        
+        await db.sessions.insert_one(session_dict)
+        
+        # Set httpOnly cookie
+        response.set_cookie(
+            key="session_token",
+            value=access_token,
+            max_age=JWT_EXPIRATION_DAYS * 24 * 60 * 60,  # 7 days in seconds
+            httponly=True,
+            secure=True,
+            samesite="none",
+            path="/"
+        )
+        
+        return {
+            "access_token": access_token,
+            "user": {
+                "id": user['id'],
+                "email": user['email'],
+                "name": user['name'],
+                "picture": user.get('picture')
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/auth/google/session")
+async def google_session(data: GoogleSessionRequest, response: Response):
+    """Process Emergent Google OAuth session"""
+    try:
+        import httpx
+        
+        # Get session data from Emergent Auth
+        async with httpx.AsyncClient() as client:
+            auth_response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": data.session_id}
+            )
+            
+            if auth_response.status_code != 200:
+                raise HTTPException(status_code=401, detail="Invalid session ID")
+            
+            session_data = auth_response.json()
+        
+        # Check if user exists
+        user = await db.users.find_one({"email": session_data['email'].lower()})
+        
+        if not user:
+            # Create new user
+            new_user = User(
+                email=session_data['email'].lower(),
+                name=session_data['name'],
+                picture=session_data.get('picture'),
+                auth_method="google"
+            )
+            
+            user_dict = new_user.model_dump()
+            user_dict['createdAt'] = user_dict['createdAt'].isoformat()
+            user_dict['updatedAt'] = user_dict['updatedAt'].isoformat()
+            
+            await db.users.insert_one(user_dict)
+            user = user_dict
+        
+        # Create access token
+        access_token = session_data.get('session_token') or create_access_token(data={"sub": user['id']})
+        
+        # Create session
+        session = Session(
+            userId=user['id'],
+            token=access_token,
+            expiresAt=datetime.now(timezone.utc) + timedelta(days=JWT_EXPIRATION_DAYS)
+        )
+        
+        session_dict = session.model_dump()
+        session_dict['createdAt'] = session_dict['createdAt'].isoformat()
+        session_dict['expiresAt'] = session_dict['expiresAt'].isoformat()
+        
+        await db.sessions.insert_one(session_dict)
+        
+        # Set httpOnly cookie
+        response.set_cookie(
+            key="session_token",
+            value=access_token,
+            max_age=JWT_EXPIRATION_DAYS * 24 * 60 * 60,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            path="/"
+        )
+        
+        return {
+            "access_token": access_token,
+            "user": {
+                "id": user['id'],
+                "email": user['email'],
+                "name": user['name'],
+                "picture": user.get('picture')
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Google session error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/auth/me")
+async def get_me(request: Request):
+    """Get current authenticated user"""
+    user = await require_auth(request)
+    return {
+        "id": user['id'],
+        "email": user['email'],
+        "name": user['name'],
+        "picture": user.get('picture'),
+        "auth_method": user.get('auth_method', 'email')
+    }
+
+@api_router.post("/auth/logout")
+async def logout(request: Request, response: Response):
+    """Logout user"""
+    try:
+        user = await get_current_user(request)
+        if user:
+            # Delete session from database
+            token = request.cookies.get("session_token")
+            if token:
+                await db.sessions.delete_many({"token": token})
+        
+        # Clear cookie
+        response.delete_cookie(
+            key="session_token",
+            path="/",
+            secure=True,
+            httponly=True,
+            samesite="none"
+        )
+        
+        return {"message": "Logged out successfully"}
+    except Exception as e:
+        logger.error(f"Logout error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/process/parse", response_model=Dict[str, Any])
 async def parse_process(input_data: ProcessInput):
     """Parse input and extract process structure"""
