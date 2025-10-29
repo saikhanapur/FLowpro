@@ -58,6 +58,30 @@ const FlowchartEditor = ({ theme }) => {
     }
   };
 
+  const handlePublish = async () => {
+    setPublishing(true);
+    try {
+      const updated = await api.publishProcess(id);
+      setProcess(updated);
+      setShowPublishDialog(false);
+      toast.success('🎉 Process published! Now shareable with your team.');
+    } catch (error) {
+      toast.error('Failed to publish process');
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleUnpublish = async () => {
+    try {
+      const updated = await api.unpublishProcess(id);
+      setProcess(updated);
+      toast.success('Process returned to draft mode');
+    } catch (error) {
+      toast.error('Failed to unpublish process');
+    }
+  };
+
   const handleGenerateIdealState = async () => {
     try {
       const data = await api.generateIdealState(id);
