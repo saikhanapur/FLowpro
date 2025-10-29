@@ -1282,21 +1282,26 @@ async def get_workspace(workspace_id: str, request: Request):
         raise HTTPException(status_code=500, detail=f"Failed to fetch workspace: {str(e)}")
 
 @api_router.put("/workspaces/{workspace_id}", response_model=Workspace)
-async def update_workspace(workspace_id: str, workspace: Workspace):
-    """Update a workspace"""
+async def update_workspace(workspace_id: str, workspace: Workspace, request: Request):
+    """Update a workspace for the authenticated user"""
     try:
+        # Get current user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
         workspace_dict = workspace.model_dump()
         workspace_dict['updatedAt'] = datetime.now(timezone.utc).isoformat()
         
+        # Update only if owned by user
         result = await db.workspaces.update_one(
-            {"id": workspace_id},
+            {"id": workspace_id, "userId": user_id},
             {"$set": workspace_dict}
         )
         
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Workspace not found")
         
-        updated = await db.workspaces.find_one({"id": workspace_id})
+        updated = await db.workspaces.find_one({"id": workspace_id, "userId": user_id})
         updated['_id'] = str(updated['_id'])
         if isinstance(updated.get('createdAt'), datetime):
             updated['createdAt'] = updated['createdAt'].isoformat()
