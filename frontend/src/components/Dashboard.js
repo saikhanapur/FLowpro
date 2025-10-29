@@ -61,7 +61,12 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   }, [currentWorkspace]); // Reload when workspace changes
 
   const loadProcesses = async () => {
-    if (!currentWorkspace) return;
+    // If no workspace yet, just set loading to false and show empty state
+    if (!currentWorkspace) {
+      setLoading(false);
+      setProcesses([]);
+      return;
+    }
     
     setLoading(true);
     try {
