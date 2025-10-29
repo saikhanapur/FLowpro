@@ -85,6 +85,40 @@ logger = logging.getLogger(__name__)
 
 # ============ Models ============
 
+# User and Authentication Models
+class User(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: str
+    name: str
+    password_hash: Optional[str] = None  # None for Google OAuth users
+    picture: Optional[str] = None  # Profile picture URL from Google
+    auth_method: str = "email"  # "email" or "google"
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Session(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    userId: str
+    token: str
+    expiresAt: datetime
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+    name: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class GoogleSessionRequest(BaseModel):
+    session_id: str
+
 class ProcessNode(BaseModel):
     id: str
     type: str  # trigger, process, decision, gap
