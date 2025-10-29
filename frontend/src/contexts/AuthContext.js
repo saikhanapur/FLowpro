@@ -64,11 +64,14 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async (sessionId) => {
     try {
       const data = await api.googleSession(sessionId);
-      setUser(data.user);
       
-      // Force a check to ensure cookie is properly set
-      await new Promise(resolve => setTimeout(resolve, 500));
-      await checkAuth();
+      // Store token in localStorage as backup
+      if (data.access_token) {
+        localStorage.setItem('auth_token', data.access_token);
+      }
+      
+      setUser(data.user);
+      setLoading(false);
       
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
