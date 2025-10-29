@@ -107,6 +107,7 @@ class Process(BaseModel):
 class ProcessInput(BaseModel):
     text: str
     inputType: str  # voice_transcript, document, chat
+    additionalContext: Optional[str] = None  # Optional context added via voice/chat
 
 class Comment(BaseModel):
     model_config = ConfigDict(extra="ignore")
