@@ -247,13 +247,13 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Batch Process Move to Workspace UI"
+    - "Workspace Move Process API"
     - "PDF Export with Proper Text Rendering"
-    - "Process CRUD API endpoints"
-    - "AI Processing with Claude API"
   stuck_tasks:
     - "PDF Export with Proper Text Rendering"
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
