@@ -733,7 +733,12 @@ async def root():
 async def parse_process(input_data: ProcessInput):
     """Parse input and extract process structure"""
     try:
-        result = await ai_service.parse_process(input_data.text, input_data.inputType)
+        # Merge document text with additional context if provided
+        text_to_parse = input_data.text
+        if input_data.additionalContext:
+            text_to_parse = f"{input_data.text}\n\n---ADDITIONAL CONTEXT FROM USER---\n{input_data.additionalContext}"
+        
+        result = await ai_service.parse_process(text_to_parse, input_data.inputType)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
