@@ -22,13 +22,18 @@ import {
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const Dashboard = ({ currentWorkspace }) => {
+const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const navigate = useNavigate();
   const [processes, setProcesses] = useState([]);
-  const [allWorkspaces, setAllWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  
+  // Multi-select state
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedProcesses, setSelectedProcesses] = useState([]);
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [movingProcesses, setMovingProcesses] = useState(false);
 
   // Helper function to format published date
   const formatPublishedDate = (dateString) => {
