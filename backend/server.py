@@ -15,6 +15,12 @@ import json
 import io
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
+try:
     import pypdf
     import docx
     from PIL import Image
