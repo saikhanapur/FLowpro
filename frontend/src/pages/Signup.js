@@ -190,9 +190,6 @@ const Signup = () => {
         </form>
 
  
-
- 
- 
  
 
         {/* Login Link */}
