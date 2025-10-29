@@ -278,8 +278,53 @@ frontend:
         agent: "testing"
         comment: "✅ MOVE PROCESS API FULLY FUNCTIONAL. Comprehensive testing completed: 1) Setup Phase: Successfully retrieved 12 processes and 2 workspaces for testing. 2) Move Process Success: PATCH /api/process/{id}/move successfully moved process between workspaces, updated workspaceId correctly. 3) Verification: GET /api/process/{id} confirmed workspaceId changed, GET /api/process?workspace_id={id} filtering works correctly. 4) Error Cases: All error scenarios work perfectly - 404 for invalid process ID, 404 for invalid workspace ID, 400 for missing workspaceId in request body. 5) Process Count Updates: Workspace processCount updates are working (some discrepancies due to processes with null workspaceId but core functionality intact). All 6 move-related tests passed successfully."
 
-frontend:
-  - task: "Batch Process Move to Workspace UI"
+  - task: "Context Addition UI (Voice + Chat)"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ContextAdder.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: Context addition step after document upload. Two modes: 1) Voice - Record audio, transcribe with Whisper, show editable transcript, allow re-recording 2) Chat - Type text context in textarea. Optional step with Skip button. UI fixed to show transcription results with green success banner, editable textarea, and 'Record Again' option. Need to test: 1) Voice recording flow 2) Transcription display 3) Edit transcription 4) Skip functionality 5) Context submission 6) Integration with AI parsing."
+
+  - task: "Workspace CRUD Operations UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/WorkspaceSelector.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Workspace management UI implemented: Create, view, switch workspaces. WorkspaceSelector component in header shows current workspace with process count. Need to test: 1) Create new workspace 2) Switch between workspaces 3) Dashboard filters by workspace 4) Delete workspace (if implemented) 5) Process count accuracy 6) Edge cases (empty workspaces, null workspace IDs)."
+
+  - task: "Publish/Unpublish Process Feature"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/FlowchartEditor.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Publish feature implemented in flowchart editor. Backend endpoints: PATCH /api/process/{id}/publish and /api/process/{id}/unpublish. Sets isPublished flag and publishedAt timestamp. Need to test: 1) Publish process from editor 2) Unpublish process 3) Published status badge on dashboard 4) Share functionality for published processes 5) Version tracking on publish."
+
+  - task: "Multi-Process Detection and Review"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/MultiProcessReview.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Multi-process detection working. When document contains multiple processes (detected by AI), shows MultiProcessReview component allowing user to: 1) Review each detected process 2) Edit process names/descriptions 3) Create all or selected processes 4) Merge into one process. Successfully tested with Data Migration document (detected 4-5 processes). All processes assigned to current workspace. CREATE ALL and individual creation tested and working."
     implemented: true
     working: "NA"
     file: "/app/frontend/src/components/Dashboard.js"
