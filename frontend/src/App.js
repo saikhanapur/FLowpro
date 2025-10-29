@@ -48,10 +48,9 @@ const AppContent = () => {
     try {
       const data = await api.getWorkspaces();
       setWorkspaces(data);
-      // Set default workspace as current
-      const defaultWs = data.find(ws => ws.isDefault) || data[0];
-      if (defaultWs) {
-        setCurrentWorkspace(defaultWs);
+      if (data.length > 0 && !currentWorkspace) {
+        const defaultWorkspace = data.find(w => w.isDefault) || data[0];
+        setCurrentWorkspace(defaultWorkspace);
       }
     } catch (error) {
       console.error('Failed to load workspaces:', error);
