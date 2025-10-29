@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar, FolderInput, CheckSquare, Square, FolderOpen, X, ArrowRight } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar, FolderInput, CheckSquare, Square, FolderOpen, X, ArrowRight, FolderPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -37,6 +37,12 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const [selectedProcesses, setSelectedProcesses] = useState([]);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [movingProcesses, setMovingProcesses] = useState(false);
+  
+  // Create workspace state
+  const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState('');
+  const [newWorkspaceDesc, setNewWorkspaceDesc] = useState('');
+  const [creatingWorkspace, setCreatingWorkspace] = useState(false);
 
   // Helper function to format published date
   const formatPublishedDate = (dateString) => {
