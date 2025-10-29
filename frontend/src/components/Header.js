@@ -40,7 +40,7 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-bold heading-font bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            FlowForge AI
+            SuperHumanly
           </h1>
         </div>
 
