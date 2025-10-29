@@ -384,6 +384,155 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           ))}
         </div>
       )}
+      
+      {/* Floating Action Bar - appears when items are selected */}
+      {selectMode && selectedProcesses.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 flex items-center gap-6 min-w-[500px]">
+            {/* Selection info */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                <CheckSquare className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-800">
+                  {selectedProcesses.length} selected
+                </p>
+                <button
+                  onClick={deselectAll}
+                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Clear selection
+                </button>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-12 w-px bg-slate-200"></div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-3 flex-1">
+              <Button
+                onClick={() => setShowMoveModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white gap-2 px-6 py-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                data-testid="move-to-workspace-btn"
+              >
+                <FolderInput className="w-4 h-4" />
+                Move to Workspace
+              </Button>
+
+              {filteredProcesses.length === selectedProcesses.length ? (
+                <Button
+                  variant="ghost"
+                  onClick={deselectAll}
+                  className="gap-2"
+                >
+                  <Square className="w-4 h-4" />
+                  Deselect All
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  onClick={selectAll}
+                  className="gap-2"
+                >
+                  <CheckSquare className="w-4 h-4" />
+                  Select All
+                </Button>
+              )}
+            </div>
+
+            {/* Close button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSelectMode}
+              className="rounded-lg"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Workspace Picker Modal */}
+      <Dialog open={showMoveModal} onOpenChange={setShowMoveModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Move to Workspace</DialogTitle>
+            <DialogDescription>
+              Select a workspace to move {selectedProcesses.length} process{selectedProcesses.length > 1 ? 'es' : ''}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-6">
+            {/* Current workspace indicator */}
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div className="flex items-center gap-2 text-sm">
+                <FolderOpen className="w-4 h-4 text-blue-600" />
+                <span className="text-slate-600">Current workspace:</span>
+                <span className="font-semibold text-slate-800">{currentWorkspace?.name}</span>
+              </div>
+            </div>
+
+            {/* Workspace grid */}
+            <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
+              {workspaces
+                ?.filter(ws => ws.id !== currentWorkspace?.id)
+                .map((workspace) => (
+                  <button
+                    key={workspace.id}
+                    onClick={() => handleMoveToWorkspace(workspace)}
+                    disabled={movingProcesses}
+                    className="group p-5 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid={`workspace-option-${workspace.id}`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <FolderOpen className="w-5 h-5 text-white" />
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" />
+                    </div>
+                    <h3 className="font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">
+                      {workspace.name}
+                    </h3>
+                    {workspace.description && (
+                      <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                        {workspace.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {workspace.processCount} processes
+                      </Badge>
+                    </div>
+                  </button>
+                ))}
+            </div>
+
+            {/* Empty state */}
+            {workspaces?.filter(ws => ws.id !== currentWorkspace?.id).length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FolderOpen className="w-8 h-8 text-slate-400" />
+                </div>
+                <p className="text-slate-600 mb-2">No other workspaces available</p>
+                <p className="text-sm text-slate-500">Create a new workspace to organize your processes</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowMoveModal(false)}
+              disabled={movingProcesses}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
