@@ -37,6 +37,12 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
+          <WorkspaceSelector
+            currentWorkspace={currentWorkspace}
+            workspaces={workspaces}
+            onWorkspaceChange={onWorkspaceChange}
+            onWorkspacesUpdate={onWorkspacesUpdate}
+          />
           <button
             onClick={() => navigate('/')}
             className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
