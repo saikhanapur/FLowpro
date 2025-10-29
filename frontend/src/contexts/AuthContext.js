@@ -57,6 +57,12 @@ export const AuthProvider = ({ children }) => {
   const signup = async (email, password, name) => {
     try {
       const data = await api.signup(email, password, name);
+      
+      // Store token in localStorage as backup
+      if (data.access_token) {
+        localStorage.setItem('auth_token', data.access_token);
+      }
+      
       setUser(data.user);
       toast.success(`Welcome to FlowForge, ${data.user.name}!`);
       return data;
