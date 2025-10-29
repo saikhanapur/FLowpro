@@ -791,6 +791,60 @@ async def unpublish_process(process_id: str):
         logger.error(f"Error unpublishing process: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to unpublish process: {str(e)}")
 
+@api_router.patch("/process/{process_id}/move")
+async def move_process_to_workspace(process_id: str, request: dict):
+    """
+    Move a process to a different workspace.
+    Updates process counts for both source and destination workspaces.
+    """
+    try:
+        workspace_id = request.get('workspaceId')
+        if not workspace_id:
+            raise HTTPException(status_code=400, detail="workspaceId is required")
+        
+        # Get the process
+        process = await db.processes.find_one({"id": process_id})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Verify target workspace exists
+        target_workspace = await db.workspaces.find_one({"id": workspace_id})
+        if not target_workspace:
+            raise HTTPException(status_code=404, detail="Target workspace not found")
+        
+        old_workspace_id = process.get('workspaceId')
+        
+        # Update process workspace
+        await db.processes.update_one(
+            {"id": process_id},
+            {"$set": {
+                "workspaceId": workspace_id,
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        # Update process counts for both workspaces
+        if old_workspace_id:
+            old_count = await db.processes.count_documents({"workspaceId": old_workspace_id})
+            await db.workspaces.update_one(
+                {"id": old_workspace_id},
+                {"$set": {"processCount": old_count}}
+            )
+        
+        new_count = await db.processes.count_documents({"workspaceId": workspace_id})
+        await db.workspaces.update_one(
+            {"id": workspace_id},
+            {"$set": {"processCount": new_count}}
+        )
+        
+        return {"message": "Process moved successfully", "workspaceId": workspace_id}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error moving process: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to move process: {str(e)}")
+
 # ============ Workspace APIs ============
 
 @api_router.get("/workspaces", response_model=List[Workspace])
