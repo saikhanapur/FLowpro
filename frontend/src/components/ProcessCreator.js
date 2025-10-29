@@ -129,6 +129,17 @@ const ProcessCreator = ({ currentWorkspace }) => {
     );
   }
 
+  // NEW: Show context adder after document upload
+  if (showContextAdder && extractedText) {
+    return (
+      <ContextAdder
+        documentText={extractedText}
+        onContextAdded={handleContextAdded}
+        onSkip={handleSkipContext}
+      />
+    );
+  }
+
   if (extractedData) {
     // If multiple processes detected, show MultiProcessReview
     if (extractedData.multipleProcesses && extractedData.processCount >= 2) {
