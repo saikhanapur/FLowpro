@@ -64,10 +64,10 @@ const Signup = () => {
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl font-bold text-white">F</span>
+            <span className="text-2xl font-bold text-white">SH</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-800 mb-2">Create account</h1>
-          <p className="text-slate-600">Start transforming workflows with AI</p>
+          <p className="text-slate-600">Work SuperHumanly fast</p>
         </div>
 
         {/* Signup Form */}
