@@ -1315,28 +1315,33 @@ async def update_workspace(workspace_id: str, workspace: Workspace, request: Req
         raise HTTPException(status_code=500, detail=f"Failed to update workspace: {str(e)}")
 
 @api_router.delete("/workspaces/{workspace_id}")
-async def delete_workspace(workspace_id: str):
-    """Delete a workspace - processes will be moved to default workspace"""
+async def delete_workspace(workspace_id: str, request: Request):
+    """Delete a workspace for the authenticated user - processes will be moved to default workspace"""
     try:
-        workspace = await db.workspaces.find_one({"id": workspace_id})
+        # Get current user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
+        # Check workspace exists and belongs to user
+        workspace = await db.workspaces.find_one({"id": workspace_id, "userId": user_id})
         if not workspace:
             raise HTTPException(status_code=404, detail="Workspace not found")
         
         # Don't allow deleting default workspace if it has processes
         if workspace.get('isDefault'):
-            count = await db.processes.count_documents({"workspaceId": workspace_id})
+            count = await db.processes.count_documents({"workspaceId": workspace_id, "userId": user_id})
             if count > 0:
                 raise HTTPException(status_code=400, detail="Cannot delete default workspace with processes")
         
-        # Move all processes to default workspace
-        default_workspace = await db.workspaces.find_one({"isDefault": True})
+        # Move all user's processes to their default workspace
+        default_workspace = await db.workspaces.find_one({"isDefault": True, "userId": user_id})
         if default_workspace and default_workspace['id'] != workspace_id:
             await db.processes.update_many(
-                {"workspaceId": workspace_id},
+                {"workspaceId": workspace_id, "userId": user_id},
                 {"$set": {"workspaceId": default_workspace['id']}}
             )
         
-        await db.workspaces.delete_one({"id": workspace_id})
+        await db.workspaces.delete_one({"id": workspace_id, "userId": user_id})
         return {"message": "Workspace deleted successfully"}
     except HTTPException:
         raise
