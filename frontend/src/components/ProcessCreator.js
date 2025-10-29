@@ -21,13 +21,26 @@ const ProcessCreator = ({ currentWorkspace }) => {
   const [extractedData, setExtractedData] = useState(null);
 
   const handleInputComplete = async (input, inputType) => {
+    // For documents, show context adder before processing
+    if (inputType === 'document') {
+      setExtractedText(input);
+      setShowContextAdder(true);
+      toast.success('Document text extracted! Add context if needed, or skip to continue.');
+    } else {
+      // For voice/chat, process directly (they are the input themselves)
+      await processWithAI(input, inputType, null);
+    }
+  };
+
+  const processWithAI = async (input, inputType, additionalContext) => {
     setProcessing(true);
+    setShowContextAdder(false);
     
     // Show toast with progress indicator
     const loadingToast = toast.loading('AI is analyzing your input... This may take 1-2 minutes for large documents.');
     
     try {
-      const data = await api.parseProcess(input, inputType);
+      const data = await api.parseProcess(input, inputType, additionalContext);
       toast.dismiss(loadingToast);
       setExtractedData(data);
       
@@ -46,6 +59,14 @@ const ProcessCreator = ({ currentWorkspace }) => {
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleContextAdded = (context) => {
+    processWithAI(extractedText, 'document', context);
+  };
+
+  const handleSkipContext = () => {
+    processWithAI(extractedText, 'document', null);
   };
 
   const handleGenerate = async () => {
