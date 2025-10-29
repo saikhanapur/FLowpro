@@ -281,3 +281,32 @@ agent_communication:
       - PDF/HTML export is frontend-only functionality (no backend endpoints needed)
       
       Backend is fully operational and ready for production use.
+  - agent: "main"
+    message: |
+      🎯 NEW FEATURE IMPLEMENTED: Move Process to Workspace (Batch Operations)
+      
+      Completed Phase 2 of Workspaces implementation:
+      
+      BACKEND:
+      - Created PATCH /api/process/{id}/move endpoint for moving processes between workspaces
+      - Updates workspaceId and workspace processCount on move
+      
+      FRONTEND (Dashboard.js):
+      - Multi-select mode with toggle button (blue when active)
+      - Beautiful checkboxes on process cards with selection state styling (blue ring + bg)
+      - Floating action bar (Apple Mail style) showing selection count and actions
+      - Elegant workspace picker modal with grid layout and gradient icons
+      - Batch move operation with toast notifications
+      - Select All / Deselect All functionality
+      - Smooth animations and transitions (slideUp animation for action bar)
+      
+      DESIGN:
+      - Apple/Claude-inspired minimalist aesthetic
+      - Clean, modern UI with subtle shadows and smooth transitions
+      - Contextual feedback and intuitive UX
+      
+      PRIORITY TESTING:
+      1. Backend: Test PATCH /api/process/{id}/move endpoint
+      2. Frontend: Test batch selection and move operation
+      3. Verify workspace counts update correctly after move
+      4. Verify processes disappear from current workspace after move
