@@ -98,9 +98,22 @@ export const api = {
 
   // Upload endpoint
   uploadDocument: async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const res = await axios.post(`${API}/upload`, formData);
-    return res.data;
+    try {
+      console.log('Uploading file:', file.name, file.size, file.type);
+      const formData = new FormData();
+      formData.append('file', file);
+      console.log('FormData created, sending to:', `${API}/upload`);
+      const res = await axios.post(`${API}/upload`, formData);
+      console.log('Upload response:', res.data);
+      return res.data;
+    } catch (error) {
+      console.error('Upload error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config?.url
+      });
+      throw error;
+    }
   }
 };
