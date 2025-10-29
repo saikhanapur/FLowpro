@@ -45,6 +45,27 @@ export const api = {
     return res.data;
   },
 
+  // Workspace APIs
+  getWorkspaces: async () => {
+    const res = await axios.get(`${API}/workspaces`);
+    return res.data;
+  },
+
+  createWorkspace: async (workspace) => {
+    const res = await axios.post(`${API}/workspaces`, workspace);
+    return res.data;
+  },
+
+  updateWorkspace: async (id, workspace) => {
+    const res = await axios.put(`${API}/workspaces/${id}`, workspace);
+    return res.data;
+  },
+
+  deleteWorkspace: async (id) => {
+    const res = await axios.delete(`${API}/workspaces/${id}`);
+    return res.data;
+  },
+
   generateIdealState: async (id) => {
     const res = await axios.post(`${API}/process/${id}/ideal-state`);
     return res.data;
