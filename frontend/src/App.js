@@ -7,6 +7,7 @@ import FlowchartEditor from './components/FlowchartEditor';
 import TemplateGallery from './components/TemplateGallery';
 import Header from './components/Header';
 import { Toaster } from '@/components/ui/sonner';
+import { api } from './utils/api';
 
 function App() {
   const [theme, setTheme] = useState('minimalist');
