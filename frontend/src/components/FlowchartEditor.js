@@ -155,6 +155,24 @@ const FlowchartEditor = ({ theme }) => {
                   <CheckCircle className="w-4 h-4 text-emerald-600" />
                   <span className="text-sm font-medium text-emerald-700">Published</span>
                 </div>
+                <Button 
+                  onClick={handleShare} 
+                  variant="default" 
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-4 h-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share
+                    </>
+                  )}
+                </Button>
                 <Button onClick={handleUnpublish} variant="outline" size="sm">
                   <Edit3 className="w-4 h-4 mr-2" />
                   Return to Draft
