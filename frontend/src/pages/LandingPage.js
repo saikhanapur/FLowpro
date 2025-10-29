@@ -56,20 +56,21 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 mb-8">
             <Zap className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-600">AI-Powered Process Intelligence</span>
+            <span className="text-sm font-medium text-blue-600">Superhuman Process Intelligence</span>
           </div>
 
           <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-            Transform workflows into
+            Process documentation
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              intelligent flowcharts
+              at superhuman speed
             </span>
           </h1>
 
           <p className="text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Capture processes via voice, documents, or chat. Our AI instantly generates visual flowcharts, 
-            identifies gaps, and suggests improvements. Built for enterprise teams.
+            Easy visualization. Interactive flowcharts. Dynamic insights. 
+            Upload documents, add voice context, get intelligent process maps with gap analysis. 
+            Built for teams who value simplicity.
           </p>
 
           <div className="flex items-center justify-center gap-4">
@@ -81,45 +82,11 @@ const LandingPage = () => {
               Start Free Trial
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="px-8 py-6 text-lg font-semibold"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Watch Demo
-            </Button>
           </div>
 
           <p className="text-sm text-slate-500 mt-6">
             No credit card required • Free 14-day trial • Cancel anytime
           </p>
-
-          {/* Hero Image Placeholder */}
-          <div className="mt-16 rounded-2xl shadow-2xl border border-slate-200 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 p-8">
-            <div className="aspect-video bg-white rounded-xl shadow-inner flex items-center justify-center border border-slate-200">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-10 h-10 text-white" />
-                </div>
-                <p className="text-slate-400 font-medium">Product Screenshot / Demo Video</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Social Proof */}
-      <section className="py-12 bg-slate-50 border-y border-slate-200">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <p className="text-sm font-medium text-slate-500 mb-8">TRUSTED BY TEAMS AT</p>
-          <div className="flex items-center justify-center gap-12 flex-wrap opacity-40">
-            <div className="text-2xl font-bold text-slate-800">Company A</div>
-            <div className="text-2xl font-bold text-slate-800">Company B</div>
-            <div className="text-2xl font-bold text-slate-800">Company C</div>
-            <div className="text-2xl font-bold text-slate-800">Company D</div>
-            <div className="text-2xl font-bold text-slate-800">Company E</div>
-          </div>
         </div>
       </section>
 
