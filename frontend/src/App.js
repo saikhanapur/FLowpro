@@ -35,7 +35,14 @@ function App() {
   return (
     <div className="App min-h-screen">
       <BrowserRouter>
-        <Header theme={theme} onThemeChange={setTheme} />
+        <Header 
+          theme={theme} 
+          onThemeChange={setTheme}
+          currentWorkspace={currentWorkspace}
+          workspaces={workspaces}
+          onWorkspaceChange={setCurrentWorkspace}
+          onWorkspacesUpdate={loadWorkspaces}
+        />
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/create" element={<ProcessCreator />} />
