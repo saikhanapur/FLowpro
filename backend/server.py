@@ -1458,13 +1458,21 @@ async def get_processes(request: Request, workspace_id: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/process/{process_id}", response_model=Process)
-async def get_process(process_id: str):
-    """Get a specific process"""
+async def get_process(process_id: str, request: Request):
+    """Get a specific process - accessible if owned by user or if published"""
     try:
         process = await db.processes.find_one({"id": process_id}, {"_id": 0})
         
         if not process:
             raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Check access: allow if owned by user OR if published
+        user = await get_current_user(request)
+        is_owner = user and user.get('id') == process.get('userId')
+        is_published = process.get('status') == 'published'
+        
+        if not is_owner and not is_published:
+            raise HTTPException(status_code=403, detail="Access denied")
         
         if isinstance(process.get('createdAt'), str):
             process['createdAt'] = datetime.fromisoformat(process['createdAt'])
