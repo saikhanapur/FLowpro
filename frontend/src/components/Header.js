@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const Header = ({ theme, onThemeChange }) => {
+const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspaceChange, onWorkspacesUpdate }) => {
   const navigate = useNavigate();
 
   const themes = [
