@@ -800,34 +800,44 @@ async def get_current_user(request: Request) -> Optional[Dict]:
     
     # Try to get token from cookie first
     token = request.cookies.get("session_token")
+    logger.info(f"🍪 Cookie token present: {bool(token)}")
+    if token:
+        logger.info(f"🍪 Cookie token starts with: {token[:20]}... (is JWT: {token.startswith('eyJ')})")
     
     # Fallback to Authorization header
     if not token:
         auth_header = request.headers.get("Authorization")
+        logger.info(f"🔑 Auth header present: {bool(auth_header)}")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
+            logger.info(f"🔑 Header token starts with: {token[:20]}...")
     
     if not token:
-        logger.warning("No token found in cookie or header")
+        logger.warning("❌ No token found in cookie or header")
         return None
     
     # Decode token
+    logger.info(f"🔓 Attempting to decode token...")
     payload = decode_access_token(token)
     if not payload:
-        logger.warning(f"Failed to decode token. Token starts with: {token[:20]}...")
+        logger.warning(f"❌ Failed to decode token. Token: {token[:30]}...")
         return None
+    
+    logger.info(f"✅ Token decoded successfully. Payload: {payload}")
     
     # Get user from database
     user_id = payload.get("sub")
     if not user_id:
-        logger.warning(f"No user_id (sub) in token payload: {payload}")
+        logger.warning(f"❌ No user_id (sub) in token payload: {payload}")
         return None
     
+    logger.info(f"🔍 Looking up user in DB: {user_id}")
     user = await db.users.find_one({"id": user_id})
     if not user:
-        logger.warning(f"User not found for id: {user_id}")
+        logger.warning(f"❌ User not found for id: {user_id}")
         return None
     
+    logger.info(f"✅ User authenticated: {user['email']} (ID: {user['id']})")
     return user
 
 async def require_auth(request: Request) -> Dict:
