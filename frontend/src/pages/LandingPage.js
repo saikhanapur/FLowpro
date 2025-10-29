@@ -363,7 +363,7 @@ const LandingPage = () => {
       <section className="py-24 px-6 bg-gradient-to-br from-blue-600 to-purple-600">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-5xl font-bold mb-6">
-            Ready to work superhumanly?
+            Ready to work SuperHumanly?
           </h2>
           <p className="text-xl mb-10 opacity-90">
             Join teams already transforming their process documentation
