@@ -1414,10 +1414,15 @@ async def create_process(process_data: dict):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/process", response_model=List[Process])
-async def get_processes(workspace_id: Optional[str] = None):
-    """Get all processes, optionally filtered by workspace"""
+async def get_processes(request: Request, workspace_id: Optional[str] = None):
+    """Get all processes for the authenticated user, optionally filtered by workspace"""
     try:
-        query = {}
+        # Get current user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
+        # Filter by userId
+        query = {"userId": user_id}
         if workspace_id:
             query['workspaceId'] = workspace_id
         
@@ -1432,6 +1437,8 @@ async def get_processes(workspace_id: Optional[str] = None):
                 process['publishedAt'] = datetime.fromisoformat(process['publishedAt'])
         
         return processes
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
