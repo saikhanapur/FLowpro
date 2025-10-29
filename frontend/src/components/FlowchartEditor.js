@@ -84,7 +84,8 @@ const FlowchartEditor = ({ theme }) => {
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/edit/${id}`;
+    // Use public view route for published processes
+    const shareUrl = `${window.location.origin}/view/${id}`;
     
     try {
       await navigator.clipboard.writeText(shareUrl);
