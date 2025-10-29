@@ -8,6 +8,7 @@ import VoiceRecorder from './VoiceRecorder';
 import DocumentUploader from './DocumentUploader';
 import ChatInterface from './ChatInterface';
 import MultiProcessReview from './MultiProcessReview';
+import ContextAdder from './ContextAdder';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
@@ -15,6 +16,8 @@ const ProcessCreator = ({ currentWorkspace }) => {
   const navigate = useNavigate();
   const [method, setMethod] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [extractedText, setExtractedText] = useState(null); // NEW: Store extracted text
+  const [showContextAdder, setShowContextAdder] = useState(false); // NEW: Show context adder
   const [extractedData, setExtractedData] = useState(null);
 
   const handleInputComplete = async (input, inputType) => {
