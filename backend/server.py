@@ -65,14 +65,29 @@ class ProcessNode(BaseModel):
     timeEstimate: Optional[str] = None
     position: Dict[str, float] = {"x": 0, "y": 0}
 
+class Workspace(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str = ""
+    color: str = "blue"  # For visual distinction
+    icon: str = "folder"  # Icon identifier
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    processCount: int = 0  # Denormalized for performance
+    isDefault: bool = False  # First workspace created is default
+
 class Process(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str = ""
+    workspaceId: Optional[str] = None  # NEW: Link to workspace
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    publishedAt: Optional[datetime] = None  # Added for publish feature
     version: int = 1
     status: str = "draft"  # draft, published, archived
     nodes: List[ProcessNode] = []
