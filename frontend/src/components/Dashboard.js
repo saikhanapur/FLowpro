@@ -300,7 +300,8 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       </div>
 
       {/* Process Grid */}
-      {filteredProcesses.length === 0 ? (
+      {allProcesses.length === 0 ? (
+        // TRUE EMPTY STATE: User has NO processes at all
         <div className="text-center py-20">
           <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
             <div className="text-5xl">✨</div>
@@ -327,6 +328,28 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           <p className="text-sm text-slate-500 mt-4">
             Start with voice, document, or chat input
           </p>
+        </div>
+      ) : filteredProcesses.length === 0 ? (
+        // FILTERED EMPTY: User has processes but none match current filter/workspace
+        <div className="text-center py-16">
+          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Search className="w-10 h-10 text-slate-400" />
+          </div>
+          <h3 className="text-xl font-semibold text-slate-800 mb-2">
+            No processes found
+          </h3>
+          <p className="text-slate-600 mb-6">
+            {searchQuery ? `No processes match "${searchQuery}"` : 'No processes in this workspace'}
+          </p>
+          <Button
+            onClick={() => {
+              setSearchQuery('');
+              setFilterStatus('all');
+            }}
+            variant="outline"
+          >
+            Clear Filters
+          </Button>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
