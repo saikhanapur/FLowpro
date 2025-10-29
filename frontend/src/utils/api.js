@@ -103,5 +103,13 @@ export const api = {
     formData.append('file', file);
     const res = await axios.post(`${API}/upload`, formData);
     return res.data;
+  },
+
+  // Transcribe audio endpoint
+  transcribeAudio: async (audioBlob) => {
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'recording.webm');
+    const res = await axios.post(`${API}/transcribe`, formData);
+    return res.data;
   }
 };
