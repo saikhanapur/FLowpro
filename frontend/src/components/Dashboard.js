@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar, FolderInput } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
 const Dashboard = ({ currentWorkspace }) => {
   const navigate = useNavigate();
   const [processes, setProcesses] = useState([]);
+  const [allWorkspaces, setAllWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
