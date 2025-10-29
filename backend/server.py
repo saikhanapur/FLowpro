@@ -710,6 +710,72 @@ async def parse_process(input_data: ProcessInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.patch("/process/{process_id}/publish", response_model=Process)
+async def publish_process(process_id: str):
+    """
+    Publish a process - marks it as official and ready to share.
+    This creates a version snapshot for audit trail.
+    """
+    try:
+        # Get the current process
+        process = await db.processes.find_one({"id": process_id})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Update status to published
+        update_data = {
+            "status": "published",
+            "updatedAt": datetime.now(timezone.utc).isoformat(),
+            "publishedAt": datetime.now(timezone.utc).isoformat(),
+            "version": process.get('version', 1) + 1  # Increment version
+        }
+        
+        await db.processes.update_one(
+            {"id": process_id},
+            {"$set": update_data}
+        )
+        
+        # Fetch updated process
+        updated = await db.processes.find_one({"id": process_id})
+        updated['_id'] = str(updated['_id'])
+        return Process(**updated)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error publishing process: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to publish process: {str(e)}")
+
+@api_router.patch("/process/{process_id}/unpublish", response_model=Process)
+async def unpublish_process(process_id: str):
+    """
+    Unpublish a process - returns it to draft status for editing.
+    """
+    try:
+        process = await db.processes.find_one({"id": process_id})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        update_data = {
+            "status": "draft",
+            "updatedAt": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.processes.update_one(
+            {"id": process_id},
+            {"$set": update_data}
+        )
+        
+        updated = await db.processes.find_one({"id": process_id})
+        updated['_id'] = str(updated['_id'])
+        return Process(**updated)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error unpublishing process: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to unpublish process: {str(e)}")
+
 @api_router.post("/process", response_model=Process)
 async def create_process(process: Process):
     """Create a new process"""
