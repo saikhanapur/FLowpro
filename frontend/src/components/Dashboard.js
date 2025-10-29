@@ -196,8 +196,11 @@ const Dashboard = () => {
                     {process.description || 'No description'}
                   </p>
                 </div>
-                <Badge variant={process.status === 'published' ? 'default' : 'secondary'}>
-                  {process.status}
+                <Badge 
+                  variant={process.status === 'published' ? 'default' : 'secondary'}
+                  className={process.status === 'published' ? 'bg-emerald-600' : ''}
+                >
+                  {process.status === 'published' ? '✓ Published' : 'Draft'}
                 </Badge>
               </div>
 
