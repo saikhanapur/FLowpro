@@ -83,6 +83,31 @@ const FlowchartEditor = ({ theme }) => {
     }
   };
 
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/edit/${id}`;
+    
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      toast.success('Link copied to clipboard! Share with your team.');
+      
+      // Reset copied state after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      setCopied(true);
+      toast.success('Link copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const handleGenerateIdealState = async () => {
     try {
       const data = await api.generateIdealState(id);
