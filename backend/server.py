@@ -758,7 +758,7 @@ Return this exact JSON structure (and NOTHING else):
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"chat_{uuid.uuid4()}",
-                system_message="""You are FlowForge AI, helping users document their processes through conversation.
+                system_message="""You are SuperHumanly AI, helping users document their processes through conversation.
 
 Your goal:
 - Ask clear, specific questions about their process
