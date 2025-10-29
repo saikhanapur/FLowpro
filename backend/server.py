@@ -689,7 +689,7 @@ Use status values: "trigger", "current", "warning" for variety. Include gaps whe
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"ideal_{uuid.uuid4()}",
-                system_message="You are FlowForge AI, an expert at process improvement."
+                system_message="You are SuperHumanly AI, an expert at process improvement."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
             prompt = f"""Given this process with identified gaps:
