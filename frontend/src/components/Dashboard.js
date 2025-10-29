@@ -270,21 +270,31 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       {/* Process Grid */}
       {filteredProcesses.length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Plus className="w-12 h-12 text-slate-400" />
+          <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <div className="text-5xl">✨</div>
           </div>
-          <h3 className="text-2xl font-bold text-slate-800 mb-2">
-            No processes yet
-          </h3>
-          <p className="text-slate-600 mb-6">
-            Create your first process to get started
+          <h2 className="text-4xl font-bold text-slate-900 mb-3">
+            Turn Chaos into Clarity
+            <br />
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              in 2 Minutes
+            </span>
+          </h2>
+          <p className="text-lg text-slate-600 mb-8 max-w-md mx-auto">
+            Document, visualize, and improve your workflows with AI
           </p>
           <Button
             onClick={() => navigate('/create')}
+            size="lg"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg font-semibold shadow-lg"
             data-testid="empty-state-create-btn"
           >
-            Create Process
+            Create Your First Process
+            <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
+          <p className="text-sm text-slate-500 mt-4">
+            Start with voice, document, or chat input
+          </p>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
