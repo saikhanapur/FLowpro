@@ -1636,6 +1636,45 @@ async def delete_process(process_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.patch("/process/{process_id}/workspace")
+async def move_process_to_workspace(process_id: str, data: dict, request: Request):
+    """Move a process to a different workspace"""
+    try:
+        # Get authenticated user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
+        workspace_id = data.get('workspaceId')
+        if not workspace_id:
+            raise HTTPException(status_code=400, detail="workspaceId required")
+        
+        # Verify workspace belongs to user
+        workspace = await db.workspaces.find_one({"id": workspace_id, "userId": user_id})
+        if not workspace:
+            raise HTTPException(status_code=404, detail="Workspace not found")
+        
+        # Verify process belongs to user
+        process = await db.processes.find_one({"id": process_id, "userId": user_id})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Update process workspace
+        result = await db.processes.update_one(
+            {"id": process_id, "userId": user_id},
+            {"$set": {"workspaceId": workspace_id, "updatedAt": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=500, detail="Failed to move process")
+        
+        logger.info(f"✅ Moved process {process_id} to workspace {workspace_id}")
+        return {"message": "Process moved successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error moving process: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/process/{process_id}/ideal-state")
 async def generate_ideal_state(process_id: str):
     """Generate ideal state for a process"""
