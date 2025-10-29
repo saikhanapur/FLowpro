@@ -808,20 +808,24 @@ async def get_current_user(request: Request) -> Optional[Dict]:
             token = auth_header.split(" ")[1]
     
     if not token:
+        logger.warning("No token found in cookie or header")
         return None
     
     # Decode token
     payload = decode_access_token(token)
     if not payload:
+        logger.warning(f"Failed to decode token. Token starts with: {token[:20]}...")
         return None
     
     # Get user from database
     user_id = payload.get("sub")
     if not user_id:
+        logger.warning(f"No user_id (sub) in token payload: {payload}")
         return None
     
     user = await db.users.find_one({"id": user_id})
     if not user:
+        logger.warning(f"User not found for id: {user_id}")
         return None
     
     return user
