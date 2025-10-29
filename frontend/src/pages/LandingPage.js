@@ -394,16 +394,38 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="py-12 px-6 bg-slate-900 text-white">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-xl font-bold">SuperHumanly</span>
               </div>
-              <span className="text-xl font-bold">SuperHumanly</span>
+              <p className="text-slate-400 text-sm">
+                Turn process documentation chaos into clarity in 2 minutes with AI.
+              </p>
             </div>
-            <div className="text-sm text-slate-400">
-              © 2024 SuperHumanly. All rights reserved.
+            
+            <div>
+              <h3 className="font-semibold mb-4">Product</h3>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li><button onClick={() => navigate('/')} className="hover:text-white transition">Home</button></li>
+                <li><button onClick={() => navigate('/signup')} className="hover:text-white transition">Get Started</button></li>
+              </ul>
             </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2 text-sm text-slate-400">
+                <li><button onClick={() => navigate('/privacy')} className="hover:text-white transition">Privacy Policy</button></li>
+                <li><button onClick={() => navigate('/terms')} className="hover:text-white transition">Terms of Service</button></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-slate-800 pt-8 text-center text-sm text-slate-400">
+            © {new Date().getFullYear()} SuperHumanly. All rights reserved.
           </div>
         </div>
       </footer>
