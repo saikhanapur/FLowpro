@@ -77,7 +77,7 @@ const LandingPage = () => {
               onClick={() => navigate('/signup')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
             >
-              Start Free Trial
+              Try it now
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
