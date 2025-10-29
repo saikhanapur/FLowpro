@@ -926,16 +926,22 @@ async def create_process(process: Process):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/process", response_model=List[Process])
-async def get_processes():
-    """Get all processes"""
+async def get_processes(workspace_id: Optional[str] = None):
+    """Get all processes, optionally filtered by workspace"""
     try:
-        processes = await db.processes.find({}, {"_id": 0}).to_list(1000)
+        query = {}
+        if workspace_id:
+            query['workspaceId'] = workspace_id
+        
+        processes = await db.processes.find(query, {"_id": 0}).to_list(1000)
         
         for process in processes:
             if isinstance(process.get('createdAt'), str):
                 process['createdAt'] = datetime.fromisoformat(process['createdAt'])
             if isinstance(process.get('updatedAt'), str):
                 process['updatedAt'] = datetime.fromisoformat(process['updatedAt'])
+            if isinstance(process.get('publishedAt'), str):
+                process['publishedAt'] = datetime.fromisoformat(process['publishedAt'])
         
         return processes
     except Exception as e:
