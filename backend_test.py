@@ -1436,6 +1436,16 @@ class BackendTester:
         print("\n🆕 NEW FEATURES - Voice Transcription API...")
         self.test_voice_transcription_api()
         
+        print("\n📢 NEW FEATURES - Publish/Unpublish Workflow...")
+        self.test_publish_unpublish_workflow()
+        
+        print("\n🏢 WORKSPACE CRUD OPERATIONS...")
+        self.test_workspace_crud_operations()
+        
+        # AI CONSISTENCY & RELIABILITY - CRITICAL FOR ENTERPRISE
+        print("\n🧠 AI CONSISTENCY & RELIABILITY - Enterprise Critical...")
+        self.test_ai_consistency_reliability()
+        
         # Test Document Upload & AI Processing
         print("\n🤖 AI PROCESSING - Document Upload & Parsing...")
         uploaded_text = self.test_document_upload()
@@ -1445,6 +1455,18 @@ class BackendTester:
         print("\n🧠 AI INTEGRATION - Ideal State & Chat...")
         self.test_ai_ideal_state()
         self.test_ai_chat()
+        
+        # AI EDGE CASES
+        print("\n🎯 AI PROCESSING - Edge Cases...")
+        self.test_edge_cases_ai_processing()
+        
+        # DATA INTEGRITY AT SCALE
+        print("\n📊 DATA INTEGRITY AT SCALE...")
+        self.test_data_integrity_at_scale()
+        
+        # ERROR HANDLING & SECURITY
+        print("\n🔒 ERROR HANDLING & SECURITY...")
+        self.test_error_handling_security()
         
         # Cleanup
         print("\n🧹 Cleanup...")
