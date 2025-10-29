@@ -57,26 +57,16 @@ const AppContent = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="App min-h-screen">
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         
         {/* Protected Routes */}
-        <Route path="/*" element={
+        <Route path="/dashboard" element={
           <ProtectedRoute>
             <Header 
               theme={theme} 
@@ -86,21 +76,53 @@ const AppContent = () => {
               onWorkspaceChange={setCurrentWorkspace}
               onWorkspacesUpdate={loadWorkspaces}
             />
-            <Routes>
-              <Route 
-                path="/" 
-                element={
-                  <Dashboard 
-                    currentWorkspace={currentWorkspace} 
-                    workspaces={workspaces}
-                    onWorkspacesUpdate={loadWorkspaces}
-                  />
-                } 
-              />
-              <Route path="/create" element={<ProcessCreator currentWorkspace={currentWorkspace} />} />
-              <Route path="/edit/:id" element={<FlowchartEditor theme={theme} />} />
-              <Route path="/templates" element={<TemplateGallery />} />
-            </Routes>
+            <Dashboard 
+              currentWorkspace={currentWorkspace} 
+              workspaces={workspaces}
+              onWorkspacesUpdate={loadWorkspaces}
+            />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/create" element={
+          <ProtectedRoute>
+            <Header 
+              theme={theme} 
+              onThemeChange={setTheme}
+              currentWorkspace={currentWorkspace}
+              workspaces={workspaces}
+              onWorkspaceChange={setCurrentWorkspace}
+              onWorkspacesUpdate={loadWorkspaces}
+            />
+            <ProcessCreator currentWorkspace={currentWorkspace} />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/edit/:id" element={
+          <ProtectedRoute>
+            <Header 
+              theme={theme} 
+              onThemeChange={setTheme}
+              currentWorkspace={currentWorkspace}
+              workspaces={workspaces}
+              onWorkspaceChange={setCurrentWorkspace}
+              onWorkspacesUpdate={loadWorkspaces}
+            />
+            <FlowchartEditor theme={theme} />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/templates" element={
+          <ProtectedRoute>
+            <Header 
+              theme={theme} 
+              onThemeChange={setTheme}
+              currentWorkspace={currentWorkspace}
+              workspaces={workspaces}
+              onWorkspaceChange={setCurrentWorkspace}
+              onWorkspacesUpdate={loadWorkspaces}
+            />
+            <TemplateGallery />
           </ProtectedRoute>
         } />
       </Routes>
