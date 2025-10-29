@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Menu, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import WorkspaceSelector from './WorkspaceSelector';
 import {
   DropdownMenu,
   DropdownMenuContent,
