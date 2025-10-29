@@ -77,6 +77,10 @@ const AppContent = () => {
         {/* Public View for Published Processes */}
         <Route path="/view/:id" element={<PublicView />} />
         
+        {/* Legal Pages */}
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        
         {/* Protected Routes */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
