@@ -226,7 +226,10 @@ const Signup = () => {
 
         {/* Terms */}
         <p className="text-center text-xs text-slate-500 mt-4">
-          By creating an account, you agree to our Terms of Service and Privacy Policy
+          By creating an account, you agree to our{' '}
+          <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
+          {' '}and{' '}
+          <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
         </p>
       </Card>
     </div>
