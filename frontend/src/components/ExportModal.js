@@ -267,6 +267,40 @@ const ExportModal = ({ process, onClose }) => {
         width: 100%;
       }
     }
+    
+    /* Print Styles - Critical for PDF Export */
+    @media print {
+      body {
+        background: white !important;
+      }
+      
+      #detailPanel {
+        display: none !important;
+      }
+      
+      /* Ensure sections don't break across pages */
+      .bg-rose-50, .bg-blue-50 {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      
+      /* Force page breaks before major sections if needed */
+      .node-container {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      
+      /* Ensure all content is visible */
+      * {
+        overflow: visible !important;
+      }
+      
+      /* Remove shadows and transitions for print */
+      * {
+        box-shadow: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-50">
