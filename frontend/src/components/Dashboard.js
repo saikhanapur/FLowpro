@@ -75,14 +75,8 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       // Store ALL processes for empty state check
       setAllProcesses(data);
       
-      // If we have a current workspace, filter by it
-      if (currentWorkspace) {
-        const filtered = data.filter(p => p.workspaceId === currentWorkspace.id);
-        setProcesses(filtered);
-      } else {
-        // If no workspace selected yet, show all user's processes
-        setProcesses(data);
-      }
+      // Always show all processes initially - don't filter by workspace automatically
+      setProcesses(data);
     } catch (error) {
       toast.error('Failed to load processes');
     } finally {
