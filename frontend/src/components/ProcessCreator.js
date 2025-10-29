@@ -11,7 +11,7 @@ import MultiProcessReview from './MultiProcessReview';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const ProcessCreator = () => {
+const ProcessCreator = ({ currentWorkspace }) => {
   const navigate = useNavigate();
   const [method, setMethod] = useState(null);
   const [processing, setProcessing] = useState(false);
@@ -54,6 +54,7 @@ const ProcessCreator = () => {
         id: `process-${Date.now()}`,
         name: processData.processName,
         description: processData.description || '',
+        workspaceId: currentWorkspace?.id, // Assign to current workspace
         nodes: processData.nodes.map((node, idx) => ({
           ...node,
           position: { x: 100, y: 100 + (idx * 150) }
