@@ -85,6 +85,60 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     }
   };
 
+  // Multi-select functions
+  const toggleSelectMode = () => {
+    setSelectMode(!selectMode);
+    setSelectedProcesses([]);
+  };
+
+  const toggleProcessSelection = (processId) => {
+    setSelectedProcesses(prev => 
+      prev.includes(processId) 
+        ? prev.filter(id => id !== processId)
+        : [...prev, processId]
+    );
+  };
+
+  const selectAll = () => {
+    setSelectedProcesses(filteredProcesses.map(p => p.id));
+  };
+
+  const deselectAll = () => {
+    setSelectedProcesses([]);
+  };
+
+  const handleMoveToWorkspace = async (targetWorkspace) => {
+    if (selectedProcesses.length === 0) return;
+
+    setMovingProcesses(true);
+    try {
+      // Move all selected processes
+      await Promise.all(
+        selectedProcesses.map(processId => 
+          api.moveProcessToWorkspace(processId, targetWorkspace.id)
+        )
+      );
+
+      toast.success(`${selectedProcesses.length} process${selectedProcesses.length > 1 ? 'es' : ''} moved to ${targetWorkspace.name}`);
+      
+      // Reset selection and reload
+      setSelectedProcesses([]);
+      setSelectMode(false);
+      setShowMoveModal(false);
+      
+      // Reload processes and update workspace counts
+      await loadProcesses();
+      if (onWorkspacesUpdate) {
+        onWorkspacesUpdate();
+      }
+    } catch (error) {
+      toast.error('Failed to move processes');
+      console.error(error);
+    } finally {
+      setMovingProcesses(false);
+    }
+  };
+
   const filteredProcesses = processes.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           p.description?.toLowerCase().includes(searchQuery.toLowerCase());
