@@ -41,7 +41,7 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !processingGoogle) {
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [isAuthenticated, navigate, processingGoogle]);
 
@@ -51,7 +51,7 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
     } finally {
