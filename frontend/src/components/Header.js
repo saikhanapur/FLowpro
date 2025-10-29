@@ -33,7 +33,7 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div 
           className="flex items-center gap-3 cursor-pointer"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/dashboard')}
           data-testid="header-logo"
         >
           <div className="w-10 h-10 rounded-lg gradient-blue flex items-center justify-center">
