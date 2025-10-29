@@ -288,7 +288,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
     return (
       <div className="max-w-6xl mx-auto px-6 py-12" data-testid="method-selection">
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/dashboard')}
           variant="ghost"
           className="mb-6"
           data-testid="back-to-dashboard"
