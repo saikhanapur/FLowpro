@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Share2, Save, Sparkles } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import FlowNode from './FlowNode';
 import DetailPanel from './DetailPanel';
 import IdealStateModal from './IdealStateModal';
@@ -19,6 +27,8 @@ const FlowchartEditor = ({ theme }) => {
   const [idealStateData, setIdealStateData] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     loadProcess();
