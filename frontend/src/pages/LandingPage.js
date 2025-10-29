@@ -88,6 +88,9 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Subtle Section Separator */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+
       {/* Features Section */}
       <section id="features" className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
