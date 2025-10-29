@@ -3,6 +3,9 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const API = `${BACKEND_URL}/api`;
 
+// Configure axios to always send credentials (cookies)
+axios.defaults.withCredentials = true;
+
 export const api = {
   // Process endpoints
   parseProcess: async (text, inputType, additionalContext = null) => {
