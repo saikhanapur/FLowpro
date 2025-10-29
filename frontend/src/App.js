@@ -72,6 +72,9 @@ const AppContent = () => {
           isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />
         } />
         
+        {/* Public View for Published Processes */}
+        <Route path="/view/:id" element={<PublicView />} />
+        
         {/* Protected Routes */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
