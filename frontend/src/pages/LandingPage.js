@@ -113,7 +113,7 @@ const LandingPage = () => {
             </div>
 
             {/* Feature 2 */}
-            <div className="p-8 rounded-2xl border border-slate-200 hover:border-purple-300 hover:shadow-lg transition-all bg-white group">
+            <div className="p-8 rounded-2xl border border-slate-100 hover:border-purple-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Users className="w-7 h-7 text-white" />
               </div>
