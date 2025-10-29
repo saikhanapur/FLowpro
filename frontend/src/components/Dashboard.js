@@ -21,13 +21,16 @@ import {
 } from "@/components/ui/dialog";
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [processes, setProcesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
   
   // Multi-select state
   const [selectMode, setSelectMode] = useState(false);
