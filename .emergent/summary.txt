@@ -1,61 +1,85 @@
 <analysis>
-The previous AI engineer initiated the development of FlowForge AI as a full-stack application (React, FastAPI, MongoDB) based on a detailed problem statement. Initial work involved setting up the environment, installing dependencies, and scaffolding the core UI components for the dashboard, process creation (voice, document, chat), and flowchart editing. Critical architectural decisions included using Claude API for AI processing and  for persistence.
-
-The development trajectory was marked by iterative bug fixes, primarily concerning AI integration (budget issues, JSON parsing failures due to truncated LLM responses), PDF/HTML export fidelity (cut-offs, lack of interactivity), and UI/UX refinements (hero section, component alignment, flowchart aesthetics like arrows and node sizes). The AI consistently addressed user feedback, redesigning elements to match a high-fidelity EROAD example. The most recent issue being tackled is text clipping within exported PDF documents, where the AI is implementing solutions for improved text wrapping and  settings.
+The AI engineer successfully built FlowForge AI from MVP, addressing critical issues and implementing new features. Initial work focused on React/FastAPI/MongoDB setup and core AI integration. Early challenges included PDF export text clipping, resolved through  adjustments and dynamic node sizing. Design evolved significantly from a dark blue border to a minimalist Apple aesthetic, requiring extensive UI/CSS refinements. A major feature, multi-process detection from documents, was challenging. Initial attempts failed due to LLM response truncation and imprecise prompting. The AI re-architected this to parse processes one-at-a-time, rigorously debugging detection logic to achieve accuracy. Recent development introduced core enterprise features: a Publish mechanism with shareability and versioning, and Workspaces for process organization, now being implemented with backend data models, CRUD APIs, and UI integration. The current work involves adding Move to Workspace functionality.
 </analysis>
 
 <product_requirements>
-FlowForge AI aims to be a world-class platform transforming messy workflows into interactive flowcharts. It captures processes via voice, documents, or chat, generates visual flowcharts, and enables collaboration and improvement. Key features include a Landing Page/Dashboard, a Process Creation Interface (Voice, Document, Chat input methods), AI Processing (Claude API for parsing, gap detection, ideal state generation), an Interactive Flowchart Canvas (with various node types/colors, detail panel, ideal state modal), Collaboration Features (role-based access, comments, version control), Output & Export System (HTML, PDF, PNG, JSON, Markdown, GitHub Pages deployment, shareable links), Theme System & Customization, AI-Powered Intelligence (gap detection, smart suggestions, process health score), and a Templates & Library System. The MVP (Option A) currently implemented omits real-time collaboration (live cursors/presence), GitHub auto-deploy, and advanced analytics for simplified development, focusing on enterprise-ready core functionalities.
+FlowForge AI aims to transform complex workflows into interactive flowcharts, offering process capture via voice, documents, or chat, AI-driven parsing (Claude API), and visual flowchart generation. The platform targets enterprise users with features like a Landing Page/Dashboard, Process Creation, an Interactive Flowchart Canvas (customizable nodes, detail panel, ideal state modal), and a robust Output & Export System (HTML, PDF). The current MVP focuses on these core functionalities, deliberately omitting real-time collaboration, GitHub auto-deploy, and advanced analytics for simplified development. So far, the application has implemented core process creation, AI parsing, interactive flowchart display with a refined Apple-inspired minimalist design, multi-process detection from single documents, a Publish feature for official versions and shareability, and a foundational Workspaces feature for organizing processes by department or project.
 </product_requirements>
 
 <key_technical_concepts>
--   **Frontend**: React 18 (Hooks), TailwindCSS, Lucide React (icons), React Flow (for advanced node editing), Framer Motion (animations), Zustand (state management).
--   **Backend/AI**: FastAPI, Claude API (Sonnet 4.5), PyMongo, Pydantic, PDF.js, Mammoth.js, Tesseract.js, .
--   **Storage**: Emergent Persistent Storage ().
+-   **Frontend**: React 18 (Hooks), TailwindCSS, Lucide React, React Flow, Framer Motion, Zustand.
+-   **Backend/AI**: FastAPI, Claude API (Sonnet 4.5), PyMongo, Pydantic, PDF.js, Mammoth.js, Tesseract.js, , Emergent Persistent Storage.
 -   **Voice Processing**: Web Speech API.
+-   **Database**: MongoDB (using UUIDs).
 </key_technical_concepts>
 
 <code_architecture>
 
 
--   **/app/backend/server.py**: Main FastAPI application handling API endpoints, AI integration with Claude (for process parsing, ideal state, gap detection), and logic for generating interactive HTML and PDF exports. It was heavily modified for robust JSON parsing, error handling (especially for LLM budget issues), and detailed export logic.
--   **/app/backend/requirements.txt**: Lists Python dependencies, including To use the fastapi command, please install "fastapi[standard]":
+-   **/app/backend/server.py**: Main FastAPI application.
+    -   **Summary**: Handles AI integration (Claude API for process parsing, ideal state generation), defines Pydantic models for , , and . Manages CRUD operations for processes and workspaces, and includes logic for publishing/unpublishing processes. Contains robust JSON parsing, error handling (LLM budget, truncated responses), and preprocessing for multi-process document parsing.
+    -   **Changes**: Extensive modifications for  logic, refined LLM prompts,  for pattern matching,  model and  in  model, Workspace CRUD APIs,  filtering by ,  field and publish/unpublish endpoints.
+-   **/app/backend/requirements.txt**: Lists Python dependencies (To use the fastapi command, please install "fastapi[standard]":
 
-	pip install "fastapi[standard]", , , , , , , , , . Crucial for backend environment setup.
--   **/app/frontend/package.json**: Manages Node.js dependencies like , , , , , .
--   **/app/frontend/src/App.js**: The root React component, managing application-wide state (view, current process, theme) and routing between major sections (dashboard, create, edit, templates). Modified for the Turn Chaos into Clarity hero section.
--   **/app/frontend/src/App.css**: Global CSS for styling, animations, and responsive design, integrating TailwindCSS. Significant changes were made to support new hero animations, header transparency fixes, and the detailed styling for flowchart elements (arrows, nodes).
--   **/app/frontend/src/utils/api.js**: Centralized utility for making API calls to the FastAPI backend, ensuring consistent communication.
--   **/app/frontend/src/components/Header.js**: Renders the application header with navigation. Modified to fix transparency issues.
--   **/app/frontend/src/components/Dashboard.js**: Placeholder for the main user dashboard, designed to display recent processes.
--   **/app/frontend/src/components/ProcessCreator.js**: Orchestrates the three input methods (Voice, Document, Chat). It handles the selection of input method, displays processing states, and presents extracted data for review. Redesigned for improved loading messages and alignment.
--   **/app/frontend/src/components/VoiceRecorder.js**: Implements voice recording and real-time transcription using Web Speech API.
--   **/app/frontend/src/components/DocumentUploader.js**: Manages document (PDF, DOCX, image) upload, text extraction using , , , and initiates AI parsing. Enhanced with loading feedback and error handling for slow AI responses.
--   **/app/frontend/src/components/ChatInterface.js**: Provides an interactive chat experience for process documentation, guided by AI.
--   **/app/frontend/src/components/FlowchartEditor.js**: The core component for displaying and interacting with the generated flowcharts. Extensively redesigned to align with the EROAD reference for layout, node interactions, and detail panel behavior. Also orchestrates PDF/HTML exports.
--   **/app/frontend/src/components/FlowNode.js**: Represents an individual node within the flowchart. Redesigned to be more compact, symmetrical, and visually distinct, with proper text wrapping.
--   **/app/frontend/src/components/DetailPanel.js**: A sidebar component that slides in from the right to display detailed information for a selected flowchart node. Redesigned to match the EROAD example.
--   **/app/frontend/src/components/IdealStateModal.js**: A modal to present AI-generated ideal state visions for processes.
--   **/app/frontend/src/components/ExportModal.js**: Handles various export options for the flowchart.
--   **/app/frontend/src/components/FlowchartElements.js**: Likely defines common elements or utilities for flowchart rendering, specifically updated for arrow shapes and styling.
--   **/app/frontend/src/components/LoadingSpinner.js**: A general-purpose loading spinner, integrated into processing states.
+	pip install "fastapi[standard]", , , , , , , , , , ).
+-   **/app/backend/migrate_workspaces.py**: New script.
+    -   **Summary**: Created and executed to assign existing processes to a default My Workspace and initialize  and  fields in the database.
+-   **/app/frontend/src/App.js**: Root React component.
+    -   **Summary**: Manages application-wide state and routing.
+    -   **Changes**: Updated to manage  state.
+-   **/app/frontend/src/App.css**: Global CSS.
+    -   **Summary**: Global styling, animations, responsive design.
+    -   **Changes**: Heavily modified to support new hero animations, header transparency, and detailed styling for flowchart elements (nodes, arrows) to achieve an Apple-inspired minimalist design.
+-   **/app/frontend/src/utils/api.js**: Centralized API calls.
+    -   **Summary**: Utility for making consistent API calls to FastAPI backend.
+    -   **Changes**: Added , , , , , , ,  calls.
+-   **/app/frontend/src/components/Header.js**: Application header.
+    -   **Summary**: Renders the application header with navigation.
+    -   **Changes**: Modified to include the  component.
+-   **/app/frontend/src/components/Dashboard.js**: Main user dashboard.
+    -   **Summary**: Designed to display recent processes.
+    -   **Changes**: Updated to show published status and published date, and to filter processes by the .
+-   **/app/frontend/src/components/ProcessCreator.js**: Orchestrates input methods.
+    -   **Summary**: Handles selection of input method, displays processing states, and presents extracted data for review.
+    -   **Changes**: Redesigned for improved loading messages/alignment, updated to handle multi-process detection, integrates , and assigns new processes to the .
+-   **/app/frontend/src/components/FlowchartEditor.js**: Core flowchart display and interaction.
+    -   **Summary**: Displays and interacts with generated flowcharts.
+    -   **Changes**: Extensively redesigned for EROAD-like layout, node interactions, detail panel, Apple-inspired minimal design, and now includes Publish and Share buttons with associated dialogs.
+-   **/app/frontend/src/components/FlowNode.js**: Individual flowchart node.
+    -   **Summary**: Represents a node within the flowchart.
+    -   **Changes**: Redesigned to be compact, symmetrical, visually distinct, with proper text wrapping, lighter borders, subtle shadows, and supports new node statuses ('active', 'completed').
+-   **/app/frontend/src/components/DetailPanel.js**: Sidebar for node details.
+    -   **Summary**: Displays detailed information for a selected flowchart node.
+    -   **Changes**: Actors label changed to Responsible.
+-   **/app/frontend/src/components/ExportModal.js**: Export options for flowchart.
+    -   **Summary**: Handles various export options (PDF/HTML).
+    -   **Changes**: Modified for improved PDF/HTML export quality, text wrapping, dynamic box sizes, and to match the Apple-inspired minimal design. Actors changed to Responsible in HTML export.
+-   **/app/frontend/src/components/MultiProcessReview.js**: **NEW component**.
+    -   **Summary**: Displays and manages multiple processes detected from a single document. Allows reviewing, editing, and batch creation, assigning processes to the .
+-   **/app/frontend/src/components/WorkspaceSelector.js**: **NEW component**.
+    -   **Summary**: Displays the active workspace and its process count, and allows switching between workspaces.
 </code_architecture>
 
 <pending_tasks>
--   Resolve persistent LLM budget issues (user needs to add credits or provide an alternative API key).
--   Address slow Claude AI response times for large documents, potentially with further optimizations or user feedback mechanisms.
--   Implement the Coming Soon features (real-time collaboration, GitHub auto-deploy, advanced analytics dashboard).
+-   Resolve persistent LLM budget issues.
+-   Address slow Claude AI response times for large documents.
+-   Implement Coming Soon features (real-time collaboration, GitHub auto-deploy, advanced analytics dashboard).
 -   Integrate full AI features (gap detection, health score, templates, analytics) once AI processing is stable and funded.
+-   Further polish on Workspaces (Phase 3: workspace settings, navigation, permissions, templates).
+-   Implement the Themes feature.
+-   Implement Templates functionality beyond placeholders.
 </pending_tasks>
 
 <current_work>
-The AI engineer is currently addressing a critical formatting issue in the PDF export. The problem is that words are cutting off within the flowchart boxes in the exported PDF, indicating a text clipping issue during the rendering process (likely with ). To fix this, the engineer plans to:
-1.  Ensure proper text wrapping within the  components.
-2.  Adjust  settings for better content capture.
-3.  Implement logic to make the flowchart boxes dynamically expand to fit their content, preventing any text overflow.
-Initial edits have been made (, , , ), and the frontend is currently restarting to apply these changes. The goal is to ensure all text within flowchart nodes is fully visible and correctly formatted in the PDF output.
+The AI engineer is currently in Phase 2 of the Workspaces feature implementation, specifically adding the ability to move existing processes between different workspaces. This involves:
+
+1.  **Backend API**: A new  endpoint has been added to .
+2.  **Frontend API**: A corresponding  function has been added to .
+3.  **UI Integration**: The task immediately before this summary request was to update the  component to incorporate Move to Workspace functionality, allowing users to select a process and assign it to a different workspace. This includes adding the UI elements (e.g., a dropdown or modal) for selecting a target workspace and triggering the move operation.
+
+The preceding work completed Phase 1 (Backend Foundation) and the initial parts of Phase 2 (UI Components) for Workspaces, establishing the data models, API endpoints, and core UI elements like the  and process filtering on the dashboard.
 </current_work>
 
 <optional_next_step>
-Test the PDF export functionality by uploading a document and verifying that text within the flowchart boxes is no longer cut off.
+Continue implementing the Move to Workspace functionality on the Dashboard component.
 </optional_next_step>
