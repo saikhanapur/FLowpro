@@ -186,29 +186,6 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           </Button>
         </div>
       )}
-            onClick={() => navigate('/templates')}
-            className="text-lg px-10 py-7 rounded-2xl border-2 hover:border-blue-500 hover:bg-blue-50 transition-all duration-300"
-          >
-            Browse Templates
-          </Button>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="flex flex-wrap justify-center gap-8 text-sm text-slate-600">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-            <span>Voice, Document, or Chat Input</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <span>AI-Powered Gap Detection</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-            <span>Export Anywhere</span>
-          </div>
-        </div>
-      </div>
 
       {/* Search and Filters */}
       <div className="mb-8 flex flex-col md:flex-row gap-4 items-center">
