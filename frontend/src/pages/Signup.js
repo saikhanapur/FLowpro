@@ -192,20 +192,20 @@ const Signup = () => {
  
  
 
-        {/* Login Link */}
-        <p className="text-center text-sm text-slate-600 mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-            Sign in
-          </Link>
-        </p>
-
         {/* Terms */}
         <p className="text-center text-xs text-slate-500 mt-4">
           By creating an account, you agree to our{' '}
           <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>
           {' '}and{' '}
           <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+        </p>
+
+        {/* Login Link */}
+        <p className="text-center text-sm text-slate-600 mt-6">
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+            Sign in
+          </Link>
         </p>
       </Card>
     </div>
