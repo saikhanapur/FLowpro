@@ -229,7 +229,41 @@ frontend:
         agent: "main"
         comment: "Three input methods implemented. Need to test document upload and AI processing flow."
 
-  - task: "Workspace Move Process API"
+  - task: "Context-Enriched Process Creation API"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: Parse endpoint now accepts optional additionalContext parameter. Merges document text + user context before sending to Claude AI. Format: document text + '---ADDITIONAL CONTEXT FROM USER---' + context. Need to test if merging works correctly and AI incorporates context intelligently."
+  
+  - task: "Voice Transcription API (Whisper)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: POST /api/transcribe endpoint using OpenAI Whisper via Emergent LLM key. Accepts audio files (webm, mp3, wav), returns transcribed text. Need to test: 1) Audio file upload and transcription 2) Various audio formats 3) Transcription accuracy 4) Error handling for invalid files 5) API key validation."
+
+  - task: "AI Guard Rails and Validation"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "ENTERPRISE REQUIREMENT: Need to implement guard rails for AI outputs to prevent hallucinations and ensure consistency. Required validations: 1) Process node count limits (max 20 nodes) 2) Text length validation (titles max 50 chars, descriptions max 200 chars) 3) Actor name validation (no special chars, max 30 chars) 4) Critical gap validation (must have actionable descriptions) 5) Response schema validation (enforce JSON structure) 6) Timeout handling (max 2 minutes for parsing) 7) Retry logic with exponential backoff. Currently missing - needs implementation."
     implemented: true
     working: true
     file: "/app/backend/server.py"
