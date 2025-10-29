@@ -830,6 +830,10 @@ async def require_auth(request: Request) -> Dict:
     """Require authentication - raises 401 if not authenticated"""
     user = await get_current_user(request)
     if not user:
+        # Debug info
+        has_cookie = "session_token" in request.cookies
+        has_auth_header = "Authorization" in request.headers
+        logger.warning(f"Auth failed - Cookie: {has_cookie}, Auth Header: {has_auth_header}")
         raise HTTPException(status_code=401, detail="Not authenticated")
     return user
 
