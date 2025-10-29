@@ -25,6 +25,7 @@ class BackendTester:
         })
         self.test_results = []
         self.existing_process_ids = []
+        self.workspace_ids = []
         
     def log_result(self, test_name, success, details, response_data=None):
         """Log test result"""
