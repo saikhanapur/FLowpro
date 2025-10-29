@@ -59,7 +59,7 @@ const LandingPage = () => {
             <span className="text-sm font-medium text-blue-600">Superhuman Process Intelligence</span>
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
+          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-4 leading-tight">
             Upload a doc. Get a flowchart.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
@@ -67,7 +67,7 @@ const LandingPage = () => {
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
             Add voice context, get dynamic insights — work SuperHumanly fast.
           </p>
 
