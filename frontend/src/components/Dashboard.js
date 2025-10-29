@@ -233,7 +233,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                 Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
               </p>
               <p className="text-sm text-slate-600">
-                Ready to turn chaos into clarity? Create a new process in 2 minutes.
+                Upload a doc or describe a workflow — get an interactive flowchart instantly
               </p>
             </div>
           </div>
