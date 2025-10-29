@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       const data = await api.signup(email, password, name);
       localStorage.setItem('auth_token', data.access_token);
       setUser(data.user);
-      toast.success(`Welcome to FlowForge, ${data.user.name}!`);
+      toast.success(`Welcome to SuperHumanly, ${data.user.name}!`);
       return data;
     } catch (error) {
       const message = error.response?.data?.detail || 'Signup failed';
