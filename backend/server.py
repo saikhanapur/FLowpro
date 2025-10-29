@@ -146,6 +146,7 @@ class Workspace(BaseModel):
     description: str = ""
     color: str = "blue"  # For visual distinction
     icon: str = "folder"  # Icon identifier
+    userId: Optional[str] = None  # Owner of the workspace
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     processCount: int = 0  # Denormalized for performance
