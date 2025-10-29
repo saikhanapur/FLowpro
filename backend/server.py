@@ -979,6 +979,8 @@ async def google_session(data: GoogleSessionRequest, response: Response):
     try:
         import httpx
         
+        logger.info(f"🔵 GOOGLE AUTH START - Session ID: {data.session_id[:20]}...")
+        
         # Get session data from Emergent Auth
         async with httpx.AsyncClient() as client:
             auth_response = await client.get(
@@ -987,14 +989,17 @@ async def google_session(data: GoogleSessionRequest, response: Response):
             )
             
             if auth_response.status_code != 200:
+                logger.error(f"❌ Emergent auth failed: {auth_response.status_code}")
                 raise HTTPException(status_code=401, detail="Invalid session ID")
             
             session_data = auth_response.json()
+            logger.info(f"✅ Got Emergent session data for: {session_data.get('email')}")
         
         # Check if user exists
         user = await db.users.find_one({"email": session_data['email'].lower()})
         
         if not user:
+            logger.info(f"🆕 Creating new user: {session_data['email']}")
             # Create new user
             new_user = User(
                 email=session_data['email'].lower(),
@@ -1009,9 +1014,13 @@ async def google_session(data: GoogleSessionRequest, response: Response):
             
             await db.users.insert_one(user_dict)
             user = user_dict
+            logger.info(f"✅ User created with ID: {user['id']}")
+        else:
+            logger.info(f"✅ Found existing user: {user['email']} (ID: {user['id']})")
         
         # Create our own access token (don't use Emergent session token)
         access_token = create_access_token(data={"sub": user['id']})
+        logger.info(f"🔑 Created JWT token: {access_token[:20]}... (starts with eyJ: {access_token.startswith('eyJ')})")
         
         # Create session
         session = Session(
@@ -1025,14 +1034,17 @@ async def google_session(data: GoogleSessionRequest, response: Response):
         session_dict['expiresAt'] = session_dict['expiresAt'].isoformat()
         
         await db.sessions.insert_one(session_dict)
+        logger.info(f"✅ Session created in DB for user: {user['id']}")
         
         # CRITICAL: Clear any existing session_token cookies with different paths/domains
         # This prevents old Emergent tokens from conflicting with our JWT tokens
+        logger.info("🧹 Clearing old cookies...")
         response.delete_cookie(key="session_token", path="/")
         response.delete_cookie(key="session_token", path="/api")
         response.delete_cookie(key="session_token")
         
         # Set our JWT token as httpOnly cookie
+        logger.info(f"🍪 Setting new JWT cookie with token: {access_token[:20]}...")
         response.set_cookie(
             key="session_token",
             value=access_token,
@@ -1042,6 +1054,8 @@ async def google_session(data: GoogleSessionRequest, response: Response):
             samesite="none",
             path="/"
         )
+        
+        logger.info(f"✅ GOOGLE AUTH COMPLETE for user: {user['email']}")
         
         return {
             "access_token": access_token,
