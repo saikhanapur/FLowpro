@@ -67,19 +67,18 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   }, [currentWorkspace]); // Reload when workspace changes
 
   const loadProcesses = async () => {
-    // If no workspace yet, just set loading to false and show empty state
-    if (!currentWorkspace) {
-      setLoading(false);
-      setProcesses([]);
-      return;
-    }
-    
     setLoading(true);
     try {
       const data = await api.getProcesses();
-      // Filter processes by current workspace
-      const filtered = data.filter(p => p.workspaceId === currentWorkspace.id);
-      setProcesses(filtered);
+      
+      // If we have a current workspace, filter by it
+      if (currentWorkspace) {
+        const filtered = data.filter(p => p.workspaceId === currentWorkspace.id);
+        setProcesses(filtered);
+      } else {
+        // If no workspace selected yet, show all user's processes
+        setProcesses(data);
+      }
     } catch (error) {
       toast.error('Failed to load processes');
     } finally {
