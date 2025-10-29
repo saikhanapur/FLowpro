@@ -390,7 +390,46 @@ agent_communication:
       Backend is fully operational and ready for production use.
   - agent: "main"
     message: |
-      🎯 NEW FEATURE IMPLEMENTED: Move Process to Workspace (Batch Operations)
+      🔬 PRE-AUTHENTICATION COMPREHENSIVE TESTING - ENTERPRISE SCALE
+      
+      User Requirements:
+      - Platform targeting 1000s of paying enterprise customers
+      - Comprehensive testing before authentication phase
+      - Focus on AI reliability and consistency (no hallucinations)
+      - Enterprise-grade security and data integrity
+      - Both email/password + Google OAuth planned for next phase
+      
+      NEW FEATURES TO TEST:
+      1. Context-Enriched Process Creation (Document + Voice/Chat context)
+      2. Voice Transcription API (Whisper integration)
+      3. Workspace CRUD operations and batch move
+      4. Publish/Unpublish processes
+      5. Multi-process detection (already working but needs verification)
+      
+      CRITICAL TESTING AREAS:
+      Backend:
+      - AI consistency: Test same input multiple times, verify similar outputs
+      - Context merging: Verify document + context intelligently combined
+      - Voice transcription: Test audio upload and transcription accuracy
+      - Error handling: Invalid inputs, timeouts, malformed data
+      - Scale testing: Can it handle 50+ processes?
+      
+      Frontend:
+      - Context addition flow (voice + chat modes)
+      - Workspace management (create, switch, delete)
+      - Batch process move with multi-select
+      - Publish/unpublish workflow
+      - PDF export (previous bug, needs retest)
+      
+      ENTERPRISE GUARD RAILS NEEDED:
+      - AI output validation (node limits, text length, schema enforcement)
+      - Timeout handling and retry logic
+      - Rate limiting considerations
+      - Input sanitization for security
+      
+      PRIORITY: Start with backend testing for all new features, then comprehensive frontend E2E testing.
+      
+      Test thoroughly - this needs to work flawlessly for paying customers at scale!
       
       Completed Phase 2 of Workspaces implementation:
       
