@@ -1021,7 +1021,13 @@ async def google_session(data: GoogleSessionRequest, response: Response):
         
         await db.sessions.insert_one(session_dict)
         
-        # Set httpOnly cookie
+        # CRITICAL: Clear any existing session_token cookies with different paths/domains
+        # This prevents old Emergent tokens from conflicting with our JWT tokens
+        response.delete_cookie(key="session_token", path="/")
+        response.delete_cookie(key="session_token", path="/api")
+        response.delete_cookie(key="session_token")
+        
+        # Set our JWT token as httpOnly cookie
         response.set_cookie(
             key="session_token",
             value=access_token,
