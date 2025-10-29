@@ -1195,6 +1195,39 @@ async def upload_document(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to extract text: {str(e)}")
 
+@api_router.post("/transcribe")
+async def transcribe_audio(file: UploadFile = File(...)):
+    """Transcribe audio using OpenAI Whisper via Emergent LLM key"""
+    if not OPENAI_AVAILABLE:
+        raise HTTPException(status_code=501, detail="OpenAI transcription not available")
+    
+    try:
+        # Get Emergent LLM key
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="EMERGENT_LLM_KEY not configured")
+        
+        # Initialize OpenAI client
+        client = OpenAI(api_key=api_key)
+        
+        # Read audio file
+        audio_content = await file.read()
+        
+        # Create a temporary file-like object
+        audio_file = io.BytesIO(audio_content)
+        audio_file.name = file.filename or "audio.webm"
+        
+        # Transcribe using Whisper
+        transcript = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
+        
+        return {"text": transcript.text}
+    except Exception as e:
+        logger.error(f"Transcription error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to transcribe audio: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
