@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import '@/App.css';
 import Dashboard from './components/Dashboard';
 import ProcessCreator from './components/ProcessCreator';
 import FlowchartEditor from './components/FlowchartEditor';
 import TemplateGallery from './components/TemplateGallery';
 import Header from './components/Header';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Toaster } from '@/components/ui/sonner';
 import { api } from './utils/api';
 
