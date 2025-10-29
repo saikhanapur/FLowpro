@@ -38,6 +38,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const data = await api.login(email, password);
+      
+      // Store token in localStorage as backup
+      if (data.access_token) {
+        localStorage.setItem('auth_token', data.access_token);
+      }
+      
       setUser(data.user);
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
