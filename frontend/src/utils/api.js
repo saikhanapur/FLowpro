@@ -5,8 +5,12 @@ const API = `${BACKEND_URL}/api`;
 
 export const api = {
   // Process endpoints
-  parseProcess: async (text, inputType) => {
-    const res = await axios.post(`${API}/process/parse`, { text, inputType });
+  parseProcess: async (text, inputType, additionalContext = null) => {
+    const res = await axios.post(`${API}/process/parse`, { 
+      text, 
+      inputType,
+      additionalContext 
+    });
     return res.data;
   },
 
