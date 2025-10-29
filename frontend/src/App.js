@@ -4,6 +4,7 @@ import '@/App.css';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import PublicView from './pages/PublicView';
 import Dashboard from './components/Dashboard';
 import ProcessCreator from './components/ProcessCreator';
 import FlowchartEditor from './components/FlowchartEditor';
