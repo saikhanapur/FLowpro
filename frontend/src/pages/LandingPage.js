@@ -100,9 +100,9 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10">
             {/* Feature 1 */}
-            <div className="p-8 rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all bg-white group">
+            <div className="p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="w-7 h-7 text-white" />
               </div>
