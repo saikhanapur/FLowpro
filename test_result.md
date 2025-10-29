@@ -103,12 +103,27 @@
 #====================================================================================================
 
 user_problem_statement: |
-  FlowForge AI is a workflow-to-flowchart platform that captures processes via voice, documents, or chat,
-  generates visual flowcharts, and enables collaboration. The current issue is PDF export text clipping
-  where words cut off within flowchart boxes. Recent fixes have been implemented to address this:
-  - Improved text wrapping in FlowNode components with break-words and whitespace-normal classes
-  - Enhanced html2canvas configuration for better content capture
-  - Dynamic box sizing to fit content
+  FlowForge AI - Enterprise-grade workflow-to-flowchart platform for paying customers (targeting 1000s of users).
+  
+  CURRENT STATE:
+  - Core features: Document upload, AI parsing (Claude), flowchart generation, workspaces, multi-process detection
+  - Recent additions: Context-enriched process creation (Document → Add Context via Voice/Chat → AI Enhanced Process)
+  - Word document bug FIXED (improvementOpportunities validation)
+  - Voice transcription feature ADDED (Whisper API via Emergent LLM key)
+  
+  PRE-AUTHENTICATION REVIEW PHASE:
+  User wants comprehensive testing before moving to authentication phase. Focus areas:
+  1. AI consistency and reliability (no hallucinations)
+  2. All features working at enterprise scale
+  3. Guard rails for AI outputs
+  4. Data integrity and error handling
+  5. Security vulnerabilities check
+  
+  AUTHENTICATION REQUIREMENTS (Next Phase):
+  - Both email/password AND Emergent Social Login (Google OAuth)
+  - Enterprise-grade security
+  - Start with isolated user data (userId on all models)
+  - Plan for team collaboration later
 
 backend:
   - task: "Process CRUD API endpoints"
