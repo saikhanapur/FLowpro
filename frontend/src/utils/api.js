@@ -35,6 +35,16 @@ export const api = {
     return res.data;
   },
 
+  publishProcess: async (id) => {
+    const res = await axios.patch(`${API}/process/${id}/publish`);
+    return res.data;
+  },
+
+  unpublishProcess: async (id) => {
+    const res = await axios.patch(`${API}/process/${id}/unpublish`);
+    return res.data;
+  },
+
   generateIdealState: async (id) => {
     const res = await axios.post(`${API}/process/${id}/ideal-state`);
     return res.data;
