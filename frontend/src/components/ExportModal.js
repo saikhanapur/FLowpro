@@ -283,7 +283,7 @@ const ExportModal = ({ process, onClose }) => {
           </div>
           <div>
             <h1 class="text-3xl font-bold text-slate-800">${process.name}</h1>
-            <p class="text-slate-600">Generated with FlowForge AI</p>
+            <p class="text-slate-600">Generated with SuperHumanly</p>
           </div>
         </div>
         ${process.description ? `<p class="text-slate-700 mb-4">${process.description}</p>` : ''}
