@@ -9,7 +9,7 @@ const ChatInterface = ({ onComplete, onCancel }) => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm FlowForge AI. I'll help you document your process through a few simple questions. Let's start: **What process would you like to document?**"
+      content: "Hi! I'm SuperHumanly AI. I'll help you document your process through a few simple questions. Let's start: **What process would you like to document?**"
     }
   ]);
   const [input, setInput] = useState('');
