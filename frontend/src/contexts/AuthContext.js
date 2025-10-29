@@ -65,6 +65,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await api.googleSession(sessionId);
       setUser(data.user);
+      
+      // Force a check to ensure cookie is properly set
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await checkAuth();
+      
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
     } catch (error) {
