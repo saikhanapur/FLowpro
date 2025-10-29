@@ -220,8 +220,8 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       </div>
 
       {/* Search and Filters */}
-      <div className="mb-8 flex flex-col md:flex-row gap-4">
-        <div className="flex-1 relative">
+      <div className="mb-8 flex flex-col md:flex-row gap-4 items-center">
+        <div className="flex-1 relative w-full">
           <Search className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
           <Input
             placeholder="Search processes..."
@@ -231,7 +231,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
             data-testid="search-input"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full md:w-auto">
           <Button
             variant={filterStatus === 'all' ? 'default' : 'outline'}
             onClick={() => setFilterStatus('all')}
@@ -254,6 +254,17 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
             Published
           </Button>
         </div>
+        
+        {/* Multi-select toggle */}
+        <Button
+          variant={selectMode ? 'default' : 'outline'}
+          onClick={toggleSelectMode}
+          className={`gap-2 transition-all duration-300 ${selectMode ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+          data-testid="select-mode-btn"
+        >
+          {selectMode ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+          Select
+        </Button>
       </div>
 
       {/* Process Grid */}
