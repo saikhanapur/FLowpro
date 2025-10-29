@@ -54,7 +54,7 @@ const ChatInterface = ({ onComplete, onCancel }) => {
   return (
     <Card className="max-w-4xl mx-auto overflow-hidden" data-testid="chat-interface">
       <div className="gradient-amber text-white p-6">
-        <h2 className="text-2xl font-bold mb-2">Chat with FlowForge AI</h2>
+        <h2 className="text-2xl font-bold mb-2">Chat with SuperHumanly AI</h2>
         <p className="text-amber-100 text-sm">Answer questions to build your process flowchart</p>
         
         <div className="mt-4 bg-amber-700/30 rounded-full h-2 overflow-hidden">
