@@ -657,6 +657,13 @@ class BackendTester:
                                   f"Expected list, got: {type(processes)}")
                     return False
             else:
+                self.log_result("GET Processes by Workspace", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("GET Processes by Workspace", False, f"Error: {str(e)}")
+            return False
+
     def test_ai_consistency_reliability(self):
         """Test AI CONSISTENCY & RELIABILITY - Critical for Enterprise"""
         print("\n🧠 Testing AI Consistency & Reliability...")
