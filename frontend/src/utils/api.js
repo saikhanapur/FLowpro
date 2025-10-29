@@ -111,5 +111,39 @@ export const api = {
     formData.append('file', audioBlob, 'recording.webm');
     const res = await axios.post(`${API}/transcribe`, formData);
     return res.data;
+  },
+
+  // Authentication endpoints
+  signup: async (email, password, name) => {
+    const res = await axios.post(`${API}/auth/signup`, { email, password, name });
+    return res.data;
+  },
+
+  login: async (email, password) => {
+    const res = await axios.post(`${API}/auth/login`, { email, password }, {
+      withCredentials: true  // Important for cookies
+    });
+    return res.data;
+  },
+
+  googleSession: async (sessionId) => {
+    const res = await axios.post(`${API}/auth/google/session`, { session_id: sessionId }, {
+      withCredentials: true
+    });
+    return res.data;
+  },
+
+  getMe: async () => {
+    const res = await axios.get(`${API}/auth/me`, {
+      withCredentials: true
+    });
+    return res.data;
+  },
+
+  logout: async () => {
+    const res = await axios.post(`${API}/auth/logout`, {}, {
+      withCredentials: true
+    });
+    return res.data;
   }
 };
