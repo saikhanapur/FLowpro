@@ -979,6 +979,29 @@ async def create_process(process_data: dict):
         if 'publishedAt' not in process_data:
             process_data['publishedAt'] = None
             
+        # Normalize improvementOpportunities - convert strings to dicts
+        if 'improvementOpportunities' in process_data:
+            opportunities = process_data['improvementOpportunities']
+            if isinstance(opportunities, list):
+                normalized = []
+                for item in opportunities:
+                    if isinstance(item, str):
+                        # Convert string to dict format
+                        normalized.append({
+                            'description': item,
+                            'priority': 'medium',
+                            'impact': 'medium'
+                        })
+                    elif isinstance(item, dict):
+                        normalized.append(item)
+                process_data['improvementOpportunities'] = normalized
+        
+        # Normalize criticalGaps - ensure it's a list of strings
+        if 'criticalGaps' in process_data:
+            gaps = process_data['criticalGaps']
+            if isinstance(gaps, list):
+                process_data['criticalGaps'] = [str(g) if not isinstance(g, str) else g for g in gaps]
+            
         # Create and validate Process object
         process = Process(**process_data)
         
