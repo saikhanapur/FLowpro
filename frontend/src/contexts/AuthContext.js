@@ -16,11 +16,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
+  const [skipAuthCheck, setSkipAuthCheck] = useState(false);
 
   // Check for existing session on mount
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (!skipAuthCheck) {
+      checkAuth();
+    }
+  }, [skipAuthCheck]);
 
   const checkAuth = async () => {
     try {
@@ -32,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
       setInitialized(true);
+      setSkipAuthCheck(false);
     }
   };
 
