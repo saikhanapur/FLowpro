@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const Dashboard = () => {
+const Dashboard = ({ currentWorkspace }) => {
   const navigate = useNavigate();
   const [processes, setProcesses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,12 +35,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadProcesses();
-  }, []);
+  }, [currentWorkspace]); // Reload when workspace changes
 
   const loadProcesses = async () => {
+    if (!currentWorkspace) return;
+    
+    setLoading(true);
     try {
       const data = await api.getProcesses();
-      setProcesses(data);
+      // Filter processes by current workspace
+      const filtered = data.filter(p => p.workspaceId === currentWorkspace.id);
+      setProcesses(filtered);
     } catch (error) {
       toast.error('Failed to load processes');
     } finally {
