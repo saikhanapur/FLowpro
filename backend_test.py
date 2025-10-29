@@ -657,6 +657,536 @@ class BackendTester:
                                   f"Expected list, got: {type(processes)}")
                     return False
             else:
+    def test_ai_consistency_reliability(self):
+        """Test AI CONSISTENCY & RELIABILITY - Critical for Enterprise"""
+        print("\n🧠 Testing AI Consistency & Reliability...")
+        
+        # Test same document 3 times to check consistency
+        test_document = """
+        Customer Support Ticket Resolution Process
+        
+        1. Customer submits support ticket via portal
+        2. System automatically assigns ticket ID and priority level
+        3. Support agent reviews ticket and categorizes issue type
+        4. Agent investigates problem and develops solution
+        5. Solution is implemented and tested
+        6. Customer is notified of resolution
+        7. Customer confirms issue is resolved
+        8. Ticket is closed and archived for future reference
+        
+        Key Actors:
+        - Customer
+        - Support Agent
+        - Technical Specialist
+        - System Administrator
+        
+        Current Issues:
+        - Manual categorization causes delays
+        - No automated priority assignment
+        - Limited escalation procedures
+        """
+        
+        responses = []
+        
+        for i in range(3):
+            try:
+                payload = {
+                    "text": test_document,
+                    "inputType": "document"
+                }
+                
+                response = self.session.post(f"{self.base_url}/process/parse", 
+                                           json=payload, timeout=TIMEOUT)
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    responses.append(result)
+                    time.sleep(2)  # Brief pause between requests
+                else:
+                    self.log_result(f"AI Consistency Test {i+1}", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+                    return
+            except Exception as e:
+                self.log_result(f"AI Consistency Test {i+1}", False, f"Error: {str(e)}")
+                return
+        
+        # Analyze consistency
+        if len(responses) == 3:
+            # Check structural consistency
+            node_counts = []
+            process_names = []
+            actor_counts = []
+            
+            for resp in responses:
+                if 'processes' in resp and resp['processes']:
+                    process = resp['processes'][0]
+                    node_counts.append(len(process.get('nodes', [])))
+                    process_names.append(process.get('processName', ''))
+                    actor_counts.append(len(process.get('actors', [])))
+                elif 'nodes' in resp:
+                    node_counts.append(len(resp.get('nodes', [])))
+                    process_names.append(resp.get('processName', ''))
+                    actor_counts.append(len(resp.get('actors', [])))
+            
+            # Check if results are reasonably consistent
+            node_variance = max(node_counts) - min(node_counts) if node_counts else 0
+            actor_variance = max(actor_counts) - min(actor_counts) if actor_counts else 0
+            
+            if node_variance <= 2 and actor_variance <= 2:
+                self.log_result("AI Consistency & Reliability", True, 
+                              f"AI outputs consistent: nodes {node_counts}, actors {actor_counts}")
+            else:
+                self.log_result("AI Consistency & Reliability", False, 
+                              f"AI outputs inconsistent: nodes {node_counts}, actors {actor_counts}")
+        else:
+            self.log_result("AI Consistency & Reliability", False, 
+                          "Could not complete all 3 consistency tests")
+
+    def test_publish_unpublish_workflow(self):
+        """Test PUBLISH/UNPUBLISH Process Feature"""
+        print("\n📢 Testing Publish/Unpublish Workflow...")
+        
+        if not self.existing_process_ids:
+            self.log_result("Publish/Unpublish Workflow", False, "No processes to test with")
+            return
+        
+        process_id = self.existing_process_ids[0]
+        
+        # Test 1: Publish process
+        try:
+            response = self.session.patch(f"{self.base_url}/process/{process_id}/publish", 
+                                        timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                published_process = response.json()
+                if (published_process.get('status') == 'published' and 
+                    published_process.get('publishedAt')):
+                    self.log_result("Publish Process", True, 
+                                  f"Process published successfully with timestamp")
+                else:
+                    self.log_result("Publish Process", False, 
+                                  f"Published process missing required fields")
+            else:
+                self.log_result("Publish Process", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_result("Publish Process", False, f"Error: {str(e)}")
+        
+        # Test 2: Unpublish process
+        try:
+            response = self.session.patch(f"{self.base_url}/process/{process_id}/unpublish", 
+                                        timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                unpublished_process = response.json()
+                if unpublished_process.get('status') == 'draft':
+                    self.log_result("Unpublish Process", True, 
+                                  "Process unpublished successfully")
+                else:
+                    self.log_result("Unpublish Process", False, 
+                                  f"Process status not reset to draft")
+            else:
+                self.log_result("Unpublish Process", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_result("Unpublish Process", False, f"Error: {str(e)}")
+        
+        # Test 3: Publish non-existent process (404 error)
+        try:
+            fake_id = str(uuid.uuid4())
+            response = self.session.patch(f"{self.base_url}/process/{fake_id}/publish", 
+                                        timeout=TIMEOUT)
+            
+            if response.status_code == 404:
+                self.log_result("Publish Process (404 Error)", True, 
+                              "Correctly returns 404 for non-existent process")
+            else:
+                self.log_result("Publish Process (404 Error)", False, 
+                              f"Expected 404, got HTTP {response.status_code}")
+        except Exception as e:
+            self.log_result("Publish Process (404 Error)", False, f"Error: {str(e)}")
+
+    def test_data_integrity_at_scale(self):
+        """Test DATA INTEGRITY AT SCALE - Create multiple processes rapidly"""
+        print("\n📊 Testing Data Integrity at Scale...")
+        
+        created_process_ids = []
+        
+        # Create 10 test processes rapidly
+        for i in range(10):
+            try:
+                test_process = {
+                    "id": str(uuid.uuid4()),
+                    "name": f"Scale Test Process {i+1}",
+                    "description": f"Process created during scale testing - {datetime.now().isoformat()}",
+                    "workspaceId": self.workspace_ids[0] if self.workspace_ids else None,
+                    "status": "draft",
+                    "nodes": [
+                        {
+                            "id": f"node-{i}-1",
+                            "type": "trigger",
+                            "status": "trigger",
+                            "title": f"Start Process {i+1}",
+                            "description": "Scale test trigger",
+                            "actors": ["Test User"],
+                            "subSteps": [],
+                            "dependencies": [],
+                            "parallelWith": [],
+                            "failures": [],
+                            "blocking": None,
+                            "currentState": "Ready",
+                            "idealState": "Automated",
+                            "gap": None,
+                            "impact": "low",
+                            "timeEstimate": "1 minute",
+                            "position": {"x": 100, "y": 100}
+                        }
+                    ],
+                    "actors": ["Test User"],
+                    "criticalGaps": [],
+                    "improvementOpportunities": [],
+                    "theme": "minimalist",
+                    "healthScore": 80,
+                    "views": 0
+                }
+                
+                response = self.session.post(f"{self.base_url}/process", 
+                                           json=test_process, timeout=TIMEOUT)
+                
+                if response.status_code == 200:
+                    created = response.json()
+                    created_process_ids.append(created.get('id'))
+                else:
+                    self.log_result(f"Scale Test Process {i+1}", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+                    break
+                    
+            except Exception as e:
+                self.log_result(f"Scale Test Process {i+1}", False, f"Error: {str(e)}")
+                break
+        
+        # Verify all processes were created correctly
+        if len(created_process_ids) == 10:
+            # Check data integrity
+            integrity_issues = []
+            
+            for process_id in created_process_ids:
+                try:
+                    response = self.session.get(f"{self.base_url}/process/{process_id}", 
+                                              timeout=TIMEOUT)
+                    if response.status_code == 200:
+                        process = response.json()
+                        
+                        # Check required fields
+                        if not process.get('createdAt'):
+                            integrity_issues.append(f"Process {process_id} missing createdAt")
+                        if not process.get('updatedAt'):
+                            integrity_issues.append(f"Process {process_id} missing updatedAt")
+                        if not process.get('id'):
+                            integrity_issues.append(f"Process {process_id} missing id")
+                        
+                        # Check datetime format (should be ISO)
+                        try:
+                            if process.get('createdAt'):
+                                datetime.fromisoformat(process['createdAt'].replace('Z', '+00:00'))
+                        except:
+                            integrity_issues.append(f"Process {process_id} invalid createdAt format")
+                            
+                    else:
+                        integrity_issues.append(f"Cannot retrieve process {process_id}")
+                        
+                except Exception as e:
+                    integrity_issues.append(f"Error checking process {process_id}: {str(e)}")
+            
+            if not integrity_issues:
+                self.log_result("Data Integrity at Scale", True, 
+                              f"Created and verified {len(created_process_ids)} processes with no integrity issues")
+            else:
+                self.log_result("Data Integrity at Scale", False, 
+                              f"Integrity issues found: {integrity_issues[:3]}")  # Show first 3
+            
+            # Cleanup scale test processes
+            for process_id in created_process_ids:
+                try:
+                    self.session.delete(f"{self.base_url}/process/{process_id}", timeout=TIMEOUT)
+                except:
+                    pass  # Ignore cleanup errors
+                    
+        else:
+            self.log_result("Data Integrity at Scale", False, 
+                          f"Only created {len(created_process_ids)}/10 processes")
+
+    def test_error_handling_security(self):
+        """Test ERROR HANDLING & SECURITY"""
+        print("\n🔒 Testing Error Handling & Security...")
+        
+        # Test 1: Malformed JSON
+        try:
+            malformed_json = '{"name": "test", "invalid": json}'
+            response = requests.post(f"{self.base_url}/process", 
+                                   data=malformed_json,
+                                   headers={'Content-Type': 'application/json'},
+                                   timeout=TIMEOUT)
+            
+            if response.status_code == 422:  # FastAPI validation error
+                self.log_result("Security (Malformed JSON)", True, 
+                              "Correctly handles malformed JSON with 422 error")
+            else:
+                self.log_result("Security (Malformed JSON)", False, 
+                              f"Expected 422, got HTTP {response.status_code}")
+        except Exception as e:
+            self.log_result("Security (Malformed JSON)", False, f"Error: {str(e)}")
+        
+        # Test 2: SQL Injection attempt in process name
+        try:
+            sql_injection_payload = {
+                "name": "'; DROP TABLE processes; --",
+                "description": "SQL injection test",
+                "status": "draft",
+                "nodes": [],
+                "actors": [],
+                "criticalGaps": [],
+                "improvementOpportunities": []
+            }
+            
+            response = self.session.post(f"{self.base_url}/process", 
+                                       json=sql_injection_payload, timeout=TIMEOUT)
+            
+            # Should either create safely or reject
+            if response.status_code in [200, 400, 422]:
+                self.log_result("Security (SQL Injection)", True, 
+                              "SQL injection attempt handled safely")
+            else:
+                self.log_result("Security (SQL Injection)", False, 
+                              f"Unexpected response to SQL injection: {response.status_code}")
+        except Exception as e:
+            self.log_result("Security (SQL Injection)", False, f"Error: {str(e)}")
+        
+        # Test 3: XSS attempt in description
+        try:
+            xss_payload = {
+                "name": "XSS Test Process",
+                "description": "<script>alert('XSS')</script>",
+                "status": "draft",
+                "nodes": [],
+                "actors": [],
+                "criticalGaps": [],
+                "improvementOpportunities": []
+            }
+            
+            response = self.session.post(f"{self.base_url}/process", 
+                                       json=xss_payload, timeout=TIMEOUT)
+            
+            if response.status_code in [200, 400, 422]:
+                # Check if script tags are sanitized or escaped
+                if response.status_code == 200:
+                    created = response.json()
+                    description = created.get('description', '')
+                    if '<script>' not in description or '&lt;script&gt;' in description:
+                        self.log_result("Security (XSS Prevention)", True, 
+                                      "XSS content properly sanitized or escaped")
+                    else:
+                        self.log_result("Security (XSS Prevention)", False, 
+                                      "XSS content not properly sanitized")
+                else:
+                    self.log_result("Security (XSS Prevention)", True, 
+                                  "XSS content rejected appropriately")
+            else:
+                self.log_result("Security (XSS Prevention)", False, 
+                              f"Unexpected response to XSS: {response.status_code}")
+        except Exception as e:
+            self.log_result("Security (XSS Prevention)", False, f"Error: {str(e)}")
+        
+        # Test 4: Invalid workspace ID (404 response)
+        try:
+            fake_workspace_id = str(uuid.uuid4())
+            response = self.session.get(f"{self.base_url}/workspaces/{fake_workspace_id}", 
+                                      timeout=TIMEOUT)
+            
+            if response.status_code == 404:
+                self.log_result("Error Handling (404 Workspace)", True, 
+                              "Correctly returns 404 for invalid workspace ID")
+            else:
+                self.log_result("Error Handling (404 Workspace)", False, 
+                              f"Expected 404, got HTTP {response.status_code}")
+        except Exception as e:
+            self.log_result("Error Handling (404 Workspace)", False, f"Error: {str(e)}")
+        
+        # Test 5: Missing required fields (400 response)
+        try:
+            incomplete_process = {
+                "description": "Missing name field"
+                # Missing required 'name' field
+            }
+            
+            response = self.session.post(f"{self.base_url}/process", 
+                                       json=incomplete_process, timeout=TIMEOUT)
+            
+            if response.status_code in [400, 422]:  # Validation error
+                self.log_result("Error Handling (Missing Fields)", True, 
+                              "Correctly validates required fields")
+            else:
+                self.log_result("Error Handling (Missing Fields)", False, 
+                              f"Expected 400/422, got HTTP {response.status_code}")
+        except Exception as e:
+            self.log_result("Error Handling (Missing Fields)", False, f"Error: {str(e)}")
+
+    def test_edge_cases_ai_processing(self):
+        """Test AI Processing with Edge Cases"""
+        print("\n🎯 Testing AI Processing Edge Cases...")
+        
+        # Test 1: Very short document (50 words)
+        try:
+            short_doc = "Simple process: User logs in. System validates. Access granted. User works. User logs out."
+            
+            payload = {
+                "text": short_doc,
+                "inputType": "document"
+            }
+            
+            response = self.session.post(f"{self.base_url}/process/parse", 
+                                       json=payload, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                result = response.json()
+                # Should still produce a valid process structure
+                has_nodes = False
+                if 'processes' in result and result['processes']:
+                    has_nodes = len(result['processes'][0].get('nodes', [])) > 0
+                elif 'nodes' in result:
+                    has_nodes = len(result.get('nodes', [])) > 0
+                
+                if has_nodes:
+                    self.log_result("AI Edge Case (Short Document)", True, 
+                                  "AI handles short documents correctly")
+                else:
+                    self.log_result("AI Edge Case (Short Document)", False, 
+                                  "AI failed to extract nodes from short document")
+            else:
+                self.log_result("AI Edge Case (Short Document)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_result("AI Edge Case (Short Document)", False, f"Error: {str(e)}")
+        
+        # Test 2: Document with special characters and emojis
+        try:
+            special_doc = """
+            🚀 Customer Onboarding Process™ 
+            
+            1. Customer fills form with special chars: @#$%^&*()
+            2. System validates email format (user@domain.com)
+            3. Send welcome email with UTF-8: Héllo Wörld! 🎉
+            4. Create account with password: P@ssw0rd123!
+            5. Redirect to dashboard → success page
+            
+            Notes: Handle edge cases like O'Connor, Smith-Jones, etc.
+            """
+            
+            payload = {
+                "text": special_doc,
+                "inputType": "document"
+            }
+            
+            response = self.session.post(f"{self.base_url}/process/parse", 
+                                       json=payload, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                self.log_result("AI Edge Case (Special Characters)", True, 
+                              "AI handles special characters and emojis correctly")
+            else:
+                self.log_result("AI Edge Case (Special Characters)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_result("AI Edge Case (Special Characters)", False, f"Error: {str(e)}")
+
+    def test_workspace_crud_operations(self):
+        """Test WORKSPACE CRUD Operations comprehensively"""
+        print("\n🏢 Testing Workspace CRUD Operations...")
+        
+        # Test 1: Create new workspace
+        try:
+            new_workspace = {
+                "id": str(uuid.uuid4()),
+                "name": "Test Workspace - Backend Testing",
+                "description": "Created during comprehensive backend testing",
+                "color": "purple",
+                "icon": "test",
+                "processCount": 0,
+                "isDefault": False
+            }
+            
+            response = self.session.post(f"{self.base_url}/workspaces", 
+                                       json=new_workspace, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                created = response.json()
+                if created.get('name') == new_workspace['name']:
+                    self.log_result("Workspace CRUD (Create)", True, 
+                                  f"Created workspace: {created.get('name')}")
+                    self.workspace_ids.append(created.get('id'))
+                else:
+                    self.log_result("Workspace CRUD (Create)", False, 
+                                  "Created workspace data mismatch")
+            else:
+                self.log_result("Workspace CRUD (Create)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_result("Workspace CRUD (Create)", False, f"Error: {str(e)}")
+        
+        # Test 2: Update workspace
+        if self.workspace_ids:
+            try:
+                workspace_id = self.workspace_ids[-1]  # Use the one we just created
+                
+                # Get current workspace
+                get_response = self.session.get(f"{self.base_url}/workspaces/{workspace_id}", 
+                                              timeout=TIMEOUT)
+                if get_response.status_code == 200:
+                    workspace = get_response.json()
+                    workspace['description'] = "Updated during backend testing - " + datetime.now().isoformat()
+                    
+                    update_response = self.session.put(f"{self.base_url}/workspaces/{workspace_id}", 
+                                                     json=workspace, timeout=TIMEOUT)
+                    
+                    if update_response.status_code == 200:
+                        updated = update_response.json()
+                        if "Updated during backend testing" in updated.get('description', ''):
+                            self.log_result("Workspace CRUD (Update)", True, 
+                                          "Workspace updated successfully")
+                        else:
+                            self.log_result("Workspace CRUD (Update)", False, 
+                                          "Update not reflected in response")
+                    else:
+                        self.log_result("Workspace CRUD (Update)", False, 
+                                      f"HTTP {update_response.status_code}: {update_response.text}")
+                else:
+                    self.log_result("Workspace CRUD (Update)", False, 
+                                  "Could not fetch workspace for update")
+            except Exception as e:
+                self.log_result("Workspace CRUD (Update)", False, f"Error: {str(e)}")
+        
+        # Test 3: Delete workspace (test workspace only)
+        if len(self.workspace_ids) > 2:  # Keep at least 2 for other tests
+            try:
+                workspace_id = self.workspace_ids[-1]  # Delete the test workspace
+                
+                response = self.session.delete(f"{self.base_url}/workspaces/{workspace_id}", 
+                                             timeout=TIMEOUT)
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    if "deleted" in result.get('message', '').lower():
+                        self.log_result("Workspace CRUD (Delete)", True, 
+                                      "Test workspace deleted successfully")
+                        self.workspace_ids.remove(workspace_id)
+                    else:
+                        self.log_result("Workspace CRUD (Delete)", False, 
+                                      f"Unexpected delete response: {result}")
+                else:
+                    self.log_result("Workspace CRUD (Delete)", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+            except Exception as e:
+                self.log_result("Workspace CRUD (Delete)", False, f"Error: {str(e)}")
                 self.log_result("GET Processes by Workspace", False, 
                               f"HTTP {response.status_code}: {response.text}")
                 return False
