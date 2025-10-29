@@ -1040,6 +1040,21 @@ async def google_session(data: GoogleSessionRequest, response: Response):
             await db.users.insert_one(user_dict)
             user = user_dict
             logger.info(f"✅ User created with ID: {user['id']}")
+            
+            # Create default workspace for new Google OAuth user
+            default_workspace = Workspace(
+                name="My Workspace",
+                description="Your default workspace",
+                userId=user['id'],
+                isDefault=True
+            )
+            
+            workspace_dict = default_workspace.model_dump()
+            workspace_dict['createdAt'] = workspace_dict['createdAt'].isoformat()
+            workspace_dict['updatedAt'] = workspace_dict['updatedAt'].isoformat()
+            
+            await db.workspaces.insert_one(workspace_dict)
+            logger.info(f"✅ Created default workspace for Google user: {user['email']}")
         else:
             logger.info(f"✅ Found existing user: {user['email']} (ID: {user['id']})")
         
