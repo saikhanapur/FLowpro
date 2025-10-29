@@ -60,17 +60,15 @@ const LandingPage = () => {
           </div>
 
           <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-            Process documentation
+            Upload a doc. Get a flowchart.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              at superhuman speed
+              Instantly.
             </span>
           </h1>
 
           <p className="text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            Easy visualization. Interactive flowcharts. Dynamic insights. 
-            Upload documents, add voice context, get intelligent process maps with gap analysis. 
-            Built for teams who value simplicity.
+            Add voice context, get dynamic insights — work SuperHumanly fast.
           </p>
 
           <div className="flex items-center justify-center gap-4">
