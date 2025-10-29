@@ -158,7 +158,8 @@ class Process(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str = ""
-    workspaceId: Optional[str] = None  # NEW: Link to workspace
+    userId: Optional[str] = None  # Owner of the process
+    workspaceId: Optional[str] = None  # Link to workspace
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     publishedAt: Optional[datetime] = None  # Added for publish feature
