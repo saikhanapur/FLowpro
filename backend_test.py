@@ -1483,11 +1483,43 @@ class BackendTester:
         print(f"✅ Passed: {passed}/{total}")
         print(f"❌ Failed: {total - passed}/{total}")
         
-        if total - passed > 0:
-            print("\n🔍 FAILED TESTS:")
-            for result in self.test_results:
-                if not result['success']:
-                    print(f"   ❌ {result['test']}: {result['details']}")
+        # Categorize results
+        critical_failures = []
+        ai_failures = []
+        security_failures = []
+        feature_failures = []
+        
+        for result in self.test_results:
+            if not result['success']:
+                test_name = result['test'].lower()
+                if any(keyword in test_name for keyword in ['ai', 'consistency', 'parse', 'transcribe']):
+                    ai_failures.append(result)
+                elif any(keyword in test_name for keyword in ['security', 'sql', 'xss', 'malformed']):
+                    security_failures.append(result)
+                elif any(keyword in test_name for keyword in ['context', 'voice', 'publish']):
+                    feature_failures.append(result)
+                else:
+                    critical_failures.append(result)
+        
+        if critical_failures:
+            print(f"\n🚨 CRITICAL FAILURES ({len(critical_failures)}):")
+            for result in critical_failures:
+                print(f"   ❌ {result['test']}: {result['details']}")
+        
+        if ai_failures:
+            print(f"\n🧠 AI RELIABILITY ISSUES ({len(ai_failures)}):")
+            for result in ai_failures:
+                print(f"   ❌ {result['test']}: {result['details']}")
+        
+        if security_failures:
+            print(f"\n🔒 SECURITY CONCERNS ({len(security_failures)}):")
+            for result in security_failures:
+                print(f"   ❌ {result['test']}: {result['details']}")
+        
+        if feature_failures:
+            print(f"\n🆕 NEW FEATURE ISSUES ({len(feature_failures)}):")
+            for result in feature_failures:
+                print(f"   ❌ {result['test']}: {result['details']}")
         
         # Enterprise readiness assessment
         success_rate = (passed / total) * 100 if total > 0 else 0
