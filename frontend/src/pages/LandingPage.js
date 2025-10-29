@@ -89,7 +89,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 px-6">
+      <section id="features" className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-slate-900 mb-4">
