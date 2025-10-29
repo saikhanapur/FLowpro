@@ -792,6 +792,47 @@ Keep responses concise (2-3 sentences max)."""
 
 ai_service = AIService()
 
+# ============ Authentication Helper ============
+
+async def get_current_user(request: Request) -> Optional[Dict]:
+    """Get current user from JWT token in cookie or Authorization header"""
+    token = None
+    
+    # Try to get token from cookie first
+    token = request.cookies.get("session_token")
+    
+    # Fallback to Authorization header
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if not token:
+        return None
+    
+    # Decode token
+    payload = decode_access_token(token)
+    if not payload:
+        return None
+    
+    # Get user from database
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+    
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        return None
+    
+    return user
+
+async def require_auth(request: Request) -> Dict:
+    """Require authentication - raises 401 if not authenticated"""
+    user = await get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return user
+
 # ============ Routes ============
 
 @api_router.get("/")
