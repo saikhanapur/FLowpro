@@ -11,6 +11,26 @@ import { api } from './utils/api';
 
 function App() {
   const [theme, setTheme] = useState('minimalist');
+  const [currentWorkspace, setCurrentWorkspace] = useState(null);
+  const [workspaces, setWorkspaces] = useState([]);
+
+  useEffect(() => {
+    loadWorkspaces();
+  }, []);
+
+  const loadWorkspaces = async () => {
+    try {
+      const data = await api.getWorkspaces();
+      setWorkspaces(data);
+      // Set default workspace as current
+      const defaultWs = data.find(ws => ws.isDefault) || data[0];
+      if (defaultWs) {
+        setCurrentWorkspace(defaultWs);
+      }
+    } catch (error) {
+      console.error('Failed to load workspaces:', error);
+    }
+  };
 
   return (
     <div className="App min-h-screen">
