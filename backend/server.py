@@ -986,8 +986,17 @@ async def delete_workspace(workspace_id: str):
 
 @api_router.post("/process", response_model=Process)
 async def create_process(process_data: dict):
-    """Create a new process"""
+    """Create a new process with security validation"""
     try:
+        # SECURITY: Sanitize text fields to prevent XSS
+        text_fields = ['name', 'description']
+        for field in text_fields:
+            if field in process_data and process_data[field]:
+                # Remove script tags and other dangerous HTML
+                process_data[field] = re.sub(r'<script[^>]*>.*?</script>', '', process_data[field], flags=re.DOTALL | re.IGNORECASE)
+                process_data[field] = re.sub(r'<iframe[^>]*>.*?</iframe>', '', process_data[field], flags=re.DOTALL | re.IGNORECASE)
+                process_data[field] = re.sub(r'on\w+\s*=', '', process_data[field], flags=re.IGNORECASE)  # Remove event handlers
+        
         # Ensure required datetime fields are present
         now = datetime.now(timezone.utc)
         if 'createdAt' not in process_data or not process_data['createdAt']:
@@ -1020,6 +1029,15 @@ async def create_process(process_data: dict):
             if isinstance(gaps, list):
                 process_data['criticalGaps'] = [str(g) if not isinstance(g, str) else g for g in gaps]
             
+        # VALIDATION: Check required fields
+        required_fields = ['name']
+        missing_fields = [field for field in required_fields if field not in process_data or not process_data[field]]
+        if missing_fields:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Missing required fields: {', '.join(missing_fields)}"
+            )
+            
         # Create and validate Process object
         process = Process(**process_data)
         
@@ -1032,8 +1050,13 @@ async def create_process(process_data: dict):
         
         await db.processes.insert_one(doc)
         return process
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error creating process: {e}")
+        # Return 422 for validation errors instead of 500
+        if 'validation error' in str(e).lower():
+            raise HTTPException(status_code=422, detail=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get("/process", response_model=List[Process])
