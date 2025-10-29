@@ -392,6 +392,235 @@ class BackendTester:
             self.log_result("POST AI Chat", False, f"Error: {str(e)}")
             return False
     
+    def test_get_workspaces(self):
+        """Test GET /api/workspaces - Get all workspaces"""
+        try:
+            response = self.session.get(f"{self.base_url}/workspaces", timeout=TIMEOUT)
+            if response.status_code == 200:
+                workspaces = response.json()
+                if isinstance(workspaces, list):
+                    # Store workspace IDs for move tests
+                    self.workspace_ids = [w.get('id') for w in workspaces if w.get('id')]
+                    self.log_result("GET Workspaces", True, 
+                                  f"Retrieved {len(workspaces)} workspaces. IDs: {self.workspace_ids}")
+                    return workspaces
+                else:
+                    self.log_result("GET Workspaces", False, f"Expected list, got: {type(workspaces)}")
+                    return []
+            else:
+                self.log_result("GET Workspaces", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return []
+        except Exception as e:
+            self.log_result("GET Workspaces", False, f"Error: {str(e)}")
+            return []
+    
+    def test_move_process_success(self):
+        """Test PATCH /api/process/{id}/move - Move process between workspaces (success case)"""
+        if not hasattr(self, 'workspace_ids') or len(self.workspace_ids) < 2:
+            self.log_result("PATCH Move Process (Success)", False, 
+                          "Need at least 2 workspaces to test move functionality")
+            return False
+        
+        if not self.existing_process_ids:
+            self.log_result("PATCH Move Process (Success)", False, "No processes available to move")
+            return False
+        
+        try:
+            # Select a process and target workspace
+            process_id = self.existing_process_ids[0]
+            target_workspace_id = self.workspace_ids[1]  # Move to second workspace
+            
+            # Get initial process state
+            get_response = self.session.get(f"{self.base_url}/process/{process_id}", timeout=TIMEOUT)
+            if get_response.status_code != 200:
+                self.log_result("PATCH Move Process (Success)", False, 
+                              "Could not fetch process before move")
+                return False
+            
+            initial_process = get_response.json()
+            initial_workspace_id = initial_process.get('workspaceId')
+            
+            # Get initial workspace counts
+            workspaces_response = self.session.get(f"{self.base_url}/workspaces", timeout=TIMEOUT)
+            initial_workspaces = workspaces_response.json() if workspaces_response.status_code == 200 else []
+            initial_counts = {ws['id']: ws.get('processCount', 0) for ws in initial_workspaces}
+            
+            # Perform the move
+            move_payload = {"workspaceId": target_workspace_id}
+            response = self.session.patch(f"{self.base_url}/process/{process_id}/move", 
+                                        json=move_payload, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('workspaceId') == target_workspace_id:
+                    # Verify process was moved
+                    verify_response = self.session.get(f"{self.base_url}/process/{process_id}", timeout=TIMEOUT)
+                    if verify_response.status_code == 200:
+                        updated_process = verify_response.json()
+                        if updated_process.get('workspaceId') == target_workspace_id:
+                            # Verify workspace counts updated
+                            final_workspaces_response = self.session.get(f"{self.base_url}/workspaces", timeout=TIMEOUT)
+                            final_workspaces = final_workspaces_response.json() if final_workspaces_response.status_code == 200 else []
+                            final_counts = {ws['id']: ws.get('processCount', 0) for ws in final_workspaces}
+                            
+                            # Check count changes
+                            source_count_decreased = True
+                            target_count_increased = True
+                            
+                            if initial_workspace_id and initial_workspace_id in final_counts:
+                                source_count_decreased = final_counts[initial_workspace_id] == initial_counts.get(initial_workspace_id, 0) - 1
+                            
+                            if target_workspace_id in final_counts:
+                                target_count_increased = final_counts[target_workspace_id] == initial_counts.get(target_workspace_id, 0) + 1
+                            
+                            if source_count_decreased and target_count_increased:
+                                self.log_result("PATCH Move Process (Success)", True, 
+                                              f"Successfully moved process from {initial_workspace_id} to {target_workspace_id}, counts updated correctly")
+                                return True
+                            else:
+                                self.log_result("PATCH Move Process (Success)", False, 
+                                              f"Process moved but workspace counts not updated correctly. Source decreased: {source_count_decreased}, Target increased: {target_count_increased}")
+                                return False
+                        else:
+                            self.log_result("PATCH Move Process (Success)", False, 
+                                          f"Process workspaceId not updated. Expected: {target_workspace_id}, Got: {updated_process.get('workspaceId')}")
+                            return False
+                    else:
+                        self.log_result("PATCH Move Process (Success)", False, 
+                                      "Could not verify process after move")
+                        return False
+                else:
+                    self.log_result("PATCH Move Process (Success)", False, 
+                                  f"Move response workspaceId mismatch. Expected: {target_workspace_id}, Got: {result.get('workspaceId')}")
+                    return False
+            else:
+                self.log_result("PATCH Move Process (Success)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("PATCH Move Process (Success)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_move_process_invalid_process_id(self):
+        """Test PATCH /api/process/{id}/move - Invalid process ID (404 error)"""
+        if not hasattr(self, 'workspace_ids') or len(self.workspace_ids) < 1:
+            self.log_result("PATCH Move Process (Invalid Process)", False, 
+                          "Need at least 1 workspace to test")
+            return False
+        
+        try:
+            invalid_process_id = str(uuid.uuid4())  # Random UUID that doesn't exist
+            target_workspace_id = self.workspace_ids[0]
+            
+            move_payload = {"workspaceId": target_workspace_id}
+            response = self.session.patch(f"{self.base_url}/process/{invalid_process_id}/move", 
+                                        json=move_payload, timeout=TIMEOUT)
+            
+            if response.status_code == 404:
+                self.log_result("PATCH Move Process (Invalid Process)", True, 
+                              "Correctly returned 404 for invalid process ID")
+                return True
+            else:
+                self.log_result("PATCH Move Process (Invalid Process)", False, 
+                              f"Expected 404, got HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("PATCH Move Process (Invalid Process)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_move_process_invalid_workspace_id(self):
+        """Test PATCH /api/process/{id}/move - Invalid workspace ID (404 error)"""
+        if not self.existing_process_ids:
+            self.log_result("PATCH Move Process (Invalid Workspace)", False, 
+                          "No processes available to test with")
+            return False
+        
+        try:
+            process_id = self.existing_process_ids[0]
+            invalid_workspace_id = str(uuid.uuid4())  # Random UUID that doesn't exist
+            
+            move_payload = {"workspaceId": invalid_workspace_id}
+            response = self.session.patch(f"{self.base_url}/process/{process_id}/move", 
+                                        json=move_payload, timeout=TIMEOUT)
+            
+            if response.status_code == 404:
+                self.log_result("PATCH Move Process (Invalid Workspace)", True, 
+                              "Correctly returned 404 for invalid workspace ID")
+                return True
+            else:
+                self.log_result("PATCH Move Process (Invalid Workspace)", False, 
+                              f"Expected 404, got HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("PATCH Move Process (Invalid Workspace)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_move_process_missing_workspace_id(self):
+        """Test PATCH /api/process/{id}/move - Missing workspaceId in body (400 error)"""
+        if not self.existing_process_ids:
+            self.log_result("PATCH Move Process (Missing WorkspaceId)", False, 
+                          "No processes available to test with")
+            return False
+        
+        try:
+            process_id = self.existing_process_ids[0]
+            
+            # Send request without workspaceId
+            move_payload = {}  # Empty payload
+            response = self.session.patch(f"{self.base_url}/process/{process_id}/move", 
+                                        json=move_payload, timeout=TIMEOUT)
+            
+            if response.status_code == 400:
+                self.log_result("PATCH Move Process (Missing WorkspaceId)", True, 
+                              "Correctly returned 400 for missing workspaceId")
+                return True
+            else:
+                self.log_result("PATCH Move Process (Missing WorkspaceId)", False, 
+                              f"Expected 400, got HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("PATCH Move Process (Missing WorkspaceId)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_get_processes_by_workspace(self):
+        """Test GET /api/process?workspace_id={id} - Filter processes by workspace"""
+        if not hasattr(self, 'workspace_ids') or len(self.workspace_ids) < 1:
+            self.log_result("GET Processes by Workspace", False, 
+                          "No workspaces available to test filtering")
+            return False
+        
+        try:
+            workspace_id = self.workspace_ids[0]
+            response = self.session.get(f"{self.base_url}/process?workspace_id={workspace_id}", 
+                                      timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                processes = response.json()
+                if isinstance(processes, list):
+                    # Verify all processes belong to the specified workspace
+                    all_match = all(p.get('workspaceId') == workspace_id for p in processes)
+                    if all_match:
+                        self.log_result("GET Processes by Workspace", True, 
+                                      f"Retrieved {len(processes)} processes for workspace {workspace_id}")
+                        return True
+                    else:
+                        mismatched = [p.get('id') for p in processes if p.get('workspaceId') != workspace_id]
+                        self.log_result("GET Processes by Workspace", False, 
+                                      f"Some processes don't match workspace filter: {mismatched}")
+                        return False
+                else:
+                    self.log_result("GET Processes by Workspace", False, 
+                                  f"Expected list, got: {type(processes)}")
+                    return False
+            else:
+                self.log_result("GET Processes by Workspace", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("GET Processes by Workspace", False, f"Error: {str(e)}")
+            return False
+
     def test_delete_process(self):
         """Test DELETE /api/process/{id} - Delete process (cleanup)"""
         # Only delete test processes we created
