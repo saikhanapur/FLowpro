@@ -112,6 +112,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
         <MultiProcessReview 
           processesData={extractedData}
           onBack={() => setExtractedData(null)}
+          currentWorkspace={currentWorkspace}
         />
       );
     }
