@@ -791,6 +791,127 @@ async def unpublish_process(process_id: str):
         logger.error(f"Error unpublishing process: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to unpublish process: {str(e)}")
 
+# ============ Workspace APIs ============
+
+@api_router.get("/workspaces", response_model=List[Workspace])
+async def get_workspaces():
+    """Get all workspaces"""
+    try:
+        workspaces = await db.workspaces.find().to_list(length=None)
+        for ws in workspaces:
+            ws['_id'] = str(ws['_id'])
+            # Convert datetime to ISO string
+            if isinstance(ws.get('createdAt'), datetime):
+                ws['createdAt'] = ws['createdAt'].isoformat()
+            if isinstance(ws.get('updatedAt'), datetime):
+                ws['updatedAt'] = ws['updatedAt'].isoformat()
+        return [Workspace(**ws) for ws in workspaces]
+    except Exception as e:
+        logger.error(f"Error fetching workspaces: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch workspaces: {str(e)}")
+
+@api_router.post("/workspaces", response_model=Workspace)
+async def create_workspace(workspace: Workspace):
+    """Create a new workspace"""
+    try:
+        workspace_dict = workspace.model_dump()
+        workspace_dict['createdAt'] = workspace_dict['createdAt'].isoformat()
+        workspace_dict['updatedAt'] = workspace_dict['updatedAt'].isoformat()
+        
+        # If this is the first workspace, mark it as default
+        existing_count = await db.workspaces.count_documents({})
+        if existing_count == 0:
+            workspace_dict['isDefault'] = True
+        
+        await db.workspaces.insert_one(workspace_dict)
+        workspace_dict['_id'] = str(workspace_dict['_id'])
+        return Workspace(**workspace_dict)
+    except Exception as e:
+        logger.error(f"Error creating workspace: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create workspace: {str(e)}")
+
+@api_router.get("/workspaces/{workspace_id}", response_model=Workspace)
+async def get_workspace(workspace_id: str):
+    """Get a specific workspace"""
+    try:
+        workspace = await db.workspaces.find_one({"id": workspace_id})
+        if not workspace:
+            raise HTTPException(status_code=404, detail="Workspace not found")
+        
+        workspace['_id'] = str(workspace['_id'])
+        if isinstance(workspace.get('createdAt'), datetime):
+            workspace['createdAt'] = workspace['createdAt'].isoformat()
+        if isinstance(workspace.get('updatedAt'), datetime):
+            workspace['updatedAt'] = workspace['updatedAt'].isoformat()
+        return Workspace(**workspace)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching workspace: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch workspace: {str(e)}")
+
+@api_router.put("/workspaces/{workspace_id}", response_model=Workspace)
+async def update_workspace(workspace_id: str, workspace: Workspace):
+    """Update a workspace"""
+    try:
+        workspace_dict = workspace.model_dump()
+        workspace_dict['updatedAt'] = datetime.now(timezone.utc).isoformat()
+        
+        result = await db.workspaces.update_one(
+            {"id": workspace_id},
+            {"$set": workspace_dict}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Workspace not found")
+        
+        updated = await db.workspaces.find_one({"id": workspace_id})
+        updated['_id'] = str(updated['_id'])
+        if isinstance(updated.get('createdAt'), datetime):
+            updated['createdAt'] = updated['createdAt'].isoformat()
+        if isinstance(updated.get('updatedAt'), datetime):
+            updated['updatedAt'] = updated['updatedAt'].isoformat()
+        return Workspace(**updated)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating workspace: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update workspace: {str(e)}")
+
+@api_router.delete("/workspaces/{workspace_id}")
+async def delete_workspace(workspace_id: str):
+    """Delete a workspace - processes will be moved to default workspace"""
+    try:
+        workspace = await db.workspaces.find_one({"id": workspace_id})
+        if not workspace:
+            raise HTTPException(status_code=404, detail="Workspace not found")
+        
+        # Don't allow deleting default workspace if it has processes
+        if workspace.get('isDefault'):
+            count = await db.processes.count_documents({"workspaceId": workspace_id})
+            if count > 0:
+                raise HTTPException(status_code=400, detail="Cannot delete default workspace with processes")
+        
+        # Move all processes to default workspace
+        default_workspace = await db.workspaces.find_one({"isDefault": True})
+        if default_workspace and default_workspace['id'] != workspace_id:
+            await db.processes.update_many(
+                {"workspaceId": workspace_id},
+                {"$set": {"workspaceId": default_workspace['id']}}
+            )
+        
+        await db.workspaces.delete_one({"id": workspace_id})
+        return {"message": "Workspace deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting workspace: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete workspace: {str(e)}")
+
+# ============ Process APIs ============
+        logger.error(f"Error unpublishing process: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to unpublish process: {str(e)}")
+
 @api_router.post("/process", response_model=Process)
 async def create_process(process: Process):
     """Create a new process"""
