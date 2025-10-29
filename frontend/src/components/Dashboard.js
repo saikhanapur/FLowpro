@@ -291,11 +291,38 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           {filteredProcesses.map((process) => (
             <Card
               key={process.id}
-              className="p-6 hover:shadow-lg transition-shadow cursor-pointer fade-in"
-              onClick={() => navigate(`/edit/${process.id}`)}
+              className={`p-6 hover:shadow-lg transition-all cursor-pointer fade-in relative ${
+                selectMode && selectedProcesses.includes(process.id) 
+                  ? 'ring-2 ring-blue-500 bg-blue-50/50' 
+                  : ''
+              }`}
+              onClick={() => {
+                if (selectMode) {
+                  toggleProcessSelection(process.id);
+                } else {
+                  navigate(`/edit/${process.id}`);
+                }
+              }}
               data-testid={`process-card-${process.id}`}
             >
-              <div className="flex items-start justify-between mb-4">
+              {/* Selection checkbox */}
+              {selectMode && (
+                <div className="absolute top-4 left-4 z-10">
+                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
+                    selectedProcesses.includes(process.id)
+                      ? 'bg-blue-600 border-blue-600'
+                      : 'bg-white border-slate-300'
+                  }`}>
+                    {selectedProcesses.includes(process.id) && (
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className={`flex items-start justify-between mb-4 ${selectMode ? 'ml-8' : ''}`}>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-slate-800 mb-1">
                     {process.name}
@@ -333,24 +360,26 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                 </div>
               )}
 
-              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => navigate(`/edit/${process.id}`)}
-                  data-testid={`edit-btn-${process.id}`}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDelete(process.id)}
-                  data-testid={`delete-btn-${process.id}`}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+              {!selectMode && (
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => navigate(`/edit/${process.id}`)}
+                    data-testid={`edit-btn-${process.id}`}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDelete(process.id)}
+                    data-testid={`delete-btn-${process.id}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
             </Card>
           ))}
         </div>
