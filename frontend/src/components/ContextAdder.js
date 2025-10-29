@@ -224,21 +224,52 @@ const ContextAdder = ({ documentText, onContextAdded, onSkip }) => {
                   placeholder="Type additional context here...&#10;&#10;Example:&#10;- The approval step usually takes 2 business days&#10;- Sarah from Finance handles all approvals&#10;- Manager sign-off needed for amounts over $5,000"
                   className="w-full h-48 px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-purple-500 focus:outline-none resize-none"
                   data-testid="chat-context-input"
+                  autoFocus
                 />
               </div>
             )}
 
-            {/* Transcribed Text Display (for voice mode) */}
+            {/* Transcribed Text Display - AFTER transcription completes */}
             {mode === 'voice' && chatContext && !isTranscribing && (
-              <div className="mb-4">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Transcribed Text (Edit if needed)
-                </label>
-                <textarea
-                  value={chatContext}
-                  onChange={(e) => setChatContext(e.target.value)}
-                  className="w-full h-32 px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                />
+              <div className="space-y-4">
+                {/* Success indicator */}
+                <div className="flex items-center justify-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg mb-4">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm font-semibold text-green-800">
+                    Voice transcribed successfully! Review and edit if needed:
+                  </span>
+                </div>
+
+                {/* Editable transcription */}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    What You Said (edit if needed):
+                  </label>
+                  <textarea
+                    value={chatContext}
+                    onChange={(e) => setChatContext(e.target.value)}
+                    className="w-full h-40 px-4 py-3 border-2 border-blue-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none bg-blue-50"
+                    autoFocus
+                  />
+                  <p className="text-xs text-slate-500 mt-2">
+                    💡 Tip: You can edit the text above if the transcription isn't perfect
+                  </p>
+                </div>
+
+                {/* Re-record option */}
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => {
+                      setChatContext('');
+                      setIsRecording(false);
+                      setIsTranscribing(false);
+                    }}
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                  >
+                    <Mic className="w-4 h-4" />
+                    Record Again
+                  </button>
+                </div>
               </div>
             )}
 
