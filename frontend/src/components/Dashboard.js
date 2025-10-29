@@ -27,6 +27,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [processes, setProcesses] = useState([]);
+  const [allProcesses, setAllProcesses] = useState([]); // Track ALL user processes
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
