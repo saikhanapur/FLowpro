@@ -49,6 +49,8 @@ export const AuthProvider = ({ children }) => {
       }
       
       setUser(data.user);
+      setLoading(false);
+      setSkipAuthCheck(true); // Don't check auth immediately after login
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
     } catch (error) {
@@ -68,6 +70,8 @@ export const AuthProvider = ({ children }) => {
       }
       
       setUser(data.user);
+      setLoading(false);
+      setSkipAuthCheck(true); // Don't check auth immediately after signup
       toast.success(`Welcome to FlowForge, ${data.user.name}!`);
       return data;
     } catch (error) {
@@ -88,6 +92,7 @@ export const AuthProvider = ({ children }) => {
       
       setUser(data.user);
       setLoading(false);
+      setSkipAuthCheck(true); // Don't check auth immediately after Google login
       
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
