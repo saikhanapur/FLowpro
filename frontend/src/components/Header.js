@@ -123,7 +123,7 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => navigate('/')}>
+              <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                 My Processes
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/templates')}>
