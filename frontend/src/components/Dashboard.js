@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, Eye, Edit, Trash2, Share } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash2, Share, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -14,6 +14,24 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+
+  // Helper function to format published date
+  const formatPublishedDate = (dateString) => {
+    if (!dateString) return null;
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Published today';
+    if (diffDays === 1) return 'Published yesterday';
+    if (diffDays < 7) return `Published ${diffDays} days ago`;
+    if (diffDays < 30) return `Published ${Math.floor(diffDays / 7)} weeks ago`;
+    
+    // Format as "Published Jan 15, 2025"
+    return `Published ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  };
 
   useEffect(() => {
     loadProcesses();
