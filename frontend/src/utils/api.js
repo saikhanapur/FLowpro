@@ -6,6 +6,20 @@ const API = `${BACKEND_URL}/api`;
 // Configure axios to always send credentials (cookies)
 axios.defaults.withCredentials = true;
 
+// Add request interceptor to include token from localStorage if available
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export const api = {
   // Process endpoints
   parseProcess: async (text, inputType, additionalContext = null) => {
