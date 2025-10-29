@@ -123,6 +123,28 @@ const FlowchartEditor = ({ theme }) => {
           </div>
 
           <div className="flex items-center gap-2">
+            {process.status === 'published' ? (
+              <>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                  <CheckCircle className="w-4 h-4 text-emerald-600" />
+                  <span className="text-sm font-medium text-emerald-700">Published</span>
+                </div>
+                <Button onClick={handleUnpublish} variant="outline" size="sm">
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Return to Draft
+                </Button>
+              </>
+            ) : (
+              <Button 
+                onClick={() => setShowPublishDialog(true)} 
+                variant="default" 
+                size="sm"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Publish Process
+              </Button>
+            )}
             <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
               <Sparkles className="w-4 h-4 mr-2" />
               Ideal State
