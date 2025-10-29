@@ -44,7 +44,16 @@ function App() {
           onWorkspacesUpdate={loadWorkspaces}
         />
         <Routes>
-          <Route path="/" element={<Dashboard currentWorkspace={currentWorkspace} />} />
+          <Route 
+            path="/" 
+            element={
+              <Dashboard 
+                currentWorkspace={currentWorkspace} 
+                workspaces={workspaces}
+                onWorkspacesUpdate={loadWorkspaces}
+              />
+            } 
+          />
           <Route path="/create" element={<ProcessCreator currentWorkspace={currentWorkspace} />} />
           <Route path="/edit/:id" element={<FlowchartEditor theme={theme} />} />
           <Route path="/templates" element={<TemplateGallery />} />
