@@ -42,6 +42,7 @@ const MultiProcessReview = ({ processesData, onBack, currentWorkspace }) => {
           id: `process-${Date.now()}-${index}`,
           name: processData.processName,
           description: processData.description || '',
+          workspaceId: currentWorkspace?.id, // Assign to current workspace
           nodes: processData.nodes.map((node, idx) => ({
             ...node,
             position: { x: 100, y: 100 + (idx * 150) }
