@@ -52,7 +52,7 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
             onWorkspacesUpdate={onWorkspacesUpdate}
           />
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
             data-testid="nav-processes"
           >
