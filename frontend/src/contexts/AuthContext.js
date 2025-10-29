@@ -15,42 +15,32 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [initialized, setInitialized] = useState(false);
-  const [skipAuthCheck, setSkipAuthCheck] = useState(false);
 
-  // Check for existing session on mount
+  // Check for existing session on mount ONLY
   useEffect(() => {
-    if (!skipAuthCheck) {
-      checkAuth();
-    }
-  }, [skipAuthCheck]);
-
-  const checkAuth = async () => {
-    try {
-      const userData = await api.getMe();
-      setUser(userData);
-    } catch (error) {
-      // Not authenticated - that's okay
-      setUser(null);
-    } finally {
+    const initAuth = async () => {
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        try {
+          const userData = await api.getMe();
+          setUser(userData);
+        } catch (error) {
+          // Token invalid or expired
+          localStorage.removeItem('auth_token');
+          setUser(null);
+        }
+      }
       setLoading(false);
-      setInitialized(true);
-      setSkipAuthCheck(false);
-    }
-  };
+    };
+
+    initAuth();
+  }, []);
 
   const login = async (email, password) => {
     try {
       const data = await api.login(email, password);
-      
-      // Store token in localStorage as backup
-      if (data.access_token) {
-        localStorage.setItem('auth_token', data.access_token);
-      }
-      
+      localStorage.setItem('auth_token', data.access_token);
       setUser(data.user);
-      setLoading(false);
-      setSkipAuthCheck(true); // Don't check auth immediately after login
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
     } catch (error) {
@@ -63,15 +53,8 @@ export const AuthProvider = ({ children }) => {
   const signup = async (email, password, name) => {
     try {
       const data = await api.signup(email, password, name);
-      
-      // Store token in localStorage as backup
-      if (data.access_token) {
-        localStorage.setItem('auth_token', data.access_token);
-      }
-      
+      localStorage.setItem('auth_token', data.access_token);
       setUser(data.user);
-      setLoading(false);
-      setSkipAuthCheck(true); // Don't check auth immediately after signup
       toast.success(`Welcome to FlowForge, ${data.user.name}!`);
       return data;
     } catch (error) {
@@ -84,16 +67,8 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async (sessionId) => {
     try {
       const data = await api.googleSession(sessionId);
-      
-      // Store token in localStorage as backup
-      if (data.access_token) {
-        localStorage.setItem('auth_token', data.access_token);
-      }
-      
+      localStorage.setItem('auth_token', data.access_token);
       setUser(data.user);
-      setLoading(false);
-      setSkipAuthCheck(true); // Don't check auth immediately after Google login
-      
       toast.success(`Welcome back, ${data.user.name}!`);
       return data;
     } catch (error) {
@@ -106,24 +81,23 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
       localStorage.removeItem('auth_token');
       setUser(null);
       toast.success('Logged out successfully');
-    } catch (error) {
-      console.error('Logout error:', error);
     }
   };
 
   const value = {
     user,
     loading,
-    initialized,
     isAuthenticated: !!user,
     login,
     signup,
     loginWithGoogle,
-    logout,
-    checkAuth
+    logout
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
