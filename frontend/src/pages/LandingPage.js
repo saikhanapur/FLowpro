@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, Zap, Users, Shield, ChevronRight, CheckCircle, Play } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, Users, Shield, ChevronRight, CheckCircle, Play, Upload, Mic, Network, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const LandingPage = () => {
