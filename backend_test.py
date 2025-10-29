@@ -675,6 +675,21 @@ class BackendTester:
         self.test_create_process()
         self.test_update_process()
         
+        # Test Workspace endpoints and Move Process functionality
+        print("\n🏢 Testing Workspace & Move Process Endpoints...")
+        workspaces = self.test_get_workspaces()
+        if workspaces and len(workspaces) >= 2:
+            self.test_move_process_success()
+            self.test_get_processes_by_workspace()
+        else:
+            print("⚠️  Skipping move tests - need at least 2 workspaces")
+        
+        # Test error cases for move process
+        print("\n🚨 Testing Move Process Error Cases...")
+        self.test_move_process_invalid_process_id()
+        self.test_move_process_invalid_workspace_id()
+        self.test_move_process_missing_workspace_id()
+        
         # Test Document Upload & AI Processing
         print("\n🤖 Testing Document Upload & AI Processing...")
         uploaded_text = self.test_document_upload()
