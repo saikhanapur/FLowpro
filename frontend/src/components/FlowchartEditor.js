@@ -264,6 +264,65 @@ const FlowchartEditor = ({ theme }) => {
       )}
 
       {/* Modals */}
+      {showPublishDialog && (
+        <Dialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                <CheckCircle className="w-6 h-6 text-emerald-600" />
+                Publish Process
+              </DialogTitle>
+              <DialogDescription className="text-base pt-2">
+                Publishing makes this process official and ready to share.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-900 mb-2">What happens when you publish:</h4>
+                <ul className="space-y-2 text-sm text-blue-800">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span><strong>Version Control:</strong> Creates version {process.version + 1} for audit trail</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span><strong>Team Visibility:</strong> Marks as official for stakeholders</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span><strong>Professional Status:</strong> Shows completed work vs draft</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span><strong>Shareable:</strong> Ready to export and share with clients</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-sm text-amber-800">
+                  <strong>Note:</strong> You can return to draft mode anytime to make edits.
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowPublishDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handlePublish} 
+                disabled={publishing}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {publishing ? 'Publishing...' : '✓ Publish Process'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {showIdealState && idealStateData && (
         <IdealStateModal
           data={idealStateData}
