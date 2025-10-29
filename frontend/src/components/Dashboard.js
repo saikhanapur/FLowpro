@@ -153,6 +153,38 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     }
   };
 
+  const handleCreateWorkspace = async () => {
+    if (!newWorkspaceName.trim()) {
+      toast.error('Please enter a workspace name');
+      return;
+    }
+
+    setCreatingWorkspace(true);
+    try {
+      const newWorkspace = await api.createWorkspace({
+        name: newWorkspaceName.trim(),
+        description: newWorkspaceDesc.trim() || `${newWorkspaceName} workspace`
+      });
+
+      toast.success(`Workspace "${newWorkspaceName}" created!`);
+      
+      // Reset form
+      setNewWorkspaceName('');
+      setNewWorkspaceDesc('');
+      setShowCreateWorkspaceModal(false);
+      
+      // Refresh workspaces
+      if (onWorkspacesUpdate) {
+        onWorkspacesUpdate();
+      }
+    } catch (error) {
+      toast.error('Failed to create workspace');
+      console.error(error);
+    } finally {
+      setCreatingWorkspace(false);
+    }
+  };
+
   const filteredProcesses = processes.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           p.description?.toLowerCase().includes(searchQuery.toLowerCase());
