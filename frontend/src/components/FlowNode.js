@@ -1,22 +1,65 @@
 import React from 'react';
 import { AlertCircle, CheckCircle, AlertTriangle, Zap } from 'lucide-react';
 
+// Map node types to visual indicators
+const NODE_TYPE_CONFIG = {
+  trigger: { emoji: '⚡', borderColor: 'border-l-blue-500', bgTint: 'bg-blue-50/30' },
+  action: { emoji: '▶️', borderColor: 'border-l-emerald-500', bgTint: 'bg-emerald-50/30' },
+  decision: { emoji: '❓', borderColor: 'border-l-purple-500', bgTint: 'bg-purple-50/30' },
+  approval: { emoji: '✋', borderColor: 'border-l-amber-500', bgTint: 'bg-amber-50/30' },
+  review: { emoji: '👀', borderColor: 'border-l-indigo-500', bgTint: 'bg-indigo-50/30' },
+  notification: { emoji: '📧', borderColor: 'border-l-cyan-500', bgTint: 'bg-cyan-50/30' },
+  outcome: { emoji: '✅', borderColor: 'border-l-green-500', bgTint: 'bg-green-50/30' },
+  completed: { emoji: '✓', borderColor: 'border-l-slate-400', bgTint: 'bg-slate-50/30' },
+  warning: { emoji: '⚠️', borderColor: 'border-l-orange-500', bgTint: 'bg-orange-50/30' },
+  'critical-gap': { emoji: '🚨', borderColor: 'border-l-rose-500', bgTint: 'bg-rose-50/30' },
+  default: { emoji: '📋', borderColor: 'border-l-slate-400', bgTint: 'bg-slate-50/20' }
+};
+
 const FlowNode = ({ node, onClick, isSelected }) => {
+  // Detect node type from title, description, or explicit type field
+  const detectNodeType = () => {
+    // Check explicit type first
+    if (node.type && NODE_TYPE_CONFIG[node.type]) {
+      return node.type;
+    }
+    
+    // Use status as fallback
+    if (node.status && NODE_TYPE_CONFIG[node.status]) {
+      return node.status;
+    }
+    
+    // Smart detection from title/description
+    const text = `${node.title} ${node.description}`.toLowerCase();
+    
+    if (text.includes('trigger') || text.includes('start') || text.includes('submit')) return 'trigger';
+    if (text.includes('approve') || text.includes('approval')) return 'approval';
+    if (text.includes('review') || text.includes('check')) return 'review';
+    if (text.includes('decide') || text.includes('decision') || text.includes('?')) return 'decision';
+    if (text.includes('notify') || text.includes('send') || text.includes('email')) return 'notification';
+    if (text.includes('complete') || text.includes('done') || text.includes('finish')) return 'outcome';
+    
+    return 'action'; // Default to action for process steps
+  };
+  
+  const nodeType = detectNodeType();
+  const typeConfig = NODE_TYPE_CONFIG[nodeType] || NODE_TYPE_CONFIG.default;
+
   const getStatusStyles = () => {
     switch (node.status) {
       case 'trigger':
         return 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg';
       case 'current':
       case 'active':  // Support AI-generated "active" status
-        return 'bg-white border border-emerald-300/60 text-slate-800 shadow-md hover:shadow-lg';
+        return `bg-white border border-emerald-300/60 text-slate-800 shadow-md hover:shadow-lg ${typeConfig.bgTint}`;
       case 'warning':
-        return 'bg-white border border-amber-300/60 text-slate-800 shadow-md hover:shadow-lg';
+        return `bg-white border border-amber-300/60 text-slate-800 shadow-md hover:shadow-lg ${typeConfig.bgTint}`;
       case 'completed':  // Support AI-generated "completed" status
-        return 'bg-white border border-slate-300/50 text-slate-800 shadow-md hover:shadow-lg';
+        return `bg-white border border-slate-300/50 text-slate-800 shadow-md hover:shadow-lg ${typeConfig.bgTint}`;
       case 'critical-gap':
         return 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg';
       default:
-        return 'bg-white border border-slate-300/50 text-slate-800 shadow-md hover:shadow-lg';
+        return `bg-white border border-slate-300/50 text-slate-800 shadow-md hover:shadow-lg ${typeConfig.bgTint}`;
     }
   };
 
