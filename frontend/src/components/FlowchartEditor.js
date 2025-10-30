@@ -18,11 +18,11 @@ import ShareModal from './ShareModal';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const FlowchartEditor = ({ theme }) => {
+const FlowchartEditor = ({ theme, readOnly = false, processData }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [process, setProcess] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [process, setProcess] = useState(processData || null);
+  const [loading, setLoading] = useState(!processData);
   const [selectedNode, setSelectedNode] = useState(null);
   const [showIdealState, setShowIdealState] = useState(false);
   const [idealStateData, setIdealStateData] = useState(null);
