@@ -348,9 +348,10 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             )}
             
             {/* Export Button - Always Available */}
-            <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn">
-              <Download className="w-4 h-4 mr-2" />
-              Export
+            <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn" className="flex-shrink-0">
+              <Download className="w-4 h-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Export</span>
+              <span className="sm:hidden">Export</span>
             </Button>
             
             {/* Refine with AI Button - Always Available for owners */}
@@ -359,10 +360,11 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 onClick={handleOpenAIChat}
                 variant="outline" 
                 size="sm"
-                className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700"
+                className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700 flex-shrink-0"
               >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Refine with AI
+                <MessageSquare className="w-4 h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Refine with AI</span>
+                <span className="sm:hidden">AI</span>
               </Button>
             )}
             
