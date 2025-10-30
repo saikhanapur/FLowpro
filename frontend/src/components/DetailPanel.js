@@ -253,10 +253,22 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
         {canEdit && (
           <div className="pt-4 border-t border-slate-200">
             {isEditing ? (
-              <Button onClick={handleSave} className="w-full" data-testid="save-node-btn">
-                <Save className="w-4 h-4 mr-2" />
-                Save Changes
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={handleSave} disabled={saving} className="flex-1" data-testid="save-node-btn">
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditedNode(node);
+                  }} 
+                  variant="outline"
+                  disabled={saving}
+                >
+                  Cancel
+                </Button>
+              </div>
             ) : (
               <Button onClick={() => setIsEditing(true)} variant="outline" className="w-full" data-testid="edit-node-btn">
                 <Edit className="w-4 h-4 mr-2" />
