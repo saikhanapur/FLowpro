@@ -188,6 +188,39 @@ class Comment(BaseModel):
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     isResolved: bool = False
 
+class Share(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    token: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
+    processId: str
+    accessLevel: str  # "view", "comment", "edit"
+    
+    # Owner tracking
+    createdBy: str  # userId of share creator
+    createdByName: str  # User's name for display
+    
+    # Expiration
+    expiresAt: Optional[datetime] = None  # None = never expires
+    isActive: bool = True  # Can be revoked without deleting
+    
+    # Usage tracking
+    accessCount: int = 0
+    lastAccessedAt: Optional[datetime] = None
+    
+    # Timestamps
+    createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    revokedAt: Optional[datetime] = None
+
+class CreateShareRequest(BaseModel):
+    accessLevel: str
+    expiresInDays: Optional[int] = None  # 7, 30, 90, or None for never
+
+# Constants for validation
+ALLOWED_ACCESS_LEVELS = ["view", "comment", "edit"]
+ALLOWED_EXPIRATION_DAYS = [7, 30, 90, None]
+
 # ============ AI Service ============
 
 class AIService:
