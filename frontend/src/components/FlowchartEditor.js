@@ -357,32 +357,38 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             </div>
 
             {/* Flowchart Nodes */}
-            <div className="flex flex-col items-center space-y-0">
+            <div className="flex flex-col items-center space-y-8">
               {process.nodes?.map((node, idx) => (
-                <div key={node.id} className="node-container w-full max-w-4xl relative">
-                  {/* Reorder Controls (Only in Edit Mode) */}
+                <div 
+                  key={node.id} 
+                  className="node-container w-full max-w-4xl relative group"
+                  style={{ transition: 'all 300ms ease-out' }}
+                >
+                  {/* Hover-Reveal Reorder Controls (Only in Edit Mode) */}
                   {!readOnly && isEditMode && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full ml-2 flex flex-col gap-1 z-10">
-                      <Button
-                        onClick={() => handleMoveNode(idx, 'up')}
+                    <div className="absolute top-3 right-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveNode(idx, 'up');
+                        }}
                         disabled={idx === 0 || reordering}
-                        size="sm"
-                        variant="outline"
-                        className="w-8 h-8 p-0 rounded-full bg-white shadow-md hover:bg-blue-50 disabled:opacity-30"
+                        className="w-7 h-7 flex items-center justify-center rounded-md bg-white/90 backdrop-blur-sm shadow-sm hover:bg-blue-50 hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150"
                         title="Move Up"
                       >
-                        <ArrowUp className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        onClick={() => handleMoveNode(idx, 'down')}
+                        <ArrowUp className="w-3.5 h-3.5 text-slate-600" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMoveNode(idx, 'down');
+                        }}
                         disabled={idx === process.nodes.length - 1 || reordering}
-                        size="sm"
-                        variant="outline"
-                        className="w-8 h-8 p-0 rounded-full bg-white shadow-md hover:bg-blue-50 disabled:opacity-30"
+                        className="w-7 h-7 flex items-center justify-center rounded-md bg-white/90 backdrop-blur-sm shadow-sm hover:bg-blue-50 hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150"
                         title="Move Down"
                       >
-                        <ArrowDown className="w-4 h-4" />
-                      </Button>
+                        <ArrowDown className="w-3.5 h-3.5 text-slate-600" />
+                      </button>
                     </div>
                   )}
                   
