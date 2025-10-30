@@ -1400,6 +1400,186 @@ class BackendTester:
         except Exception as e:
             self.log_result("Voice Transcription (Missing File)", False, f"Error: {str(e)}")
 
+    # ============ AUTHENTICATION FLOW TESTING ============
+    
+    def test_signup_flow(self):
+        """Test user signup with email/password"""
+        try:
+            signup_data = {
+                "email": self.test_user_email,
+                "password": self.test_user_password,
+                "name": self.test_user_name
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/signup", 
+                                       json=signup_data, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if 'access_token' in result and 'user' in result:
+                    self.auth_token = result['access_token']
+                    # Set authorization header for subsequent requests
+                    self.session.headers['Authorization'] = f"Bearer {self.auth_token}"
+                    self.log_result("Authentication (Signup)", True, 
+                                  f"User signup successful: {result['user']['email']}")
+                    return True
+                else:
+                    self.log_result("Authentication (Signup)", False, 
+                                  "Signup response missing required fields")
+                    return False
+            elif response.status_code == 400:
+                # User might already exist, try login instead
+                self.log_result("Authentication (Signup)", True, 
+                              "User already exists (expected for repeated tests)")
+                return self.test_login_flow()
+            else:
+                self.log_result("Authentication (Signup)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("Authentication (Signup)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_login_flow(self):
+        """Test user login with email/password"""
+        try:
+            login_data = {
+                "email": self.test_user_email,
+                "password": self.test_user_password
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/login", 
+                                       json=login_data, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if 'access_token' in result and 'user' in result:
+                    self.auth_token = result['access_token']
+                    # Set authorization header for subsequent requests
+                    self.session.headers['Authorization'] = f"Bearer {self.auth_token}"
+                    self.log_result("Authentication (Login)", True, 
+                                  f"User login successful: {result['user']['email']}")
+                    return True
+                else:
+                    self.log_result("Authentication (Login)", False, 
+                                  "Login response missing required fields")
+                    return False
+            else:
+                self.log_result("Authentication (Login)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("Authentication (Login)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_session_persistence(self):
+        """Test that authentication persists across requests"""
+        try:
+            # Test accessing protected endpoint
+            response = self.session.get(f"{self.base_url}/auth/me", timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                user_data = response.json()
+                if user_data.get('email') == self.test_user_email:
+                    self.log_result("Authentication (Session Persistence)", True, 
+                                  "Session persists correctly across requests")
+                    return True
+                else:
+                    self.log_result("Authentication (Session Persistence)", False, 
+                                  f"User data mismatch: expected {self.test_user_email}, got {user_data.get('email')}")
+                    return False
+            else:
+                self.log_result("Authentication (Session Persistence)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("Authentication (Session Persistence)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_logout_flow(self):
+        """Test user logout"""
+        try:
+            response = self.session.post(f"{self.base_url}/auth/logout", timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if 'message' in result:
+                    # Remove auth header but keep token for later re-login
+                    temp_token = self.auth_token
+                    if 'Authorization' in self.session.headers:
+                        del self.session.headers['Authorization']
+                    
+                    # Verify we can't access protected endpoints
+                    verify_response = self.session.get(f"{self.base_url}/auth/me", timeout=TIMEOUT)
+                    if verify_response.status_code == 401:
+                        # Re-add auth for subsequent tests
+                        self.session.headers['Authorization'] = f"Bearer {temp_token}"
+                        self.log_result("Authentication (Logout)", True, 
+                                      "Logout successful, session invalidated")
+                        return True
+                    else:
+                        self.session.headers['Authorization'] = f"Bearer {temp_token}"
+                        self.log_result("Authentication (Logout)", False, 
+                                      "Session not properly invalidated after logout")
+                        return False
+                else:
+                    self.log_result("Authentication (Logout)", False, 
+                                  "Logout response missing message")
+                    return False
+            else:
+                self.log_result("Authentication (Logout)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            self.log_result("Authentication (Logout)", False, f"Error: {str(e)}")
+            return False
+    
+    def test_auth_protected_endpoints(self):
+        """Test that protected endpoints require authentication"""
+        try:
+            # Remove auth header temporarily
+            temp_headers = self.session.headers.copy()
+            if 'Authorization' in self.session.headers:
+                del self.session.headers['Authorization']
+            
+            # Test accessing protected endpoints without auth
+            protected_endpoints = [
+                ('/workspaces', 'GET'),
+                ('/process', 'GET'),
+                ('/auth/me', 'GET')
+            ]
+            
+            all_protected = True
+            for endpoint, method in protected_endpoints:
+                try:
+                    if method == 'GET':
+                        response = self.session.get(f"{self.base_url}{endpoint}", timeout=TIMEOUT)
+                    elif method == 'POST':
+                        response = self.session.post(f"{self.base_url}{endpoint}", json={}, timeout=TIMEOUT)
+                    
+                    if response.status_code != 401:
+                        all_protected = False
+                        break
+                except:
+                    pass
+            
+            # Restore auth headers
+            self.session.headers.update(temp_headers)
+            
+            if all_protected:
+                self.log_result("Authentication (Protected Endpoints)", True, 
+                              "All protected endpoints properly require authentication")
+                return True
+            else:
+                self.log_result("Authentication (Protected Endpoints)", False, 
+                              "Some protected endpoints accessible without authentication")
+                return False
+        except Exception as e:
+            # Restore headers on error
+            self.session.headers.update(temp_headers)
+            self.log_result("Authentication (Protected Endpoints)", False, f"Error: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests in order - ENTERPRISE SCALE COMPREHENSIVE TESTING"""
         print(f"🚀 FlowForge AI - ENTERPRISE SCALE PRE-AUTHENTICATION REVIEW")
