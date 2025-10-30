@@ -27,6 +27,7 @@ const FlowchartEditor = ({ theme }) => {
   const [showIdealState, setShowIdealState] = useState(false);
   const [idealStateData, setIdealStateData] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [publishing, setPublishing] = useState(false);
