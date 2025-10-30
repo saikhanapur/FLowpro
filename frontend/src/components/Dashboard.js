@@ -44,6 +44,13 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const [newWorkspaceName, setNewWorkspaceName] = useState('');
   const [newWorkspaceDesc, setNewWorkspaceDesc] = useState('');
   const [creatingWorkspace, setCreatingWorkspace] = useState(false);
+  
+  // Project management state
+  const [collapsedProjects, setCollapsedProjects] = useState(new Set());
+  const [editingProject, setEditingProject] = useState(null);
+  const [editProjectName, setEditProjectName] = useState('');
+  const [showDeleteProjectModal, setShowDeleteProjectModal] = useState(false);
+  const [deletingProject, setDeletingProject] = useState(null);
 
   // Helper function to format published date
   const formatPublishedDate = (dateString) => {
