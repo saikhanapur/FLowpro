@@ -244,7 +244,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                 My Workspace
               </h1>
               <p className="text-lg text-slate-600">
-                {allProcesses.length} flowchart{allProcesses.length !== 1 ? 's' : ''} organized in {workspaces.length} project{workspaces.length !== 1 ? 's' : ''}
+                {allProcesses.length} flowchart{allProcesses.length !== 1 ? 's' : ''} across {workspaces.length} project{workspaces.length !== 1 ? 's' : ''}
               </p>
             </div>
             <div className="flex gap-3">
