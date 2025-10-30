@@ -122,7 +122,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
           </h2>
           
           <p className="text-lg text-slate-600 mb-8">
-            AI is extracting steps, actors, and dependencies
+            {processingStep || 'AI is extracting steps, actors, and dependencies'}
           </p>
           
           <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
