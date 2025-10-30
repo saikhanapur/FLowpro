@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mic, Upload, MessageSquare, ArrowLeft, CheckCircle, AlertCircle, FolderOpen, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,9 @@ import ChatInterface from './ChatInterface';
 import MultiProcessReview from './MultiProcessReview';
 import ContextAdder from './ContextAdder';
 import SmartQuestionPanel from './SmartQuestionPanel';
+import LiveProgressPanel from './LiveProgressPanel';
 import { api } from '@/utils/api';
+import { streamDocumentAnalysis } from '@/utils/sseClient';
 import { toast } from 'sonner';
 
 const ProcessCreator = ({ currentWorkspace }) => {
@@ -29,11 +31,19 @@ const ProcessCreator = ({ currentWorkspace }) => {
   const [showContextAdder, setShowContextAdder] = useState(false);
   const [extractedData, setExtractedData] = useState(null);
   
-  // Smart question flow
+  // Smart question flow with streaming
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [showSmartQuestions, setShowSmartQuestions] = useState(false);
   const [contextAnswers, setContextAnswers] = useState(null);
+  
+  // Streaming progress
+  const [progressUpdates, setProgressUpdates] = useState([]);
+  const [showLiveProgress, setShowLiveProgress] = useState(false);
+  const sseConsumerRef = useRef(null);
+  
+  // Predictive pre-loading
+  const [preloadedAnalysis, setPreloadedAnalysis] = useState(null);
   
   // Project selection
   const [workspaces, setWorkspaces] = useState([]);
