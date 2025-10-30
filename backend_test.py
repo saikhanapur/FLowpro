@@ -1592,6 +1592,16 @@ class BackendTester:
             print("❌ Cannot connect to API. Stopping tests.")
             return False
         
+        # AUTHENTICATION FLOW TESTING (Critical for deployment)
+        print("\n🔐 AUTHENTICATION FLOW TESTING...")
+        auth_success = self.test_signup_flow()
+        if auth_success:
+            self.test_session_persistence()
+            self.test_logout_flow()
+            self.test_auth_protected_endpoints()
+        else:
+            print("⚠️ Authentication failed - continuing with unauthenticated tests")
+        
         # EXISTING FEATURES - REGRESSION TESTING
         print("\n📋 REGRESSION TESTING - Existing Features...")
         self.test_get_all_processes()
