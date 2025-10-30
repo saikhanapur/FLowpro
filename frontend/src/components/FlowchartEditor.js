@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check, ArrowUp, ArrowDown, Plus, Trash2, MessageSquare, X } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check, ArrowUp, ArrowDown, Plus, Trash2, MessageSquare, X, FolderInput, FolderOpen, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,11 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [showAIChat, setShowAIChat] = useState(false);
   const [showRefineWarning, setShowRefineWarning] = useState(false);
   const [wasAutoUnpublished, setWasAutoUnpublished] = useState(false);
+  
+  // Move to project state
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [workspaces, setWorkspaces] = useState([]);
+  const [movingProcess, setMovingProcess] = useState(false);
 
   useEffect(() => {
     if (!processData) {
