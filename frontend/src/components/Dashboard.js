@@ -98,6 +98,14 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       // Filter by status if needed (no workspace filtering - show all)
       const filtered = filterStatus === 'all' ? data : data.filter(p => p.status === filterStatus);
       setProcesses(filtered);
+      
+      // Auto-collapse empty projects
+      if (workspaces && workspaces.length > 0) {
+        const emptyProjects = workspaces
+          .filter(ws => !data.some(p => p.workspaceId === ws.id))
+          .map(ws => ws.id);
+        setCollapsedProjects(new Set(emptyProjects));
+      }
     } catch (error) {
       toast.error('Failed to load processes');
     } finally {
