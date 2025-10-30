@@ -68,20 +68,11 @@ const ProcessCreator = ({ currentWorkspace }) => {
   };
 
   const handleInputComplete = async (input, inputType) => {
-    // For documents, use streaming analysis with predictive pre-loading
+    // For documents, use fast analysis (non-streaming for speed)
     if (inputType === 'document') {
       setExtractedText(input);
-      
-      // Check if we have preloaded analysis (predictive pre-processing)
-      if (preloadedAnalysis) {
-        console.log('✨ Using preloaded analysis - instant result!');
-        setAnalysis(preloadedAnalysis);
-        setPreloadedAnalysis(null);
-        handleAnalysisComplete(preloadedAnalysis, input, inputType);
-      } else {
-        // Start streaming analysis
-        await analyzeDocumentWithStreaming(input, inputType);
-      }
+      // Use regular fast API (streaming was adding latency)
+      await analyzeDocument(input, inputType);
     } else {
       // For voice/chat, process directly
       await processWithAI(input, inputType, null, null);
