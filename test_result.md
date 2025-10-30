@@ -198,6 +198,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "Redesigned to Apple-inspired minimalist design. Changes: 1) Borders - Changed from 2px dark borders to subtle 1px light borders (blue-400/30, emerald-200, amber-200) 2) Shadows - Replaced heavy borders with soft shadows (shadow-sm, shadow-lg) 3) Nodes - Rounded corners increased to rounded-xl, smooth hover transitions (duration-300), subtle scale effects (1.02) 4) Typography - Changed from font-bold to font-semibold with tracking-tight, reduced opacity to 85% for descriptions 5) Actor Badges - Rounded-lg instead of rounded-full, added borders, lighter backgrounds 6) Gap Messages - Cleaner with rounded-lg, conditional backgrounds (amber-50 for warnings, white/15 for critical), border styling 7) Arrows - Lighter and more subtle (text-slate-300, stroke-width 1.5) 8) Selection - Cleaner ring-2 instead of ring-4, larger offset. Overall aesthetic is clean, modern, and minimal like Apple products."
+      - working: true
+        agent: "main"
+        comment: "MOBILE RESPONSIVENESS FIX: Fixed critical React syntax error (duplicate div tag at line 354-356) that was preventing compilation. Error was introduced during mobile responsiveness improvements. Removed duplicate comment and fixed malformed JSX. App now compiles successfully and mobile layout verified working: 'v1 • 2 steps' displays correctly without overlapping, all action buttons (Export, Comment, Edit, Publish) are visible on mobile screens (375px and 390px widths tested)."
 
   - task: "PDF Export with Proper Text Rendering"
     implemented: true
