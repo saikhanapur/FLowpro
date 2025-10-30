@@ -228,8 +228,8 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           </div>
           
           <div className="flex items-center gap-2">
-            {/* Published Badge (Always Show) */}
-            {process?.status === 'published' && (
+            {/* Published Badge */}
+            {process?.status === 'published' && !isEditMode && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
                 <CheckCircle className="w-4 h-4 text-emerald-600" />
                 <span className="text-sm font-medium text-emerald-700">Published</span>
@@ -245,54 +245,89 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             {/* Action Buttons (Hidden in readOnly mode) */}
             {!readOnly && (
               <>
-                {process?.status === 'published' ? (
+                {isEditMode ? (
+                  /* Edit Mode Buttons */
                   <>
                     <Button 
-                      onClick={handleShare} 
-                      variant="default" 
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={handleSaveChanges} 
+                      disabled={saving}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
                     >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Share2 className="w-4 h-4 mr-2" />
-                          Share
-                        </>
-                      )}
+                      <Save className="w-4 h-4 mr-2" />
+                      {saving ? 'Saving...' : 'Save Changes'}
                     </Button>
-                    <Button onClick={handleUnpublish} variant="outline" size="sm">
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      Return to Draft
+                    <Button onClick={handleExitEditMode} variant="outline" size="sm">
+                      Cancel
                     </Button>
                   </>
                 ) : (
-                  <Button 
-                    onClick={() => setShowPublishDialog(true)} 
-                    variant="default" 
-                    size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Publish Process
-                  </Button>
+                  /* View Mode Buttons */
+                  <>
+                    {process?.status === 'published' && (
+                      <Button 
+                        onClick={handleShare} 
+                        variant="default" 
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="w-4 h-4 mr-2" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Share2 className="w-4 h-4 mr-2" />
+                            Share
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    
+                    <Button onClick={handleEnterEditMode} variant="outline" size="sm">
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      Edit Process
+                    </Button>
+                    
+                    {process?.status !== 'published' && (
+                      <Button 
+                        onClick={() => setShowPublishDialog(true)} 
+                        variant="default" 
+                        size="sm"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Publish Process
+                      </Button>
+                    )}
+                    
+                    <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Ideal State
+                    </Button>
+                  </>
                 )}
-                <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Ideal State
-                </Button>
-                <Button onClick={handleSave} disabled={saving} size="sm" data-testid="save-btn">
-                  <Save className="w-4 h-4 mr-2" />
-                  {saving ? 'Saving...' : 'Save'}
-                </Button>
               </>
             )}
           </div>
         </div>
+
+        {/* Edit Mode Banner */}
+        {isEditMode && !readOnly && (
+          <div className="bg-amber-50 border-b border-amber-200 px-6 py-3">
+            <div className="flex items-center justify-between max-w-7xl mx-auto">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-amber-700" />
+                <span className="text-sm font-medium text-amber-900">
+                  🔧 EDITING MODE - Make your changes below
+                </span>
+              </div>
+              <span className="text-xs text-amber-700">
+                Click "Save Changes" when done or "Cancel" to discard
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Canvas - scrollable */}
         <div className="flex-1 overflow-auto bg-slate-50" data-testid="flowchart-canvas">
