@@ -1236,6 +1236,7 @@ async def publish_process(process_id: str):
 async def unpublish_process(process_id: str):
     """
     Unpublish a process - returns it to draft status for editing.
+    Also deactivates all active shares for security.
     """
     try:
         process = await db.processes.find_one({"id": process_id})
@@ -1251,6 +1252,21 @@ async def unpublish_process(process_id: str):
             {"id": process_id},
             {"$set": update_data}
         )
+        
+        # Deactivate all active shares for this process (security measure)
+        deactivate_result = await db.shares.update_many(
+            {"processId": process_id, "isActive": True},
+            {
+                "$set": {
+                    "isActive": False,
+                    "revokedAt": datetime.now(timezone.utc),
+                    "updatedAt": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        if deactivate_result.modified_count > 0:
+            logger.info(f"✅ Deactivated {deactivate_result.modified_count} shares for unpublished process {process_id}")
         
         updated = await db.processes.find_one({"id": process_id})
         updated['_id'] = str(updated['_id'])
