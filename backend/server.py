@@ -177,6 +177,23 @@ class ProcessInput(BaseModel):
     text: str
     inputType: str  # voice_transcript, document, chat
     additionalContext: Optional[str] = None  # Optional context added via voice/chat
+    contextAnswers: Optional[Dict[str, str]] = None  # Smart question answers
+
+class SmartQuestion(BaseModel):
+    id: str
+    question: str
+    options: List[str]
+    why_asking: str
+    category: str  # "roles", "thresholds", "timing", "systems", "escalation"
+
+class DocumentAnalysis(BaseModel):
+    process_type: str
+    complexity: str  # "low", "medium", "high"
+    confidence: float
+    detected_steps: int
+    detected_actors: int
+    suggested_questions: List[SmartQuestion]
+    summary: str
 
 class Comment(BaseModel):
     model_config = ConfigDict(extra="ignore")
