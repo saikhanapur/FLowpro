@@ -352,92 +352,91 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             
             {/* Right side: Action buttons */}
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 overflow-x-auto"
-              <Download className="w-4 h-4 mr-1 md:mr-2" />
-              <span className="hidden sm:inline">Export</span>
-              <span className="sm:hidden">Export</span>
-            </Button>
-            
-            {/* Refine with AI Button - Always Available for owners */}
-            {!readOnly && accessLevel === 'owner' && (
-              <Button 
-                onClick={handleOpenAIChat}
-                variant="outline" 
-                size="sm"
-                className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700 flex-shrink-0"
-              >
-                <MessageSquare className="w-4 h-4 mr-1 md:mr-2" />
-                <span className="hidden sm:inline">Refine with AI</span>
-                <span className="sm:hidden">AI</span>
+            {/* Right side: Action buttons */}
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 overflow-x-auto">
+              {/* Export Button - Always Available */}
+              <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn" className="flex-shrink-0">
+                <Download className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
               </Button>
-            )}
-            
-            {/* Action Buttons (Hidden in readOnly mode) */}
-            {!readOnly && (
-              <>
-                {isEditMode ? (
-                  /* Edit Mode Buttons */
-                  <>
-                    <Button 
-                      onClick={handleSaveChanges} 
-                      disabled={saving}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      {saving ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                    <Button onClick={handleExitEditMode} variant="outline" size="sm">
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  /* View Mode Buttons */
-                  <>
-                    {process?.status === 'published' && (
+              
+              {/* Refine with AI Button - Always Available for owners */}
+              {!readOnly && accessLevel === 'owner' && (
+                <Button 
+                  onClick={handleOpenAIChat}
+                  variant="outline" 
+                  size="sm"
+                  className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700 flex-shrink-0"
+                >
+                  <MessageSquare className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">AI</span>
+                </Button>
+              )}
+              
+              {/* Action Buttons (Hidden in readOnly mode) */}
+              {!readOnly && (
+                <>
+                  {isEditMode ? (
+                    /* Edit Mode Buttons */
+                    <>
                       <Button 
-                        onClick={handleShare} 
-                        variant="default" 
+                        onClick={handleSaveChanges} 
+                        disabled={saving}
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white flex-shrink-0"
                       >
-                        {copied ? (
-                          <>
-                            <Check className="w-4 h-4 mr-2" />
-                            Copied!
-                          </>
-                        ) : (
-                          <>
-                            <Share2 className="w-4 h-4 mr-2" />
-                            Share
-                          </>
-                        )}
+                        <Save className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">{saving ? 'Saving...' : 'Save'}</span>
                       </Button>
-                    )}
-                    
-                    <Button onClick={handleEnterEditMode} variant="outline" size="sm">
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      Edit Process
-                    </Button>
-                    
-                    {process?.status !== 'published' && (
-                      <Button 
-                        onClick={() => setShowPublishDialog(true)} 
-                        variant="default" 
-                        size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Publish Process
+                      <Button onClick={handleExitEditMode} variant="outline" size="sm" className="flex-shrink-0">
+                        <X className="w-4 h-4" />
                       </Button>
-                    )}
-                    
-                    <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Ideal State
-                    </Button>
-                  </>
-                )}
-              </>
-            )}
+                    </>
+                  ) : (
+                    /* View Mode Buttons */
+                    <>
+                      {process?.status === 'published' && (
+                        <Button 
+                          onClick={handleShare} 
+                          variant="default" 
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
+                        >
+                          {copied ? (
+                            <>
+                              <Check className="w-4 h-4 sm:mr-2" />
+                              <span className="hidden sm:inline">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Share2 className="w-4 h-4 sm:mr-2" />
+                              <span className="hidden sm:inline">Share</span>
+                            </>
+                          )}
+                        </Button>
+                      )}
+                      
+                      <Button onClick={handleEnterEditMode} variant="outline" size="sm" className="flex-shrink-0">
+                        <Edit3 className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Edit</span>
+                      </Button>
+                      
+                      {process?.status !== 'published' && (
+                        <Button 
+                          onClick={() => setShowPublishDialog(true)} 
+                          variant="default" 
+                          size="sm"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white flex-shrink-0"
+                        >
+                          <CheckCircle className="w-4 h-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Publish</span>
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
 
