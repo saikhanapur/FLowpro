@@ -107,7 +107,7 @@ const PublicView = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <p className="text-sm text-blue-900 font-medium">
-              📄 {process?.processName || 'Untitled Process'}
+              📄 {process?.name || process?.processName || 'Untitled Process'}
             </p>
             <p className="text-xs text-blue-700">
               Published {process?.publishedAt ? new Date(process.publishedAt).toLocaleDateString() : 'recently'}
