@@ -227,6 +227,58 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     }
   };
 
+  const toggleProjectCollapse = (projectId) => {
+    setCollapsedProjects(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId);
+      } else {
+        newSet.add(projectId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleEditProject = async (projectId) => {
+    if (!editProjectName.trim()) {
+      toast.error('Project name cannot be empty');
+      return;
+    }
+
+    try {
+      await api.updateWorkspace(projectId, {
+        name: editProjectName.trim()
+      });
+      toast.success('Project renamed!');
+      setEditingProject(null);
+      setEditProjectName('');
+      if (onWorkspacesUpdate) {
+        onWorkspacesUpdate();
+      }
+    } catch (error) {
+      toast.error('Failed to rename project');
+      console.error(error);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!deletingProject) return;
+
+    try {
+      await api.deleteWorkspace(deletingProject.id);
+      toast.success('Project deleted!');
+      setShowDeleteProjectModal(false);
+      setDeletingProject(null);
+      if (onWorkspacesUpdate) {
+        onWorkspacesUpdate();
+      }
+      loadProcesses(); // Reload processes
+    } catch (error) {
+      toast.error('Failed to delete project');
+      console.error(error);
+    }
+  };
+
   const filteredProcesses = processes; // Using backend search/filtering now
 
   if (loading) {
