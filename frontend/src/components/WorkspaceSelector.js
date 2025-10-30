@@ -28,7 +28,7 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
 
   const handleCreateWorkspace = async () => {
     if (!newWorkspaceName.trim()) {
-      toast.error('Please enter a workspace name');
+      toast.error('Please enter a project name');
       return;
     }
 
@@ -44,13 +44,13 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
       };
 
       await api.createWorkspace(workspace);
-      toast.success('Workspace created!');
+      toast.success('Project created!');
       setShowCreateDialog(false);
       setNewWorkspaceName('');
       setNewWorkspaceDesc('');
       onWorkspacesUpdate();
     } catch (error) {
-      toast.error('Failed to create workspace');
+      toast.error('Failed to create project');
       console.error(error);
     } finally {
       setCreating(false);
