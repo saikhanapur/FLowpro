@@ -11,6 +11,7 @@ import Dashboard from './components/Dashboard';
 import ProcessCreator from './components/ProcessCreator';
 import FlowchartEditor from './components/FlowchartEditor';
 import TemplateGallery from './components/TemplateGallery';
+import StudioDashboard from './components/StudioDashboard';
 import Header from './components/Header';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Toaster } from '@/components/ui/sonner';
