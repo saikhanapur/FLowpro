@@ -88,13 +88,8 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       // Store ALL processes for empty state check
       setAllProcesses(data);
       
-      // Filter by current workspace
-      const workspaceProcesses = currentWorkspace 
-        ? data.filter(p => p.workspaceId === currentWorkspace.id)
-        : data;
-      
-      // Filter by status if needed
-      const filtered = filterStatus === 'all' ? workspaceProcesses : workspaceProcesses.filter(p => p.status === filterStatus);
+      // Filter by status if needed (no workspace filtering - show all)
+      const filtered = filterStatus === 'all' ? data : data.filter(p => p.status === filterStatus);
       setProcesses(filtered);
     } catch (error) {
       toast.error('Failed to load processes');
