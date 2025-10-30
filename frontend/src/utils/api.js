@@ -36,8 +36,20 @@ export const api = {
     return res.data;
   },
 
-  getProcesses: async () => {
-    const res = await axios.get(`${API}/process`);
+  getProcesses: async (workspaceId = null) => {
+    const params = workspaceId ? `?workspace_id=${workspaceId}` : '';
+    const res = await axios.get(`${API}/process${params}`);
+    return res.data;
+  },
+
+  searchProcesses: async (query, workspaceId = null, status = null) => {
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (workspaceId) params.append('workspace_id', workspaceId);
+    if (status) params.append('status', status);
+    
+    const queryString = params.toString();
+    const res = await axios.get(`${API}/process/search${queryString ? '?' + queryString : ''}`);
     return res.data;
   },
 
