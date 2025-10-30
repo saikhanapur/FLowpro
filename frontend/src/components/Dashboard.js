@@ -67,18 +67,49 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     loadProcesses();
   }, [currentWorkspace]); // Reload when workspace changes
 
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        performSearch();
+      } else {
+        loadProcesses(); // Reset to all processes when search is empty
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, filterStatus, currentWorkspace]);
+
   const loadProcesses = async () => {
     setLoading(true);
     try {
-      const data = await api.getProcesses();
+      const data = await api.getProcesses(currentWorkspace?.id || null);
       
       // Store ALL processes for empty state check
       setAllProcesses(data);
       
-      // Always show all processes initially - don't filter by workspace automatically
-      setProcesses(data);
+      // Filter by status if needed
+      const filtered = filterStatus === 'all' ? data : data.filter(p => p.status === filterStatus);
+      setProcesses(filtered);
     } catch (error) {
       toast.error('Failed to load processes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const performSearch = async () => {
+    setLoading(true);
+    try {
+      const data = await api.searchProcesses(
+        searchQuery.trim(), 
+        currentWorkspace?.id || null, 
+        filterStatus === 'all' ? null : filterStatus
+      );
+      setProcesses(data);
+    } catch (error) {
+      console.error('Search error:', error);
+      toast.error('Failed to search processes');
     } finally {
       setLoading(false);
     }
