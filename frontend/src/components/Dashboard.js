@@ -383,7 +383,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
             }}
             variant="outline"
           >
-            Clear Filters
+            Clear Search
           </Button>
         </div>
       ) : (
