@@ -213,7 +213,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
         onWorkspacesUpdate();
       }
     } catch (error) {
-      toast.error('Failed to create workspace');
+      toast.error('Failed to create project');
       console.error(error);
     } finally {
       setCreatingWorkspace(false);
