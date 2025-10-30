@@ -14,7 +14,7 @@ import io
 import time
 
 # Configuration
-BASE_URL = "https://superhuman-flow.preview.emergentagent.com/api"
+BASE_URL = "https://superhuman-flow-1.preview.emergentagent.com/api"
 TIMEOUT = 60
 
 class FocusedTester:
