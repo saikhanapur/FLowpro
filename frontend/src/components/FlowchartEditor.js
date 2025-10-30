@@ -134,60 +134,62 @@ const FlowchartEditor = ({ theme, readOnly = false, processData }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {process.status === 'published' ? (
-              <>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <CheckCircle className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm font-medium text-emerald-700">Published</span>
-                </div>
+          {!readOnly && (
+            <div className="flex items-center gap-2">
+              {process.status === 'published' ? (
+                <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <span className="text-sm font-medium text-emerald-700">Published</span>
+                  </div>
+                  <Button 
+                    onClick={handleShare} 
+                    variant="default" 
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Share
+                      </>
+                    )}
+                  </Button>
+                  <Button onClick={handleUnpublish} variant="outline" size="sm">
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Return to Draft
+                  </Button>
+                </>
+              ) : (
                 <Button 
-                  onClick={handleShare} 
+                  onClick={() => setShowPublishDialog(true)} 
                   variant="default" 
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4 mr-2" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Share
-                    </>
-                  )}
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Publish Process
                 </Button>
-                <Button onClick={handleUnpublish} variant="outline" size="sm">
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Return to Draft
-                </Button>
-              </>
-            ) : (
-              <Button 
-                onClick={() => setShowPublishDialog(true)} 
-                variant="default" 
-                size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Publish Process
+              )}
+              <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Ideal State
               </Button>
-            )}
-            <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Ideal State
-            </Button>
-            <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-            <Button onClick={handleSave} disabled={saving} size="sm" data-testid="save-btn">
-              <Save className="w-4 h-4 mr-2" />
-              {saving ? 'Saving...' : 'Save'}
-            </Button>
-          </div>
+              <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+              </Button>
+              <Button onClick={handleSave} disabled={saving} size="sm" data-testid="save-btn">
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Canvas - scrollable */}
