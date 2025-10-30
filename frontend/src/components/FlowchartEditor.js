@@ -109,6 +109,41 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     }
   };
 
+  const handleMoveNode = async (nodeIndex, direction) => {
+    if (reordering) return; // Prevent concurrent reorders
+    
+    const newIndex = direction === 'up' ? nodeIndex - 1 : nodeIndex + 1;
+    
+    // Check bounds
+    if (newIndex < 0 || newIndex >= process.nodes.length) return;
+    
+    setReordering(true);
+    try {
+      // Swap nodes in array
+      const newNodes = [...process.nodes];
+      [newNodes[nodeIndex], newNodes[newIndex]] = [newNodes[newIndex], newNodes[nodeIndex]];
+      
+      // Extract node IDs in new order
+      const nodeIds = newNodes.map(n => n.id);
+      
+      // Save to backend
+      const response = await api.reorderNodes(process.id, nodeIds);
+      
+      // Update local state with backend response
+      setProcess({
+        ...process,
+        nodes: response.nodes
+      });
+      
+      toast.success(`Step ${direction === 'up' ? 'moved up' : 'moved down'}`);
+    } catch (error) {
+      console.error('Failed to reorder:', error);
+      toast.error('Failed to reorder step');
+    } finally {
+      setReordering(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
