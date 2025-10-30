@@ -1906,6 +1906,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_db_indexes():
+    """Create database indexes on startup"""
+    try:
+        # Shares indexes for performance
+        await db.shares.create_index("token", unique=True)
+        await db.shares.create_index("processId")
+        await db.shares.create_index([("processId", 1), ("isActive", 1)])
+        logger.info("✅ Database indexes created successfully")
+    except Exception as e:
+        logger.warning(f"⚠️ Error creating indexes (may already exist): {e}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
