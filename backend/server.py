@@ -1739,6 +1739,65 @@ async def update_node(process_id: str, node_id: str, node_data: dict, request: R
         logger.error(f"Error updating node: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update node: {str(e)}")
 
+@api_router.patch("/process/{process_id}/reorder")
+async def reorder_nodes(process_id: str, node_order: dict, request: Request):
+    """Reorder nodes in a process (owner only)"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can reorder nodes")
+        
+        # Get the new order of node IDs
+        new_order = node_order.get("nodeIds", [])
+        if not new_order:
+            raise HTTPException(status_code=400, detail="nodeIds array required")
+        
+        # Get current nodes
+        nodes = process.get("nodes", [])
+        
+        # Validate that all node IDs exist
+        node_ids_set = {n.get("id") for n in nodes}
+        if set(new_order) != node_ids_set:
+            raise HTTPException(status_code=400, detail="Node IDs don't match existing nodes")
+        
+        # Create a mapping of node ID to node
+        node_map = {n.get("id"): n for n in nodes}
+        
+        # Reorder nodes based on new_order
+        reordered_nodes = [node_map[node_id] for node_id in new_order]
+        
+        # Update positions for visual consistency
+        for i, node in enumerate(reordered_nodes):
+            node["position"] = {"x": 100.0, "y": 100.0 + (i * 150)}
+        
+        # Update the process with reordered nodes
+        await db.processes.update_one(
+            {"id": process_id},
+            {
+                "$set": {
+                    "nodes": reordered_nodes,
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        logger.info(f"✅ Nodes reordered in process {process_id} by {user['email']}")
+        
+        return {"success": True, "nodes": reordered_nodes}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reordering nodes: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to reorder nodes: {str(e)}")
+
 @api_router.patch("/process/{process_id}/workspace")
 async def move_process_to_workspace(process_id: str, data: dict, request: Request):
     """Move a process to a different workspace"""
