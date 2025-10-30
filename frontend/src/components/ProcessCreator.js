@@ -80,13 +80,22 @@ const ProcessCreator = ({ currentWorkspace }) => {
         <div>
           <div className="font-semibold">✨ Analysis Complete!</div>
           <div className="text-sm text-slate-600 mt-1">
-            {analysisResult.process_type} • {analysisResult.detected_steps} steps • {analysisResult.complexity} complexity
+            {analysisResult.is_multi_process 
+              ? `${analysisResult.process_count} processes detected!`
+              : `${analysisResult.process_type} • ${analysisResult.detected_steps} steps • ${analysisResult.complexity} complexity`
+            }
           </div>
         </div>,
         { duration: 4000 }
       );
       
-      // Only show questions if complexity is medium or high
+      // Skip questions for multi-process documents (they'll review each process individually)
+      if (analysisResult.is_multi_process) {
+        await processWithAI(text, inputType, null, null);
+        return;
+      }
+      
+      // Only show questions if complexity is medium or high AND single process
       const shouldShowQuestions = 
         (analysisResult.complexity === 'medium' || analysisResult.complexity === 'high') &&
         analysisResult.suggested_questions && 
