@@ -299,6 +299,8 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
               nodes: process.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
             });
           }}
+          readOnly={readOnly}
+          accessLevel={accessLevel}
         />
       )}
 
