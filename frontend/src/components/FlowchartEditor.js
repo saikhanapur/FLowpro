@@ -453,10 +453,13 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                   
                   {idx < process.nodes.length - 1 && (
                     <div className="flex justify-center py-1.5 arrow-connector w-full">
-                      <svg width="20" height="24" viewBox="0 0 20 24" className="text-slate-400">
-                        <line x1="10" y1="0" x2="10" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        <polygon points="10,24 4,16 16,16" fill="currentColor" />
-                      </svg>
+                      {/* Center the arrow accounting for control strip */}
+                      <div className="flex justify-center w-full" style={{ marginLeft: !readOnly && isEditMode ? '3rem' : '0' }}>
+                        <svg width="20" height="24" viewBox="0 0 20 24" className="text-slate-400">
+                          <line x1="10" y1="0" x2="10" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <polygon points="10,24 4,16 16,16" fill="currentColor" />
+                        </svg>
+                      </div>
                     </div>
                   )}
                 </div>
