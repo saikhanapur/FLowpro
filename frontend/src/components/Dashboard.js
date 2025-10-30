@@ -65,7 +65,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   useEffect(() => {
     loadProcesses();
-  }, []); // Only load on component mount, not workspace changes
+  }, [currentWorkspace]); // Load when workspace changes
 
   // Debounced search effect
   useEffect(() => {
@@ -73,24 +73,28 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       if (searchQuery.trim()) {
         performSearch();
       } else {
-        loadProcesses(); // Reset to all processes when search is empty
+        loadProcesses(); // Reset to filtered processes when search is empty
       }
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, filterStatus]); // Removed currentWorkspace dependency
+  }, [searchQuery, filterStatus, currentWorkspace]);
 
   const loadProcesses = async () => {
     setLoading(true);
     try {
-      // Always load ALL processes initially (don't filter by workspace)
       const data = await api.getProcesses();
       
       // Store ALL processes for empty state check
       setAllProcesses(data);
       
+      // Filter by current workspace
+      const workspaceProcesses = currentWorkspace 
+        ? data.filter(p => p.workspaceId === currentWorkspace.id)
+        : data;
+      
       // Filter by status if needed
-      const filtered = filterStatus === 'all' ? data : data.filter(p => p.status === filterStatus);
+      const filtered = filterStatus === 'all' ? workspaceProcesses : workspaceProcesses.filter(p => p.status === filterStatus);
       setProcesses(filtered);
     } catch (error) {
       toast.error('Failed to load processes');
