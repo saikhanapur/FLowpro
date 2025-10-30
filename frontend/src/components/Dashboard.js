@@ -467,6 +467,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                     </Card>
                   ))}
                 </div>
+                )}
               </div>
             );
           })}
