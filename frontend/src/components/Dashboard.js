@@ -305,23 +305,32 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       {/* Dashboard Header with Create Button */}
       {allProcesses.length > 0 && (
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-slate-900 mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
                 My Workspace
               </h1>
-              <p className="text-lg text-slate-600">
+              <p className="text-base md:text-lg text-slate-600">
                 {allProcesses.length} flowchart{allProcesses.length !== 1 ? 's' : ''} across {workspaces.length} project{workspaces.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <Button
+                onClick={() => navigate('/create')}
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                data-testid="create-process-btn"
+              >
+                <Plus className="w-5 h-5 mr-2 flex-shrink-0" />
+                <span className="truncate">Create Flowchart</span>
+              </Button>
               <Button
                 onClick={() => setShowCreateWorkspaceModal(true)}
                 variant="outline"
                 size="lg"
-                className="px-6 py-6 text-base font-semibold"
+                className="px-6 py-6 text-base font-semibold w-full sm:w-auto"
               >
-                <FolderPlus className="w-5 h-5 mr-2" />
+                <FolderPlus className="w-5 h-5 mr-2 flex-shrink-0" />
                 New Project
               </Button>
               <Button
