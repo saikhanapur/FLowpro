@@ -826,6 +826,49 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Project Confirmation Modal */}
+      <Dialog open={showDeleteProjectModal} onOpenChange={setShowDeleteProjectModal}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Delete Project?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete "{deletingProject?.name}"?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            {deletingProject && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>Warning:</strong> This will permanently delete this project. 
+                  {filteredProcesses.filter(p => p.workspaceId === deletingProject.id).length > 0 && (
+                    <span> All {filteredProcesses.filter(p => p.workspaceId === deletingProject.id).length} flowchart(s) in this project will also be deleted.</span>
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteProjectModal(false);
+                setDeletingProject(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteProject}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete Project
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
