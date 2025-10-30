@@ -300,27 +300,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
     }
   };
 
-  // Show live progress panel for streaming analysis
-  if (showLiveProgress && analyzing) {
-    return (
-      <div>
-        <button 
-          onClick={() => navigate('/dashboard')} 
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 px-6 pt-8 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">Back to Dashboard</span>
-        </button>
-        
-        <LiveProgressPanel 
-          progressUpdates={progressUpdates}
-          isComplete={false}
-        />
-      </div>
-    );
-  }
-
-  // Fallback to old loading UI for processing (non-analysis)
+  // Fast loading UI (no streaming overhead)
   if (processing || analyzing) {
     const stepNumber = processingStep.includes('Reading') ? 1 : processingStep.includes('Analyzing') ? 2 : 3;
     const progressPercent = analyzing ? 50 : (stepNumber / 3) * 100;
