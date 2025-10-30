@@ -118,7 +118,7 @@ const PublicView = () => {
             </p>
           </div>
           <div className="text-xs text-blue-700">
-            ✓ Public View
+            ✓ {accessLevel === 'view' ? 'View Only' : accessLevel === 'comment' ? 'Can Comment' : 'Can Edit'} Access
           </div>
         </div>
       </div>
@@ -128,6 +128,7 @@ const PublicView = () => {
         <FlowchartEditor 
           theme="minimalist" 
           readOnly={true}
+          accessLevel={accessLevel}
           processData={process}
         />
       </div>
