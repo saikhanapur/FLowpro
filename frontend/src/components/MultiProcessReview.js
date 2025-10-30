@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const MultiProcessReview = ({ processesData, onBack, currentWorkspace }) => {
+const MultiProcessReview = ({ processesData, onBack, currentWorkspace, selectedWorkspace }) => {
   const navigate = useNavigate();
   const [expandedIndex, setExpandedIndex] = useState(0);
   const [creating, setCreating] = useState(false);
