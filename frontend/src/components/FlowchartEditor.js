@@ -326,19 +326,19 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
-        <div className="border-b border-slate-200 bg-white px-6 py-4 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <Button onClick={() => navigate('/')} variant="ghost" size="sm" data-testid="back-btn">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+        <div className="border-b border-slate-200 bg-white px-3 sm:px-6 py-4 flex items-center justify-between flex-shrink-0 gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+            <Button onClick={() => navigate('/')} variant="ghost" size="sm" data-testid="back-btn" className="flex-shrink-0">
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <div>
-              <h2 className="text-lg font-bold text-slate-800">{process.name}</h2>
-              <p className="text-sm text-slate-600">v{process.version} • {process.nodes?.length || 0} steps</p>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-base sm:text-lg font-bold text-slate-800 truncate">{process.name}</h2>
+              <p className="text-xs sm:text-sm text-slate-600">v{process.version} • {process.nodes?.length || 0} steps</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {/* Published Badge */}
             {process?.status === 'published' && !isEditMode && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
