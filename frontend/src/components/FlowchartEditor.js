@@ -362,6 +362,13 @@ const FlowchartEditor = ({ theme }) => {
           onClose={() => setShowExportModal(false)}
         />
       )}
+
+      {showShareModal && (
+        <ShareModal
+          process={process}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
     </div>
   );
 };
