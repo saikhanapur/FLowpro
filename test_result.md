@@ -201,6 +201,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "MOBILE RESPONSIVENESS FIX: Fixed critical React syntax error (duplicate div tag at line 354-356) that was preventing compilation. Error was introduced during mobile responsiveness improvements. Removed duplicate comment and fixed malformed JSX. App now compiles successfully and mobile layout verified working: 'v1 • 2 steps' displays correctly without overlapping, all action buttons (Export, Comment, Edit, Publish) are visible on mobile screens (375px and 390px widths tested)."
+      - working: true
+        agent: "main"
+        comment: "EDIT MODE FIX: Fixed missing X icon import from lucide-react. User reported 'X is not defined' error when clicking Edit button on desktop. Added X to imports on line 3. Edit mode now working correctly: shows 'Editing Mode' banner, Save/X buttons, node reordering controls (up/down arrows), delete buttons, and 'Add Step' functionality. Verified on desktop (1920x800)."
 
   - task: "PDF Export with Proper Text Rendering"
     implemented: true
