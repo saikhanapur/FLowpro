@@ -194,6 +194,8 @@ class DocumentAnalysis(BaseModel):
     detected_actors: int
     suggested_questions: List[SmartQuestion]
     summary: str
+    is_multi_process: bool = False  # NEW: Flag for multi-process documents
+    process_count: int = 1  # NEW: Number of processes detected
 
 class Comment(BaseModel):
     model_config = ConfigDict(extra="ignore")
