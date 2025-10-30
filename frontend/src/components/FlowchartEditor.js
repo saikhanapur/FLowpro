@@ -389,6 +389,14 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 <span className="hidden sm:inline">Export</span>
               </Button>
               
+              {/* Move to Project Button - Owner Only */}
+              {!readOnly && accessLevel === 'owner' && (
+                <Button onClick={() => setShowMoveModal(true)} variant="outline" size="sm" className="flex-shrink-0">
+                  <FolderInput className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Move</span>
+                </Button>
+              )}
+              
               {/* Refine with AI Button - Always Available for owners */}
               {!readOnly && accessLevel === 'owner' && (
                 <Button 
