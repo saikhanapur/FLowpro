@@ -49,7 +49,11 @@ export const api = {
     if (status) params.append('status', status);
     
     const queryString = params.toString();
-    const res = await axios.get(`${API}/process/search${queryString ? '?' + queryString : ''}`);
+    const url = `${API}/process/search${queryString ? '?' + queryString : ''}`;
+    console.log('🌐 Search API call:', url);
+    
+    const res = await axios.get(url);
+    console.log('🌐 Search API response:', res.data);
     return res.data;
   },
 
