@@ -312,18 +312,18 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           </div>
         </div>
 
-        {/* Edit Mode Banner */}
+        {/* Edit Mode Banner - Compact & Elegant */}
         {isEditMode && !readOnly && (
-          <div className="bg-amber-50 border-b border-amber-200 px-6 py-3">
-            <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 px-6 py-2.5">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-amber-700" />
-                <span className="text-sm font-medium text-amber-900">
-                  🔧 EDITING MODE - Make your changes below
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                <span className="text-sm font-medium text-slate-700">
+                  Editing Mode
                 </span>
               </div>
-              <span className="text-xs text-amber-700">
-                Click "Save Changes" when done or "Cancel" to discard
+              <span className="text-xs text-slate-500">
+                Hover over nodes to reorder • Click to edit details
               </span>
             </div>
           </div>
