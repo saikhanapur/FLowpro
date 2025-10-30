@@ -196,9 +196,10 @@ const ProcessCreator = ({ currentWorkspace }) => {
     }
   };
 
-  if (processing) {
+  if (processing || analyzing) {
     const stepNumber = processingStep.includes('Reading') ? 1 : processingStep.includes('Analyzing') ? 2 : 3;
-    const progressPercent = (stepNumber / 3) * 100;
+    const progressPercent = analyzing ? 50 : (stepNumber / 3) * 100;
+    const loadingTitle = analyzing ? 'Analyzing Your Document...' : 'Generating Your Flowchart...';
     
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -206,7 +207,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
           <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-8"></div>
           
           <h2 className="text-3xl font-bold text-slate-800 mb-3">
-            Analyzing Your Process...
+            {loadingTitle}
           </h2>
           
           <p className="text-lg text-slate-600 mb-4">
@@ -223,10 +224,12 @@ const ProcessCreator = ({ currentWorkspace }) => {
           
           <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
             <p className="text-base font-semibold text-blue-900 mb-3">
-              This may take 1-2 minutes for large documents
+              {analyzing ? 'Quick analysis in progress...' : 'This may take 1-2 minutes for large documents'}
             </p>
             <p className="text-sm text-blue-700 leading-relaxed">
-              Claude AI is carefully analyzing your process to identify gaps, dependencies, and improvement opportunities.
+              {analyzing 
+                ? 'Understanding your process to ask smart questions that improve accuracy' 
+                : 'Claude AI is carefully analyzing your process to identify gaps, dependencies, and improvement opportunities.'}
             </p>
           </div>
         </div>
