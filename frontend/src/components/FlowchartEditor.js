@@ -404,7 +404,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
               {process.nodes?.map((node, idx) => (
                 <div key={node.id} className="w-full max-w-4xl">
                   <div 
-                    className="node-container relative flex items-center gap-4"
+                    className={`node-container relative flex items-center gap-4 ${!readOnly && isEditMode ? '' : 'justify-center'}`}
                     style={{ transition: 'all 300ms ease-out' }}
                   >
                     {/* Left-Side Control Strip (Always Visible in Edit Mode, Hidden in Print) */}
@@ -443,7 +443,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                       </div>
                     )}
                     
-                    <div className="flex-1">
+                    <div className={`${!readOnly && isEditMode ? 'flex-1' : ''}`}>
                       <FlowNode
                         node={node}
                         onClick={() => setSelectedNode(node)}
