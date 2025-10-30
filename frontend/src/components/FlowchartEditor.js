@@ -452,12 +452,12 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                     </div>
                   </div>
                   
-                  {/* Arrow Connector - Properly Centered */}
+                  {/* Arrow Connector - Bigger and More Connected */}
                   {idx < process.nodes.length - 1 && (
-                    <div className="flex justify-center py-1.5 w-full">
-                      <svg width="20" height="24" viewBox="0 0 20 24" className="text-slate-400">
-                        <line x1="10" y1="0" x2="10" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        <polygon points="10,24 4,16 16,16" fill="currentColor" />
+                    <div className="flex justify-center py-4 w-full">
+                      <svg width="32" height="40" viewBox="0 0 32 40" className="text-slate-400">
+                        <line x1="16" y1="0" x2="16" y2="28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        <polygon points="16,40 6,26 26,26" fill="currentColor" />
                       </svg>
                     </div>
                   )}
