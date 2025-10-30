@@ -2167,11 +2167,19 @@ Return ONLY valid JSON, no markdown or explanations."""
             
             logger.info(f"✅ Processed {len(processed_nodes)} nodes")
             
+            # Check if process was published
+            was_published = process.get("status") == "published"
+            
             # Update process in database
             update_data = {
                 "nodes": processed_nodes,
                 "updatedAt": datetime.now(timezone.utc).isoformat()
             }
+            
+            # Auto-unpublish if it was published (for quality control)
+            if was_published:
+                update_data["status"] = "draft"
+                logger.info(f"⚠️ Auto-unpublished process {process_id} for review after AI refinement")
             
             # Update name/description if changed
             if refined_data.get("name") and refined_data["name"] != process_context["name"]:
@@ -2191,11 +2199,13 @@ Return ONLY valid JSON, no markdown or explanations."""
             
             return {
                 "success": True,
+                "wasPublished": was_published,
                 "process": {
                     "id": process_id,
                     "name": refined_data.get("name", process_context["name"]),
                     "description": refined_data.get("description", process_context["description"]),
-                    "nodes": processed_nodes
+                    "nodes": processed_nodes,
+                    "status": update_data.get("status", process.get("status"))
                 },
                 "changes": refined_data.get("changes", ["Process updated based on your request"])
             }
