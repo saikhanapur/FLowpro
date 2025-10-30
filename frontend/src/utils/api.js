@@ -192,5 +192,10 @@ export const api = {
   updateNode: async (processId, nodeId, nodeData) => {
     const res = await axios.patch(`${API}/process/${processId}/node/${nodeId}`, nodeData);
     return res.data;
+  },
+
+  reorderNodes: async (processId, nodeIds) => {
+    const res = await axios.patch(`${API}/process/${processId}/reorder`, { nodeIds });
+    return res.data;
   }
 };
