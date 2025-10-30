@@ -365,8 +365,11 @@ const FlowchartEditor = ({ theme }) => {
 
       {showShareModal && (
         <ShareModal
-          process={process}
+          isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
+          processId={process?.id}
+          processName={process?.name}
+          isPublished={process?.status === 'published'}
         />
       )}
     </div>
