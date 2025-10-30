@@ -2110,7 +2110,9 @@ Return ONLY valid JSON, no markdown or explanations."""
                 system_message="You are a process optimization expert. Return only valid JSON responses. Never include markdown code blocks, just pure JSON."
             ).with_model("anthropic", "claude-sonnet-4-20250514")
             
-            response = chat.run(prompt)
+            user_msg = UserMessage(text=prompt)
+            response = await chat.send_message(user_msg)
+            
             logger.info(f"✅ Claude response received: {response[:200]}...")
             
         except Exception as e:
