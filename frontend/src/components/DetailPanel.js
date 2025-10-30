@@ -105,11 +105,24 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Status Badge */}
+        {/* Status */}
         <div>
-          <Badge variant={node.status === 'critical-gap' ? 'destructive' : node.status === 'current' ? 'default' : 'secondary'} className="text-xs">
-            {node.status.toUpperCase()}
-          </Badge>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Status</label>
+          {isEditing ? (
+            <select
+              value={editedNode.status}
+              onChange={(e) => setEditedNode({...editedNode, status: e.target.value})}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+            >
+              {statusOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          ) : (
+            <Badge variant={node.status === 'critical-gap' ? 'destructive' : node.status === 'current' ? 'default' : 'secondary'} className="text-xs">
+              {node.status.toUpperCase()}
+            </Badge>
+          )}
         </div>
 
         {/* Title */}
@@ -121,6 +134,7 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
               value={editedNode.title}
               onChange={(e) => setEditedNode({...editedNode, title: e.target.value})}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              placeholder="Step title"
             />
           ) : (
             <div className="font-semibold text-slate-800">{node.title}</div>
@@ -136,23 +150,55 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
               onChange={(e) => setEditedNode({...editedNode, description: e.target.value})}
               rows={4}
               className="text-sm"
+              placeholder="Describe what happens in this step"
             />
           ) : (
             <div className="text-sm text-slate-700 leading-relaxed">{node.description}</div>
           )}
         </div>
 
-        {/* Responsible */}
-        {node.actors && node.actors.length > 0 && (
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Responsible</label>
-            <div className="flex flex-wrap gap-2">
-              {node.actors.map((actor, idx) => (
-                <Badge key={idx} variant="outline" className="text-xs">{actor}</Badge>
-              ))}
+        {/* Responsible/Actors */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Responsible</label>
+          {isEditing ? (
+            <div className="space-y-2">
+              <div className="flex flex-wrap gap-2 mb-2">
+                {editedNode.actors?.map((actor, idx) => (
+                  <Badge key={idx} variant="outline" className="text-xs flex items-center gap-1">
+                    {actor}
+                    <X 
+                      className="w-3 h-3 cursor-pointer hover:text-red-600" 
+                      onClick={() => handleRemoveActor(idx)}
+                    />
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={actorInput}
+                  onChange={(e) => setActorInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddActor()}
+                  placeholder="Add person/team"
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                />
+                <Button onClick={handleAddActor} size="sm" variant="outline">
+                  Add
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {node.actors && node.actors.length > 0 ? (
+                node.actors.map((actor, idx) => (
+                  <Badge key={idx} variant="outline" className="text-xs">{actor}</Badge>
+                ))
+              ) : (
+                <span className="text-sm text-slate-500">No one assigned</span>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Sub-steps */}
         {node.subSteps && node.subSteps.length > 0 && (
