@@ -33,6 +33,10 @@ class BackendTester:
         self.test_results = []
         self.existing_process_ids = []
         self.workspace_ids = []
+        self.auth_token = None
+        self.test_user_email = f"test_user_{uuid.uuid4().hex[:8]}@flowforge.test"
+        self.test_user_password = "TestPass123!"
+        self.test_user_name = "Test User"
         
     def log_result(self, test_name, success, details, response_data=None):
         """Log test result"""
