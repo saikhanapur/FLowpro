@@ -355,9 +355,9 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           </div>
         </div>
 
-        {/* Edit Mode Banner - Compact & Elegant */}
+        {/* Edit Mode Banner - Compact & Elegant (Hidden in Print) */}
         {isEditMode && !readOnly && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 px-6 py-2.5">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 px-6 py-2.5 print:hidden">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
