@@ -1618,6 +1618,80 @@ async def get_processes(request: Request, workspace_id: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/process/search", response_model=List[Process])
+async def search_processes(
+    request: Request, 
+    q: Optional[str] = None,
+    workspace_id: Optional[str] = None,
+    status: Optional[str] = None
+):
+    """Search processes for the authenticated user"""
+    try:
+        # Get current user
+        user = await require_auth(request)
+        user_id = user.get('id')
+        
+        # Base query - filter by userId
+        query = {"userId": user_id}
+        
+        # Add workspace filter if specified
+        if workspace_id:
+            query['workspaceId'] = workspace_id
+            
+        # Add status filter if specified
+        if status and status in ['draft', 'published']:
+            query['status'] = status
+        
+        # Add text search if query provided
+        if q and q.strip():
+            # Create text search conditions
+            search_conditions = []
+            search_term = {"$regex": q.strip(), "$options": "i"}  # Case-insensitive
+            
+            # Search in name, description, and node content
+            search_conditions.append({"name": search_term})
+            search_conditions.append({"description": search_term})
+            
+            # Search in node titles and descriptions
+            search_conditions.append({
+                "nodes": {
+                    "$elemMatch": {
+                        "$or": [
+                            {"title": search_term},
+                            {"description": search_term}
+                        ]
+                    }
+                }
+            })
+            
+            # Combine with OR condition
+            query["$or"] = search_conditions
+        
+        # Execute search
+        processes = await db.processes.find(query, {"_id": 0}).to_list(1000)
+        
+        # Convert datetime strings if needed
+        for process in processes:
+            if isinstance(process.get('createdAt'), str):
+                process['createdAt'] = datetime.fromisoformat(process['createdAt'])
+            if isinstance(process.get('updatedAt'), str):
+                process['updatedAt'] = datetime.fromisoformat(process['updatedAt'])
+            if isinstance(process.get('publishedAt'), str):
+                process['publishedAt'] = datetime.fromisoformat(process['publishedAt'])
+        
+        # Sort by relevance (updated date desc)
+        processes.sort(key=lambda x: x.get('updatedAt', datetime.min), reverse=True)
+        
+        logger.info(f"✅ Search completed: query='{q}' results={len(processes)} user={user['email']}")
+        
+        return processes
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error searching processes: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to search processes: {str(e)}")
+
 @api_router.get("/process/{process_id}", response_model=Process)
 async def get_process(process_id: str, request: Request):
     """Get a specific process - accessible if owned by user or if published"""
