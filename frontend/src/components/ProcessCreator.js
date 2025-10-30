@@ -24,10 +24,16 @@ const ProcessCreator = ({ currentWorkspace }) => {
   const navigate = useNavigate();
   const [method, setMethod] = useState(null);
   const [processing, setProcessing] = useState(false);
-  const [processingStep, setProcessingStep] = useState(''); // NEW: Track processing step
+  const [processingStep, setProcessingStep] = useState(''); // Track processing step
   const [extractedText, setExtractedText] = useState(null);
   const [showContextAdder, setShowContextAdder] = useState(false);
   const [extractedData, setExtractedData] = useState(null);
+  
+  // Smart question flow
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+  const [showSmartQuestions, setShowSmartQuestions] = useState(false);
+  const [contextAnswers, setContextAnswers] = useState(null);
   
   // Project selection
   const [workspaces, setWorkspaces] = useState([]);
