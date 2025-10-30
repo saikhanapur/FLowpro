@@ -41,8 +41,8 @@ const FlowNode = ({ node, onClick, isSelected }) => {
   return (
     <div
       onClick={onClick}
-      className={`rounded-2xl p-4 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.01] mx-auto w-full overflow-visible ${getStatusStyles()} ${
-        isSelected ? 'ring-2 ring-blue-500 ring-offset-2 scale-[1.01]' : ''
+      className={`rounded-2xl p-4 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.02] mx-auto w-full overflow-visible ${getStatusStyles()} ${
+        isSelected ? 'ring-2 ring-blue-500 ring-offset-4 scale-[1.02] shadow-xl' : 'shadow-md hover:shadow-lg'
       }`}
       data-testid={`flow-node-${node.id}`}
       style={{ minHeight: 'auto', minWidth: '320px' }}
