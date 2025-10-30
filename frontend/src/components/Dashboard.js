@@ -100,6 +100,12 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   };
 
   const performSearch = async () => {
+    console.log('🔍 Performing search with:', { 
+      query: searchQuery.trim(), 
+      workspace: currentWorkspace?.id || null, 
+      status: filterStatus === 'all' ? null : filterStatus 
+    });
+    
     setLoading(true);
     try {
       const data = await api.searchProcesses(
@@ -107,9 +113,10 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
         currentWorkspace?.id || null, 
         filterStatus === 'all' ? null : filterStatus
       );
+      console.log('🔍 Search results:', data);
       setProcesses(data);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('❌ Search error:', error);
       toast.error('Failed to search processes');
     } finally {
       setLoading(false);
