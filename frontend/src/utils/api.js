@@ -162,5 +162,29 @@ export const api = {
       withCredentials: true
     });
     return res.data;
+  },
+
+  // Share endpoints
+  createShare: async (processId, accessLevel, expiresInDays = null) => {
+    const res = await axios.post(`${API}/process/${processId}/share`, {
+      accessLevel,
+      expiresInDays
+    });
+    return res.data;
+  },
+
+  getShares: async (processId) => {
+    const res = await axios.get(`${API}/process/${processId}/shares`);
+    return res.data;
+  },
+
+  revokeShare: async (token) => {
+    const res = await axios.delete(`${API}/share/${token}`);
+    return res.data;
+  },
+
+  getSharedProcess: async (token) => {
+    const res = await axios.get(`${API}/view/${token}`);
+    return res.data;
   }
 };
