@@ -50,7 +50,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
       // Step 3: Generating
       setProcessingStep('Generating interactive flowchart...');
       await new Promise(resolve => setTimeout(resolve, 500));
-      toast.dismiss(loadingToast);
+      
       setExtractedData(data);
       
       // Check if multiple processes were detected
