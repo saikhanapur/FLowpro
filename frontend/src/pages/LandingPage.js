@@ -15,9 +15,14 @@ const LandingPage = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              SuperHumanly
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                SuperHumanly
+              </span>
+              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                EARLY ACCESS
+              </span>
+            </div>
           </div>
 
           <div className="hidden md:flex items-center gap-8">
