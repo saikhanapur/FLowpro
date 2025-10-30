@@ -462,6 +462,19 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                   )}
                 </div>
               ))}
+              
+              {/* Add Step Button (Only in Edit Mode) */}
+              {!readOnly && isEditMode && (
+                <button
+                  onClick={handleAddNode}
+                  className="w-full max-w-4xl mt-4 py-4 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group"
+                >
+                  <div className="flex items-center justify-center gap-2 text-slate-600 group-hover:text-blue-600">
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Add Step</span>
+                  </div>
+                </button>
+              )}
             </div>
 
             {/* Summary Sections */}
