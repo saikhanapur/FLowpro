@@ -526,33 +526,32 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                   {/* Project Content - Collapsible */}
                   {!isCollapsed && (
                     <div className="px-4 pb-4">
-                  <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Plus className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                      No flowcharts in this project yet
-                    </h3>
-                    <p className="text-sm text-slate-600 mb-4">
-                      Create your first flowchart for {workspace.name}
-                    </p>
-                    <Button
-                      onClick={() => navigate('/create')}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Flowchart
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {workspaceProcesses.map((process) => (
-                      <Card
-                        key={process.id}
-                        className="p-6 hover:shadow-lg transition-all cursor-pointer fade-in relative"
-                        onClick={() => navigate(`/edit/${process.id}`)}
-                        data-testid={`process-card-${process.id}`}
-                      >
+                      {isEmpty ? (
+                        <div className="text-center py-8 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Plus className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <p className="text-sm text-slate-600 mb-3">
+                            No flowcharts yet
+                          </p>
+                          <Button
+                            size="sm"
+                            onClick={() => navigate('/create')}
+                            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create Flowchart
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {workspaceProcesses.map((process) => (
+                            <Card
+                              key={process.id}
+                              className="p-6 hover:shadow-lg transition-all cursor-pointer fade-in relative"
+                              onClick={() => navigate(`/edit/${process.id}`)}
+                              data-testid={`process-card-${process.id}`}
+                            >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <h3 className="text-lg font-bold text-slate-800 mb-1">
