@@ -351,9 +351,33 @@ const ProcessCreator = ({ currentWorkspace }) => {
               Create an Interactive Flowchart
             </span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-6">
             Choose how you'd like to document your process
           </p>
+          
+          {/* Project Selector */}
+          {workspaces.length > 0 && (
+            <div className="max-w-md mx-auto mb-6">
+              <label className="block text-sm font-semibold text-slate-700 mb-2 text-left">
+                Select Project
+              </label>
+              <Select value={selectedWorkspace} onValueChange={setSelectedWorkspace}>
+                <SelectTrigger className="w-full h-12">
+                  <SelectValue placeholder="Choose a project..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {workspaces.map((workspace) => (
+                    <SelectItem key={workspace.id} value={workspace.id}>
+                      <div className="flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-slate-600" />
+                        <span>{workspace.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
