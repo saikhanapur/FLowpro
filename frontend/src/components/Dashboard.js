@@ -344,16 +344,16 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           </p>
         </div>
       ) : filteredProcesses.length === 0 ? (
-        // FILTERED EMPTY: User has processes but none match current filter/workspace
+        // FILTERED EMPTY: User has processes but none match current filter
         <div className="text-center py-16">
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="w-10 h-10 text-slate-400" />
           </div>
           <h3 className="text-xl font-semibold text-slate-800 mb-2">
-            No processes found
+            No flowcharts found
           </h3>
           <p className="text-slate-600 mb-6">
-            {searchQuery ? `No processes match "${searchQuery}"` : 'No processes in this workspace'}
+            {searchQuery ? `No flowcharts match "${searchQuery}"` : 'No flowcharts match your filters'}
           </p>
           <Button
             onClick={() => {
@@ -366,42 +366,34 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           </Button>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProcesses.map((process) => (
-            <Card
-              key={process.id}
-              className={`p-6 hover:shadow-lg transition-all cursor-pointer fade-in relative ${
-                selectMode && selectedProcesses.includes(process.id) 
-                  ? 'ring-2 ring-blue-500 bg-blue-50/50' 
-                  : ''
-              }`}
-              onClick={() => {
-                if (selectMode) {
-                  toggleProcessSelection(process.id);
-                } else {
-                  navigate(`/edit/${process.id}`);
-                }
-              }}
-              data-testid={`process-card-${process.id}`}
-            >
-              {/* Selection checkbox */}
-              {selectMode && (
-                <div className="absolute top-4 left-4 z-10">
-                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
-                    selectedProcesses.includes(process.id)
-                      ? 'bg-blue-600 border-blue-600'
-                      : 'bg-white border-slate-300'
-                  }`}>
-                    {selectedProcesses.includes(process.id) && (
-                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
+        // Group processes by workspace/project
+        <div className="space-y-8">
+          {workspaces.map((workspace) => {
+            const workspaceProcesses = filteredProcesses.filter(p => p.workspaceId === workspace.id);
+            if (workspaceProcesses.length === 0) return null;
+            
+            return (
+              <div key={workspace.id} className="space-y-4">
+                {/* Project Header */}
+                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                  <div className="flex items-center gap-3">
+                    <FolderOpen className="w-5 h-5 text-slate-600" />
+                    <h2 className="text-2xl font-bold text-slate-900">{workspace.name}</h2>
+                    <Badge variant="secondary" className="text-xs">
+                      {workspaceProcesses.length} flowchart{workspaceProcesses.length !== 1 ? 's' : ''}
+                    </Badge>
                   </div>
                 </div>
-              )}
-
-              <div className={`flex items-start justify-between mb-4 ${selectMode ? 'ml-8' : ''}`}>
+                
+                {/* Process Grid for this Project */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {workspaceProcesses.map((process) => (
+                    <Card
+                      key={process.id}
+                      className="p-6 hover:shadow-lg transition-all cursor-pointer fade-in relative"
+                      onClick={() => navigate(`/edit/${process.id}`)}
+                      data-testid={`process-card-${process.id}`}
+                    >
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-slate-800 mb-1">
                     {process.name}
