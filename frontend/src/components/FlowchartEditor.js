@@ -326,29 +326,32 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
-        <div className="border-b border-slate-200 bg-white px-3 sm:px-6 py-4 flex items-center justify-between flex-shrink-0 gap-2">
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-            <Button onClick={() => navigate('/')} variant="ghost" size="sm" data-testid="back-btn" className="flex-shrink-0">
-              <ArrowLeft className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Back</span>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <h2 className="text-base sm:text-lg font-bold text-slate-800 truncate">{process.name}</h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-0.5">v{process.version} • {process.nodes?.length || 0} steps</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            {/* Published Badge */}
-            {process?.status === 'published' && !isEditMode && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-medium text-emerald-700">Published</span>
+        <div className="border-b border-slate-200 bg-white px-3 sm:px-6 py-3 sm:py-4 flex-shrink-0">
+          {/* Mobile: Two rows, Desktop: One row */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            {/* Left side: Back + Title */}
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+              <Button onClick={() => navigate('/')} variant="ghost" size="sm" data-testid="back-btn" className="flex-shrink-0">
+                <ArrowLeft className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Back</span>
+              </Button>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-800 truncate">{process.name}</h2>
+                  {/* Published Badge - inline with title on mobile */}
+                  {process?.status === 'published' && !isEditMode && (
+                    <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200 rounded-lg flex-shrink-0">
+                      <CheckCircle className="w-3 h-3 text-emerald-600" />
+                      <span className="text-xs font-medium text-emerald-700">Published</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 mt-1">v{process.version} • {process.nodes?.length || 0} steps</p>
               </div>
-            )}
+            </div>
             
-            {/* Export Button - Always Available */}
-            <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn" className="flex-shrink-0">
+            {/* Right side: Action buttons */}
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 overflow-x-auto"
               <Download className="w-4 h-4 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Export</span>
               <span className="sm:hidden">Export</span>
