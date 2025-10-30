@@ -167,52 +167,71 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
         )}
 
         {/* Edit/Save Button */}
-        <div className="pt-4 border-t border-slate-200">
-          {isEditing ? (
-            <Button onClick={handleSave} className="w-full" data-testid="save-node-btn">
-              <Save className="w-4 h-4 mr-2" />
-              Save Changes
-            </Button>
-          ) : (
-            <Button onClick={() => setIsEditing(true)} variant="outline" className="w-full" data-testid="edit-node-btn">
-              <Edit className="w-4 h-4 mr-2" />
-              Edit Node
-            </Button>
-          )}
-        </div>
+        {canEdit && (
+          <div className="pt-4 border-t border-slate-200">
+            {isEditing ? (
+              <Button onClick={handleSave} className="w-full" data-testid="save-node-btn">
+                <Save className="w-4 h-4 mr-2" />
+                Save Changes
+              </Button>
+            ) : (
+              <Button onClick={() => setIsEditing(true)} variant="outline" className="w-full" data-testid="edit-node-btn">
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Node
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Comments Section */}
-        <div className="pt-4 border-t border-slate-200">
-          <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-            <MessageSquare className="w-4 h-4" />
-            Comments ({comments.length})
-          </h4>
+        {canViewComments && (
+          <div className="pt-4 border-t border-slate-200">
+            <h4 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Comments ({comments.length})
+            </h4>
 
-          <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
-            {comments.map((comment) => (
-              <div key={comment.id} className="bg-slate-50 rounded-lg p-3">
-                <div className="text-sm text-slate-700 leading-relaxed">{comment.content}</div>
-                <div className="text-xs text-slate-500 mt-2">
-                  {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : 'Just now'}
+            <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
+              {comments.map((comment) => (
+                <div key={comment.id} className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-sm text-slate-700 leading-relaxed">{comment.content}</div>
+                  <div className="text-xs text-slate-500 mt-2">
+                    {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : 'Just now'}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="space-y-2">
-            <Textarea
-              placeholder="Add a comment..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              rows={3}
-              data-testid="comment-input"
-              className="text-sm"
-            />
-            <Button onClick={handleAddComment} size="sm" className="w-full" data-testid="add-comment-btn">
-              Add Comment
-            </Button>
+            {canComment && (
+              <div className="space-y-2">
+                <Textarea
+                  placeholder="Add a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  rows={3}
+                  data-testid="comment-input"
+                  className="text-sm"
+                />
+                <Button onClick={handleAddComment} size="sm" className="w-full" data-testid="add-comment-btn">
+                  Add Comment
+                </Button>
+              </div>
+            )}
           </div>
-        </div>
+        )}
+        
+        {/* Access Level Info for non-owners */}
+        {!canEdit && readOnly && (
+          <div className="pt-4 border-t border-slate-200">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+              <p className="text-xs text-blue-800">
+                {accessLevel === 'view' && '👁️ View-only access'}
+                {accessLevel === 'comment' && '💬 You can view and comment'}
+                {accessLevel === 'edit' && '✏️ You can view, comment, and suggest edits'}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
