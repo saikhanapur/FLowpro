@@ -140,7 +140,7 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
               Cancel
             </Button>
             <Button onClick={handleCreateWorkspace} disabled={creating}>
-              {creating ? 'Creating...' : 'Create Workspace'}
+              {creating ? 'Creating...' : 'Create Project'}
             </Button>
           </DialogFooter>
         </DialogContent>
