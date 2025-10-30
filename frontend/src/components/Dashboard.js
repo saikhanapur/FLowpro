@@ -611,10 +611,12 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                     </Card>
                   ))}
                 </div>
-                )}
-              </div>
-            );
-          })}
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
       )}
       
