@@ -236,6 +236,23 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8" data-testid="dashboard">
+      {/* Studio Mode Banner */}
+      <div className="mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all group cursor-pointer relative overflow-hidden" onClick={() => navigate('/studio')}>
+        <div className="absolute inset-0 bg-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+              <Sparkles className="w-8 h-8 text-white animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-1">🎬 Try Studio Mode (Beta)</h3>
+              <p className="text-white/90 text-sm">Experience our creative, unconventional interface with Studios, Flows & Magic ✨</p>
+            </div>
+          </div>
+          <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+        </div>
+      </div>
+
       {/* Dashboard Header with Create Button */}
       {allProcesses.length > 0 && (
         <div className="mb-8">
