@@ -39,7 +39,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [movingProcesses, setMovingProcesses] = useState(false);
   
-  // Create workspace state
+  // Create project state
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
   const [newWorkspaceName, setNewWorkspaceName] = useState('');
   const [newWorkspaceDesc, setNewWorkspaceDesc] = useState('');
