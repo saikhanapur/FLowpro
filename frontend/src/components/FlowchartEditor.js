@@ -399,62 +399,54 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
               </div>
             </div>
 
-            {/* Flowchart Nodes */}
-            <div className="flex flex-col items-center space-y-8">
+            {/* Flowchart Nodes - Back to Original Beautiful Layout */}
+            <div className="flex flex-col items-center space-y-0">
               {process.nodes?.map((node, idx) => (
-                <div key={node.id} className="w-full max-w-4xl">
-                  <div 
-                    className={`node-container relative flex items-center gap-4 ${!readOnly && isEditMode ? '' : 'justify-center'}`}
-                    style={{ transition: 'all 300ms ease-out' }}
-                  >
-                    {/* Left-Side Control Strip (Always Visible in Edit Mode, Hidden in Print) */}
-                    {!readOnly && isEditMode && (
-                      <div className="flex-shrink-0 w-12 bg-slate-100 rounded-xl border border-slate-200 p-2 shadow-sm print:hidden">
-                        <div className="flex flex-col items-center gap-2">
-                          <button
-                            onClick={() => handleMoveNode(idx, 'up')}
-                            disabled={idx === 0 || reordering}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-blue-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
-                            title="Move Up"
-                          >
-                            <ArrowUp className="w-4 h-4 text-slate-600" />
-                          </button>
-                          
-                          <button
-                            onClick={() => handleMoveNode(idx, 'down')}
-                            disabled={idx === process.nodes.length - 1 || reordering}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-blue-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
-                            title="Move Down"
-                          >
-                            <ArrowDown className="w-4 h-4 text-slate-600" />
-                          </button>
-                          
-                          <div className="w-6 h-px bg-slate-300 my-1"></div>
-                          
-                          <button
-                            onClick={() => handleDeleteNode(node.id)}
-                            disabled={process.nodes.length === 1}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-red-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
-                            title="Delete Step"
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
+                <div key={node.id} className="node-container w-full max-w-4xl relative">
+                  {/* Left-Side Control Strip (Only in Edit Mode, Hidden in Print) */}
+                  {!readOnly && isEditMode && (
+                    <div className="absolute -left-16 top-1/2 -translate-y-1/2 w-12 bg-slate-100 rounded-xl border border-slate-200 p-2 shadow-sm print:hidden">
+                      <div className="flex flex-col items-center gap-2">
+                        <button
+                          onClick={() => handleMoveNode(idx, 'up')}
+                          disabled={idx === 0 || reordering}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-blue-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
+                          title="Move Up"
+                        >
+                          <ArrowUp className="w-4 h-4 text-slate-600" />
+                        </button>
+                        
+                        <button
+                          onClick={() => handleMoveNode(idx, 'down')}
+                          disabled={idx === process.nodes.length - 1 || reordering}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-blue-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
+                          title="Move Down"
+                        >
+                          <ArrowDown className="w-4 h-4 text-slate-600" />
+                        </button>
+                        
+                        <div className="w-6 h-px bg-slate-300 my-1"></div>
+                        
+                        <button
+                          onClick={() => handleDeleteNode(node.id)}
+                          disabled={process.nodes.length === 1}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-red-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
+                          title="Delete Step"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </button>
                       </div>
-                    )}
-                    
-                    <div className={`${!readOnly && isEditMode ? 'flex-1' : ''}`}>
-                      <FlowNode
-                        node={node}
-                        onClick={() => setSelectedNode(node)}
-                        isSelected={selectedNode?.id === node.id}
-                      />
                     </div>
-                  </div>
+                  )}
                   
-                  {/* Arrow Connector - Bigger and More Connected */}
+                  <FlowNode
+                    node={node}
+                    onClick={() => setSelectedNode(node)}
+                    isSelected={selectedNode?.id === node.id}
+                  />
+                  
                   {idx < process.nodes.length - 1 && (
-                    <div className="flex justify-center py-4 w-full">
+                    <div className="flex justify-center py-1.5 arrow-connector">
                       <svg width="32" height="40" viewBox="0 0 32 40" className="text-slate-400">
                         <line x1="16" y1="0" x2="16" y2="28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                         <polygon points="16,40 6,26 26,26" fill="currentColor" />
@@ -466,20 +458,15 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
               
               {/* Add Step Button (Only in Edit Mode, Hidden in Print) */}
               {!readOnly && isEditMode && (
-                <div className="w-full max-w-4xl print:hidden">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12"></div> {/* Spacer for alignment with control strip */}
-                    <button
-                      onClick={handleAddNode}
-                      className="flex-1 py-4 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group"
-                    >
-                      <div className="flex items-center justify-center gap-2 text-slate-600 group-hover:text-blue-600">
-                        <Plus className="w-5 h-5" />
-                        <span className="font-medium">Add Step</span>
-                      </div>
-                    </button>
+                <button
+                  onClick={handleAddNode}
+                  className="w-full max-w-4xl mt-4 py-4 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group print:hidden"
+                >
+                  <div className="flex items-center justify-center gap-2 text-slate-600 group-hover:text-blue-600">
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Add Step</span>
                   </div>
-                </div>
+                </button>
               )}
             </div>
 
