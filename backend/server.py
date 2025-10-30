@@ -1685,6 +1685,60 @@ async def delete_process(process_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.patch("/process/{process_id}/node/{node_id}")
+async def update_node(process_id: str, node_id: str, node_data: dict, request: Request):
+    """Update a specific node in a process (owner only)"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can edit nodes")
+        
+        # Find and update the specific node
+        nodes = process.get("nodes", [])
+        node_found = False
+        
+        for i, node in enumerate(nodes):
+            if node.get("id") == node_id:
+                # Update only the fields provided in node_data
+                for key, value in node_data.items():
+                    if key != "id":  # Don't allow changing node ID
+                        nodes[i][key] = value
+                node_found = True
+                break
+        
+        if not node_found:
+            raise HTTPException(status_code=404, detail="Node not found")
+        
+        # Update the process with modified nodes
+        await db.processes.update_one(
+            {"id": process_id},
+            {
+                "$set": {
+                    "nodes": nodes,
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        logger.info(f"✅ Node {node_id} updated in process {process_id} by {user['email']}")
+        
+        # Return the updated node
+        updated_node = next((n for n in nodes if n.get("id") == node_id), None)
+        return updated_node
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating node: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update node: {str(e)}")
+
 @api_router.patch("/process/{process_id}/workspace")
 async def move_process_to_workspace(process_id: str, data: dict, request: Request):
     """Move a process to a different workspace"""
