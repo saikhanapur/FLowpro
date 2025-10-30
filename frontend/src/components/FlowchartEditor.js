@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -28,6 +28,11 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [idealStateData, setIdealStateData] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [reordering, setReordering] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [publishing, setPublishing] = useState(false);
