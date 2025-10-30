@@ -1974,6 +1974,69 @@ async def revoke_share(token: str, request: Request):
         logger.error(f"Error revoking share: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to revoke share: {str(e)}")
 
+@api_router.get("/view/{token}")
+async def view_shared_process(token: str):
+    """Access a shared process via token (public endpoint, no auth required)"""
+    try:
+        # Get share by token
+        share = await db.shares.find_one({"token": token}, {"_id": 0})
+        if not share:
+            raise HTTPException(status_code=404, detail="Share not found or invalid token")
+        
+        # Convert datetime strings if needed
+        for date_field in ['createdAt', 'updatedAt', 'expiresAt', 'lastAccessedAt', 'revokedAt']:
+            if isinstance(share.get(date_field), str):
+                share[date_field] = datetime.fromisoformat(share[date_field])
+        
+        # Check if share is active
+        if not share.get("isActive", True):
+            raise HTTPException(status_code=403, detail="This share has been revoked")
+        
+        # Check if share has expired
+        if share.get("expiresAt"):
+            if datetime.now(timezone.utc) > share["expiresAt"]:
+                raise HTTPException(status_code=403, detail="This share has expired")
+        
+        # Get the process
+        process = await db.processes.find_one({"id": share["processId"]}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Verify process is still published
+        if process.get("status") != "published":
+            raise HTTPException(status_code=403, detail="This process is no longer published")
+        
+        # Update access statistics
+        await db.shares.update_one(
+            {"token": token},
+            {
+                "$set": {
+                    "lastAccessedAt": datetime.now(timezone.utc),
+                    "updatedAt": datetime.now(timezone.utc)
+                },
+                "$inc": {"accessCount": 1}
+            }
+        )
+        
+        logger.info(f"✅ Process accessed via share: {token} (access #{share.get('accessCount', 0) + 1})")
+        
+        # Return process data with access level
+        return {
+            "process": process,
+            "accessLevel": share["accessLevel"],
+            "shareInfo": {
+                "createdBy": share.get("createdByName", "Unknown"),
+                "createdAt": share.get("createdAt"),
+                "expiresAt": share.get("expiresAt")
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error accessing shared process: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to access shared process: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
