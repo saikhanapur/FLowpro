@@ -660,6 +660,15 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* AI Refine Chat */}
+      {showAIChat && (
+        <AIRefineChat
+          processId={id}
+          onClose={() => setShowAIChat(false)}
+          onRefineComplete={handleRefineComplete}
+        />
+      )}
     </div>
   );
 };
