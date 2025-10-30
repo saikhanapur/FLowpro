@@ -6,11 +6,16 @@ import { Badge } from '@/components/ui/badge';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const DetailPanel = ({ node, processId, onClose, onUpdate }) => {
+const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, accessLevel = 'owner' }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedNode, setEditedNode] = useState(node);
+  
+  // Determine permissions based on access level
+  const canEdit = !readOnly && accessLevel === 'owner';
+  const canComment = !readOnly && (accessLevel === 'comment' || accessLevel === 'edit' || accessLevel === 'owner');
+  const canViewComments = canComment; // Show comments section only if user can comment
 
   useEffect(() => {
     loadComments();
