@@ -2047,6 +2047,11 @@ async def refine_process_with_ai(process_id: str, data: dict, request: Request):
         if not user_message:
             raise HTTPException(status_code=400, detail="Message is required")
         
+        # Get API key
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
         # Prepare current process context
         process_context = {
             "name": process.get("name", ""),
@@ -2072,6 +2077,7 @@ Please analyze the user's request and return the COMPLETE updated process with a
   "nodes": [
     {{
       "id": "existing_id_or_new_temp_id",
+      "type": "step",
       "title": "Step title",
       "description": "Step description",
       "status": "current",
@@ -2085,50 +2091,79 @@ Please analyze the user's request and return the COMPLETE updated process with a
 
 IMPORTANT:
 1. Return ALL nodes (not just changed ones)
-2. For EXISTING nodes: Keep their original "id" values
+2. For EXISTING nodes: Keep their original "id" values exactly as they are
 3. For NEW nodes: Use placeholder IDs like "new-1", "new-2", etc.
-4. Update positions: y = 100.0 + (index * 150)
-5. Keep all existing data for unchanged nodes
-6. Provide clear "changes" summary
+4. Always include "type": "step" for each node
+5. Update positions: y = 100.0 + (index * 150)
+6. Keep all existing data for unchanged nodes
+7. Provide clear "changes" summary
 
 Return ONLY valid JSON, no markdown or explanations."""
 
-        # Call Claude API
+        # Call Claude API with proper initialization
         logger.info(f"🤖 Refining process {process_id} with Claude...")
         
-        llm = LlmChat(
-            system_message="You are a process optimization expert. Return only valid JSON responses.",
-            model="claude-sonnet-4-20250514"
-        )
-        
-        response = llm.run(prompt)
-        logger.info(f"✅ Claude response received")
+        try:
+            chat = LlmChat(
+                api_key=api_key,
+                session_id=f"refine_{process_id}_{int(datetime.now(timezone.utc).timestamp())}",
+                system_message="You are a process optimization expert. Return only valid JSON responses. Never include markdown code blocks, just pure JSON."
+            ).with_model("anthropic", "claude-sonnet-4-20250514")
+            
+            response = chat.run(prompt)
+            logger.info(f"✅ Claude response received: {response[:200]}...")
+            
+        except Exception as e:
+            logger.error(f"Claude API error: {e}")
+            raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
         
         # Parse Claude's response
         try:
-            # Extract JSON from response (handle markdown code blocks)
-            json_match = re.search(r'```(?:json)?\s*(.*?)\s*```', response, re.DOTALL)
-            if json_match:
-                json_str = json_match.group(1)
-            else:
-                json_str = response
+            # Extract JSON from response (handle markdown code blocks if present)
+            json_str = response.strip()
+            
+            # Remove markdown code blocks if present
+            if json_str.startswith('```'):
+                json_match = re.search(r'```(?:json)?\s*(.*?)\s*```', json_str, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(1)
             
             refined_data = json.loads(json_str)
             
             # Validate response structure
             if 'nodes' not in refined_data:
-                raise ValueError("Response missing 'nodes' field")
+                logger.error(f"Response missing 'nodes' field: {json_str[:500]}")
+                raise ValueError("AI response missing 'nodes' field")
+            
+            if not isinstance(refined_data['nodes'], list):
+                raise ValueError("'nodes' must be an array")
             
             # Post-process nodes: Replace placeholder IDs with proper timestamps
             processed_nodes = []
             timestamp_counter = int(datetime.now(timezone.utc).timestamp() * 1000)
             
-            for node in refined_data.get("nodes", []):
+            for idx, node in enumerate(refined_data.get("nodes", [])):
+                # Ensure node has required fields
+                if not isinstance(node, dict):
+                    continue
+                
                 # If node has a placeholder ID (starts with "new-"), generate a real one
-                if node.get("id", "").startswith("new-"):
+                node_id = node.get("id", f"new-{idx}")
+                if node_id.startswith("new-"):
                     node["id"] = f"node-{timestamp_counter}"
                     timestamp_counter += 1
+                
+                # Ensure type field exists
+                if "type" not in node:
+                    node["type"] = "step"
+                
+                # Ensure position exists
+                if "position" not in node:
+                    node["position"] = {"x": 100.0, "y": 100.0 + (idx * 150)}
+                
                 processed_nodes.append(node)
+            
+            logger.info(f"✅ Processed {len(processed_nodes)} nodes")
             
             # Update process in database
             update_data = {
@@ -2142,10 +2177,13 @@ Return ONLY valid JSON, no markdown or explanations."""
             if refined_data.get("description") and refined_data["description"] != process_context["description"]:
                 update_data["description"] = refined_data["description"]
             
-            await db.processes.update_one(
+            result = await db.processes.update_one(
                 {"id": process_id},
                 {"$set": update_data}
             )
+            
+            if result.modified_count == 0:
+                logger.warning(f"Process {process_id} not modified (maybe no changes?)")
             
             logger.info(f"✅ Process {process_id} refined successfully by {user['email']}")
             
@@ -2161,9 +2199,12 @@ Return ONLY valid JSON, no markdown or explanations."""
             }
             
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse Claude response: {e}")
+            logger.error(f"Failed to parse Claude response as JSON: {e}")
             logger.error(f"Response was: {response}")
-            raise HTTPException(status_code=500, detail="AI returned invalid format. Please try rephrasing your request.")
+            raise HTTPException(
+                status_code=500, 
+                detail="AI returned invalid format. Please try rephrasing your request or try again."
+            )
         except ValueError as e:
             logger.error(f"Invalid response structure: {e}")
             raise HTTPException(status_code=500, detail=str(e))
@@ -2171,7 +2212,7 @@ Return ONLY valid JSON, no markdown or explanations."""
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error refining process: {e}")
+        logger.error(f"Unexpected error refining process: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to refine process: {str(e)}")
 
 @api_router.post("/process/{process_id}/ideal-state")
