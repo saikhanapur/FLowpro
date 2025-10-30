@@ -623,23 +623,23 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Create Workspace Modal */}
+      {/* Create Project Modal */}
       <Dialog open={showCreateWorkspaceModal} onOpenChange={setShowCreateWorkspaceModal}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Create New Workspace</DialogTitle>
+            <DialogTitle>Create New Project</DialogTitle>
             <DialogDescription>
-              Organize your processes into workspaces
+              Organize your flowcharts into projects for teams, clients, or departments
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div>
               <label className="text-sm font-medium text-slate-700 mb-2 block">
-                Workspace Name *
+                Project Name *
               </label>
               <Input
-                placeholder="e.g., Marketing Team, Q4 Projects"
+                placeholder="e.g., Marketing Team, Client ABC, Q4 Operations"
                 value={newWorkspaceName}
                 onChange={(e) => setNewWorkspaceName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateWorkspace()}
@@ -651,7 +651,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                 Description (Optional)
               </label>
               <Input
-                placeholder="Brief description of this workspace"
+                placeholder="Brief description of this project"
                 value={newWorkspaceDesc}
                 onChange={(e) => setNewWorkspaceDesc(e.target.value)}
               />
@@ -675,7 +675,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
               disabled={creatingWorkspace || !newWorkspaceName.trim()}
               className="bg-gradient-to-r from-blue-600 to-purple-600"
             >
-              {creatingWorkspace ? 'Creating...' : 'Create Workspace'}
+              {creatingWorkspace ? 'Creating...' : 'Create Project'}
             </Button>
           </DialogFooter>
         </DialogContent>
