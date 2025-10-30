@@ -2027,6 +2027,142 @@ async def move_process_to_workspace(process_id: str, data: dict, request: Reques
         logger.error(f"Error moving process: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@api_router.post("/process/{process_id}/refine")
+async def refine_process_with_ai(process_id: str, data: dict, request: Request):
+    """Refine a process using AI based on user's natural language request"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can refine")
+        
+        user_message = data.get("message", "").strip()
+        if not user_message:
+            raise HTTPException(status_code=400, detail="Message is required")
+        
+        # Prepare current process context
+        process_context = {
+            "name": process.get("name", ""),
+            "description": process.get("description", ""),
+            "nodes": process.get("nodes", [])
+        }
+        
+        # Build prompt for Claude
+        prompt = f"""You are helping refine a workflow/process flowchart. 
+
+Current Process: {process_context['name']}
+Description: {process_context['description']}
+
+Current Steps:
+{json.dumps(process_context['nodes'], indent=2)}
+
+User's refinement request: "{user_message}"
+
+Please analyze the user's request and return the COMPLETE updated process with all nodes (including unchanged ones) in the following JSON format:
+{{
+  "name": "Process name (keep same unless user wants to change)",
+  "description": "Process description (keep same unless user wants to change)",
+  "nodes": [
+    {{
+      "id": "unique_id",
+      "title": "Step title",
+      "description": "Step description",
+      "status": "current",
+      "actors": ["Actor 1", "Actor 2"],
+      "subSteps": ["Sub-step 1", "Sub-step 2"],
+      "position": {{"x": 100.0, "y": 100.0}}
+    }}
+  ],
+  "changes": ["Brief summary of what was changed"]
+}}
+
+IMPORTANT:
+1. Return ALL nodes (not just changed ones)
+2. Preserve IDs for unchanged nodes
+3. Create new IDs for new nodes (format: node-{timestamp})
+4. Update positions: y = 100.0 + (index * 150)
+5. Keep all existing data for unchanged nodes
+6. Provide clear "changes" summary
+
+Return ONLY valid JSON, no markdown or explanations."""
+
+        # Call Claude API
+        logger.info(f"🤖 Refining process {process_id} with Claude...")
+        
+        llm = LlmChat(
+            system_message="You are a process optimization expert. Return only valid JSON responses.",
+            model="claude-sonnet-4-20250514"
+        )
+        
+        response = llm.run(prompt)
+        logger.info(f"✅ Claude response received")
+        
+        # Parse Claude's response
+        try:
+            # Extract JSON from response (handle markdown code blocks)
+            json_match = re.search(r'```(?:json)?\s*(.*?)\s*```', response, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1)
+            else:
+                json_str = response
+            
+            refined_data = json.loads(json_str)
+            
+            # Validate response structure
+            if 'nodes' not in refined_data:
+                raise ValueError("Response missing 'nodes' field")
+            
+            # Update process in database
+            update_data = {
+                "nodes": refined_data.get("nodes", process_context["nodes"]),
+                "updatedAt": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Update name/description if changed
+            if refined_data.get("name") and refined_data["name"] != process_context["name"]:
+                update_data["name"] = refined_data["name"]
+            if refined_data.get("description") and refined_data["description"] != process_context["description"]:
+                update_data["description"] = refined_data["description"]
+            
+            await db.processes.update_one(
+                {"id": process_id},
+                {"$set": update_data}
+            )
+            
+            logger.info(f"✅ Process {process_id} refined successfully by {user['email']}")
+            
+            return {
+                "success": True,
+                "process": {
+                    "id": process_id,
+                    "name": refined_data.get("name", process_context["name"]),
+                    "description": refined_data.get("description", process_context["description"]),
+                    "nodes": refined_data["nodes"]
+                },
+                "changes": refined_data.get("changes", ["Process updated based on your request"])
+            }
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse Claude response: {e}")
+            logger.error(f"Response was: {response}")
+            raise HTTPException(status_code=500, detail="AI returned invalid format. Please try rephrasing your request.")
+        except ValueError as e:
+            logger.error(f"Invalid response structure: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error refining process: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to refine process: {str(e)}")
+
 @api_router.post("/process/{process_id}/ideal-state")
 async def generate_ideal_state(process_id: str):
     """Generate ideal state for a process"""
