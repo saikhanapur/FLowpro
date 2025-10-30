@@ -14,6 +14,7 @@ import FlowNode from './FlowNode';
 import DetailPanel from './DetailPanel';
 import IdealStateModal from './IdealStateModal';
 import ExportModal from './ExportModal';
+import ShareModal from './ShareModal';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
