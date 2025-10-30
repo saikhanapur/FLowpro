@@ -373,8 +373,25 @@ class AIService:
         try:
             logger.info(f"Starting smart document analysis for {len(text)} characters")
             
-            # Quick preprocessing to get initial metrics
+            # Quick preprocessing to get initial metrics and detect multiple processes
             process_detection = self._preprocess_and_detect_boundaries(text)
+            
+            # Check if multiple processes detected - if yes, skip smart questions
+            is_multi_process = process_detection['process_count'] >= 2 and process_detection['high_confidence']
+            
+            if is_multi_process:
+                logger.info(f"Multi-process document detected ({process_detection['process_count']} processes). Skipping smart questions.")
+                return DocumentAnalysis(
+                    process_type="Multiple Processes Detected",
+                    complexity="high",
+                    confidence=0.9,
+                    detected_steps=process_detection['process_count'] * 5,  # Rough estimate
+                    detected_actors=process_detection['process_count'] * 2,
+                    suggested_questions=[],  # No questions for multi-process
+                    summary=f"Found {process_detection['process_count']} distinct processes. You'll review each one individually.",
+                    is_multi_process=True,
+                    process_count=process_detection['process_count']
+                )
             
             chat = LlmChat(
                 api_key=self.api_key,
@@ -443,6 +460,10 @@ Return ONLY this JSON (no markdown, no explanations):
             response = await chat.send_message(UserMessage(content=analysis_prompt))
             result = json.loads(response.content)
             
+            # Add multi-process info
+            result['is_multi_process'] = False
+            result['process_count'] = 1
+            
             logger.info(f"Document analysis complete: {result['process_type']} ({result['complexity']} complexity)")
             
             return DocumentAnalysis(**result)
@@ -457,7 +478,9 @@ Return ONLY this JSON (no markdown, no explanations):
                 detected_steps=5,
                 detected_actors=2,
                 suggested_questions=[],
-                summary="Unable to fully analyze document"
+                summary="Unable to fully analyze document",
+                is_multi_process=False,
+                process_count=1
             )
     
     def _smart_truncate(self, text: str, max_length: int, process_titles: List[str]) -> str:
