@@ -366,7 +366,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 </span>
               </div>
               <span className="text-xs text-slate-500">
-                Hover over nodes to reorder • Click to edit details
+                Click nodes to edit details
               </span>
             </div>
           </div>
