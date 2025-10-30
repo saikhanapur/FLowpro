@@ -44,31 +44,25 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
           </h1>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6">
-          {/* WorkspaceSelector removed - showing all processes now */}
-          {/* <WorkspaceSelector
+        <nav className="hidden md:flex items-center gap-4">
+          {/* Project Selector */}
+          <WorkspaceSelector
             currentWorkspace={currentWorkspace}
             workspaces={workspaces}
             onWorkspaceChange={onWorkspaceChange}
             onWorkspacesUpdate={onWorkspacesUpdate}
-          /> */}
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
-            data-testid="nav-processes"
-          >
-            My Processes
-          </button>
+          />
+          
           <button
             onClick={() => navigate('/templates')}
-            className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
+            className="text-sm text-slate-700 hover:text-slate-900 font-medium transition-colors px-3 py-2 rounded-md hover:bg-slate-100"
             data-testid="nav-templates"
           >
             Templates
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" data-testid="theme-selector">
+              <Button variant="outline" size="sm" className="text-sm font-medium" data-testid="theme-selector">
                 <Settings className="w-4 h-4 mr-2" />
                 Theme
               </Button>
