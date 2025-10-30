@@ -51,6 +51,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     if (!processData) {
       loadProcess();
     }
+    loadWorkspaces();
   }, [id, processData]);
 
   const loadProcess = async () => {
@@ -64,6 +65,30 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       navigate('/');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadWorkspaces = async () => {
+    try {
+      const data = await api.getWorkspaces();
+      setWorkspaces(data);
+    } catch (error) {
+      console.error('Failed to load workspaces:', error);
+    }
+  };
+
+  const handleMoveToWorkspace = async (targetWorkspace) => {
+    setMovingProcess(true);
+    try {
+      await api.moveProcessToWorkspace(id, targetWorkspace.id);
+      toast.success(`Moved to ${targetWorkspace.name}`);
+      setShowMoveModal(false);
+      // Redirect to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error('Failed to move process');
+    } finally {
+      setMovingProcess(false);
     }
   };
 
