@@ -1932,6 +1932,48 @@ async def list_shares(process_id: str, request: Request):
         logger.error(f"Error listing shares: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to list shares: {str(e)}")
 
+@api_router.delete("/share/{token}")
+async def revoke_share(token: str, request: Request):
+    """Revoke a share (soft delete) - owner only"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get share
+        share = await db.shares.find_one({"token": token}, {"_id": 0})
+        if not share:
+            raise HTTPException(status_code=404, detail="Share not found")
+        
+        # Verify ownership via process
+        process = await db.processes.find_one({"id": share["processId"]}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Associated process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can revoke shares")
+        
+        # Soft delete - set isActive to False and record revocation time
+        await db.shares.update_one(
+            {"token": token},
+            {
+                "$set": {
+                    "isActive": False,
+                    "revokedAt": datetime.now(timezone.utc),
+                    "updatedAt": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        logger.info(f"✅ Share revoked: {token} by {user['email']}")
+        
+        return {"success": True, "message": "Share revoked successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error revoking share: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to revoke share: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
