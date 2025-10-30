@@ -37,11 +37,19 @@ const ProcessCreator = ({ currentWorkspace }) => {
     setProcessing(true);
     setShowContextAdder(false);
     
-    // Show toast with progress indicator
-    const loadingToast = toast.loading('AI is analyzing your input... This may take 1-2 minutes for large documents.');
-    
     try {
+      // Step 1: Reading
+      setProcessingStep('Reading your input...');
+      await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause for UX
+      
+      // Step 2: Analyzing
+      setProcessingStep('Analyzing structure and extracting steps...');
+      
       const data = await api.parseProcess(input, inputType, additionalContext);
+      
+      // Step 3: Generating
+      setProcessingStep('Generating interactive flowchart...');
+      await new Promise(resolve => setTimeout(resolve, 500));
       toast.dismiss(loadingToast);
       setExtractedData(data);
       
