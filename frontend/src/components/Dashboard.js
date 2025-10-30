@@ -490,7 +490,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                         </div>
                       ) : (
                         <>
-                          <h2 className="text-lg md:text-xl font-bold text-slate-900 truncate max-w-[150px] sm:max-w-[250px] md:max-w-none">{workspace.name}</h2>
+                          <h2 className="text-base md:text-xl font-bold text-slate-900 truncate max-w-[140px] sm:max-w-[250px] md:max-w-none">{workspace.name}</h2>
                           <Badge variant="secondary" className="text-xs flex-shrink-0">
                             {workspaceProcesses.length} flowchart{workspaceProcesses.length !== 1 ? 's' : ''}
                           </Badge>
