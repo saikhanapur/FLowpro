@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Upload, MessageSquare, ArrowLeft, CheckCircle, AlertCircle, FolderOpen } from 'lucide-react';
+import { Mic, Upload, MessageSquare, ArrowLeft, CheckCircle, AlertCircle, FolderOpen, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ import DocumentUploader from './DocumentUploader';
 import ChatInterface from './ChatInterface';
 import MultiProcessReview from './MultiProcessReview';
 import ContextAdder from './ContextAdder';
+import SmartQuestionPanel from './SmartQuestionPanel';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
