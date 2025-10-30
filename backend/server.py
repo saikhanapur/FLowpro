@@ -1294,14 +1294,40 @@ async def logout(request: Request, response: Response):
         logger.error(f"Logout error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/process/analyze", response_model=DocumentAnalysis)
+async def analyze_document(input_data: ProcessInput):
+    """
+    Intelligent document analysis - analyzes document to understand complexity 
+    and generate smart contextual questions BEFORE parsing.
+    """
+    try:
+        logger.info(f"Analyzing document for smart questions: {input_data.inputType}")
+        result = await ai_service.analyze_document(input_data.text)
+        return result
+    except Exception as e:
+        logger.error(f"Document analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/process/parse", response_model=Dict[str, Any])
 async def parse_process(input_data: ProcessInput):
-    """Parse input and extract process structure"""
+    """Parse input and extract process structure with optional smart context"""
     try:
-        # Merge document text with additional context if provided
+        # Build enhanced context from smart questions if provided
         text_to_parse = input_data.text
+        
+        # Add context answers if provided (smart questions)
+        if input_data.contextAnswers:
+            context_parts = []
+            for question_id, answer in input_data.contextAnswers.items():
+                context_parts.append(f"{question_id}: {answer}")
+            
+            if context_parts:
+                smart_context = "\n".join(context_parts)
+                text_to_parse = f"{input_data.text}\n\n---SMART CONTEXT FROM USER---\n{smart_context}"
+        
+        # Add additional freeform context if provided
         if input_data.additionalContext:
-            text_to_parse = f"{input_data.text}\n\n---ADDITIONAL CONTEXT FROM USER---\n{input_data.additionalContext}"
+            text_to_parse = f"{text_to_parse}\n\n---ADDITIONAL CONTEXT FROM USER---\n{input_data.additionalContext}"
         
         result = await ai_service.parse_process(text_to_parse, input_data.inputType)
         return result
