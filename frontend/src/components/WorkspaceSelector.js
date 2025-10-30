@@ -63,7 +63,7 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 text-sm font-medium">
             <FolderOpen className="w-4 h-4" />
             <span className="font-medium">{currentWorkspace.name}</span>
             <span className="text-xs text-slate-500">({currentWorkspace.processCount})</span>
@@ -72,7 +72,7 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-64">
           <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 uppercase">
-            Workspaces
+            Projects
           </div>
           {workspaces.map((workspace) => (
             <DropdownMenuItem
@@ -94,24 +94,24 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setShowCreateDialog(true)} className="cursor-pointer">
             <Plus className="w-4 h-4 mr-2" />
-            <span>Create Workspace</span>
+            <span>New Project</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Create Workspace Dialog */}
+      {/* Create Project Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Workspace</DialogTitle>
+            <DialogTitle>Create New Project</DialogTitle>
             <DialogDescription>
-              Organize your processes into separate workspaces for teams, projects, or departments.
+              Organize your flowcharts into separate projects for teams, clients, or departments.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Workspace Name *</label>
+              <label className="text-sm font-medium mb-2 block">Project Name *</label>
               <Input
                 placeholder="e.g., HR Department, Client XYZ, IT Operations"
                 value={newWorkspaceName}
@@ -122,7 +122,7 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
             <div>
               <label className="text-sm font-medium mb-2 block">Description (Optional)</label>
               <Input
-                placeholder="Brief description of this workspace"
+                placeholder="Brief description of this project"
                 value={newWorkspaceDesc}
                 onChange={(e) => setNewWorkspaceDesc(e.target.value)}
               />
@@ -130,7 +130,7 @@ const WorkspaceSelector = ({ currentWorkspace, workspaces, onWorkspaceChange, on
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <p className="text-sm text-blue-800">
-                <strong>💡 Tip:</strong> Create workspaces to separate processes by team, client, or project for better organization.
+                <strong>💡 Tip:</strong> Create projects to separate flowcharts by team, client, or department for better organization.
               </p>
             </div>
           </div>
