@@ -233,7 +233,7 @@ const PublicView = () => {
       <div className="bg-slate-100 border-t border-slate-200 py-12 px-6 mt-12">
         <div className="max-w-4xl mx-auto text-center">
           <h3 className="text-3xl font-bold text-slate-900 mb-4">
-            Create Your Own Process Flowcharts
+            Create Your Own Interactive Flowcharts
           </h3>
           <p className="text-lg text-slate-600 mb-6">
             Turn your process documents into interactive flowcharts in 2 minutes with AI
