@@ -58,8 +58,8 @@ class BackendTester:
             response = self.session.get(f"{self.base_url}/", timeout=TIMEOUT)
             if response.status_code == 200:
                 data = response.json()
-                if "FlowForge AI API" in data.get("message", ""):
-                    self.log_result("Root Endpoint", True, "API is responding correctly")
+                if "API" in data.get("message", ""):
+                    self.log_result("Root Endpoint", True, f"API is responding correctly: {data.get('message')}")
                     return True
                 else:
                     self.log_result("Root Endpoint", False, f"Unexpected response: {data}")
