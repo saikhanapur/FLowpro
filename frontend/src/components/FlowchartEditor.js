@@ -86,29 +86,8 @@ const FlowchartEditor = ({ theme }) => {
   };
 
   const handleShare = async () => {
-    // Use public view route for published processes
-    const shareUrl = `${window.location.origin}/view/${id}`;
-    
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      toast.success('Link copied to clipboard! Share with your team.');
-      
-      // Reset copied state after 2 seconds
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = shareUrl;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      
-      setCopied(true);
-      toast.success('Link copied to clipboard!');
-      setTimeout(() => setCopied(false), 2000);
-    }
+    // Open share modal with access controls
+    setShowShareModal(true);
   };
 
   const handleGenerateIdealState = async () => {
