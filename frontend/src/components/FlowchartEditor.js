@@ -85,6 +85,17 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     }
   };
 
+
+  const handleRefineComplete = (refinedProcess) => {
+    // Update process with refined data
+    setProcess(prev => ({
+      ...prev,
+      ...refinedProcess
+    }));
+    // Close chat after successful refinement
+    // setShowAIChat(false); // Keep open for multi-turn refinement
+  };
+
   const handleUnpublish = async () => {
     try {
       const updated = await api.unpublishProcess(id);
