@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, Upload, MessageSquare, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mic, Upload, MessageSquare, ArrowLeft, CheckCircle, AlertCircle, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import VoiceRecorder from './VoiceRecorder';
 import DocumentUploader from './DocumentUploader';
 import ChatInterface from './ChatInterface';
@@ -20,6 +27,28 @@ const ProcessCreator = ({ currentWorkspace }) => {
   const [extractedText, setExtractedText] = useState(null);
   const [showContextAdder, setShowContextAdder] = useState(false);
   const [extractedData, setExtractedData] = useState(null);
+  
+  // Project selection
+  const [workspaces, setWorkspaces] = useState([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+
+  useEffect(() => {
+    loadWorkspaces();
+  }, []);
+
+  const loadWorkspaces = async () => {
+    try {
+      const data = await api.getWorkspaces();
+      setWorkspaces(data);
+      if (currentWorkspace) {
+        setSelectedWorkspace(currentWorkspace.id);
+      } else if (data.length > 0) {
+        setSelectedWorkspace(data[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+    }
+  };
 
   const handleInputComplete = async (input, inputType) => {
     // For documents, show context adder before processing
