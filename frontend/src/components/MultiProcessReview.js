@@ -102,7 +102,7 @@ const MultiProcessReview = ({ processesData, onBack, currentWorkspace, selectedW
         id: `process-${Date.now()}`,
         name: selectedData.map(p => p.processName).join(' & '),
         description: 'Combined process from multiple workflows',
-        workspaceId: currentWorkspace?.id, // Assign to current workspace
+        workspaceId: selectedWorkspace || currentWorkspace?.id, // Use selected workspace first
         nodes: allNodes,
         actors: allActors,
         criticalGaps: allGaps,
