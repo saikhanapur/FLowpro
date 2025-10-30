@@ -234,7 +234,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
     );
   }
 
-  // NEW: Show context adder after document upload
+  // NEW: Show context adder after document upload (legacy, might be removed)
   if (showContextAdder && extractedText) {
     return (
       <ContextAdder
@@ -242,6 +242,70 @@ const ProcessCreator = ({ currentWorkspace }) => {
         onContextAdded={handleContextAdded}
         onSkip={handleSkipContext}
       />
+    );
+  }
+
+  // NEW: Show smart questions after analysis (adaptive)
+  if (showSmartQuestions && analysis) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <button 
+          onClick={() => navigate('/dashboard')} 
+          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="font-medium">Back to Dashboard</span>
+        </button>
+
+        {/* Analysis Summary */}
+        <div className="mb-6 p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-slate-900 mb-1">
+                ✨ Analysis Complete
+              </h2>
+              <p className="text-slate-600 text-sm mb-3">
+                {analysis.summary}
+              </p>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                  📄 {analysis.process_type}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-medium">
+                  {analysis.detected_steps} steps
+                </span>
+                <span className={`px-3 py-1 rounded-full font-medium ${
+                  analysis.complexity === 'high' ? 'bg-red-100 text-red-700' :
+                  analysis.complexity === 'medium' ? 'bg-amber-100 text-amber-700' :
+                  'bg-green-100 text-green-700'
+                }`}>
+                  {analysis.complexity} complexity
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Smart Questions */}
+        <SmartQuestionPanel
+          analysis={analysis}
+          onComplete={handleSmartQuestionsComplete}
+          onSkip={handleSkipSmartQuestions}
+        />
+
+        {/* Skip All Button */}
+        <div className="mt-6 text-center">
+          <button
+            onClick={handleSkipSmartQuestions}
+            className="text-sm text-slate-500 hover:text-slate-700 font-medium transition-colors"
+          >
+            Skip all questions and generate now →
+          </button>
+        </div>
+      </div>
     );
   }
 
