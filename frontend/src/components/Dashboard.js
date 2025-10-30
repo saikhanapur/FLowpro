@@ -246,13 +246,10 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-4xl font-bold text-slate-900 mb-2">
-                Turn Chaos into{' '}
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  Clarity
-                </span>
+                My Workspace
               </h1>
               <p className="text-lg text-slate-600">
-                {currentWorkspace ? `${currentWorkspace.name} • ${processes.length} flowchart${processes.length !== 1 ? 's' : ''}` : 'Document, visualize, and improve workflows'}
+                {allProcesses.length} flowchart{allProcesses.length !== 1 ? 's' : ''} organized in {workspaces.length} project{workspaces.length !== 1 ? 's' : ''}
               </p>
             </div>
             <div className="flex gap-3">
