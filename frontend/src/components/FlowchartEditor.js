@@ -716,6 +716,69 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         </DialogContent>
       </Dialog>
 
+      {/* Refine Published Warning Dialog */}
+      <Dialog open={showRefineWarning} onOpenChange={setShowRefineWarning}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-amber-600" />
+              </div>
+              Refine Published Flowchart?
+            </DialogTitle>
+            <DialogDescription className="pt-4">
+              This flowchart is currently <strong>published and shared</strong>. Using AI refinement will:
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-3 py-4">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs text-blue-600 font-bold">1</span>
+              </div>
+              <p className="text-sm text-slate-700">Save your AI-powered changes</p>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs text-amber-600 font-bold">2</span>
+              </div>
+              <p className="text-sm text-slate-700">
+                <strong>Unpublish</strong> the flowchart temporarily
+              </p>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs text-green-600 font-bold">3</span>
+              </div>
+              <p className="text-sm text-slate-700">
+                Allow you to <strong>review changes</strong> before republishing
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-xs text-blue-800">
+              <strong>💡 Why?</strong> This ensures quality control - you can review AI changes before sharing them with your team.
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRefineWarning(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleConfirmRefine}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Continue to Refine
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* AI Refine Chat */}
       {showAIChat && (
         <AIRefineChat
