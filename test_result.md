@@ -403,6 +403,10 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Implemented complete multi-select and batch move functionality with Apple/Claude-inspired design. Features: 1) Select mode toggle button 2) Checkboxes on process cards with visual selection state (blue ring, blue bg) 3) Beautiful floating action bar at bottom (Apple Mail style) with selection count, clear selection, and move button 4) Elegant workspace picker modal with grid layout 5) Batch move operation handling with toast notifications 6) Smooth animations and transitions. UI verified working via screenshots."
+      - working: "NA"
+        agent: "main"
+        comment: "Updated Dashboard UI based on user feedback: 1) Added prominent 'Create an Interactive Flowchart' button in header 2) Removed 'Select' and 'New Workspace' buttons for cleaner UI 3) Simplified action bar to only Search + Filters 4) Updated all terminology from 'Create a process' to 'Create an Interactive Flowchart' 5) Added 'Coming Soon' banner to Templates page. Need to verify: Dashboard layout, button functionality, Templates page display, no broken features from removed buttons."
+
 
 metadata:
   created_by: "main_agent"
