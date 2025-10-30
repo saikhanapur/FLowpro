@@ -197,5 +197,15 @@ export const api = {
   reorderNodes: async (processId, nodeIds) => {
     const res = await axios.patch(`${API}/process/${processId}/reorder`, { nodeIds });
     return res.data;
+  },
+
+  addNode: async (processId, nodeData) => {
+    const res = await axios.post(`${API}/process/${processId}/node`, nodeData);
+    return res.data;
+  },
+
+  deleteNode: async (processId, nodeId) => {
+    const res = await axios.delete(`${API}/process/${processId}/node/${nodeId}`);
+    return res.data;
   }
 };
