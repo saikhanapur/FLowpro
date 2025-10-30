@@ -16,8 +16,9 @@ const ProcessCreator = ({ currentWorkspace }) => {
   const navigate = useNavigate();
   const [method, setMethod] = useState(null);
   const [processing, setProcessing] = useState(false);
-  const [extractedText, setExtractedText] = useState(null); // NEW: Store extracted text
-  const [showContextAdder, setShowContextAdder] = useState(false); // NEW: Show context adder
+  const [processingStep, setProcessingStep] = useState(''); // NEW: Track processing step
+  const [extractedText, setExtractedText] = useState(null);
+  const [showContextAdder, setShowContextAdder] = useState(false);
   const [extractedData, setExtractedData] = useState(null);
 
   const handleInputComplete = async (input, inputType) => {
