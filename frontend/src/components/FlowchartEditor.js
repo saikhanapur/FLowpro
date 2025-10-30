@@ -351,8 +351,6 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             </div>
             
             {/* Right side: Action buttons */}
-            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 overflow-x-auto"
-            {/* Right side: Action buttons */}
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 overflow-x-auto">
               {/* Export Button - Always Available */}
               <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn" className="flex-shrink-0">
