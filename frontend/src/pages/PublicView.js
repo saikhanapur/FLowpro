@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sparkles, ExternalLink, AlertCircle } from 'lucide-react';
 import FlowchartEditor from '../components/FlowchartEditor';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,13 @@ import { api } from '../utils/api';
 const PublicView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [process, setProcess] = useState(null);
+  
+  // Extract access level from URL query parameter (view, comment, edit)
+  const accessLevel = searchParams.get('access') || 'view';
 
   useEffect(() => {
     loadProcess();
