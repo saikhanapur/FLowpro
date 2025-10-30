@@ -1479,6 +1479,15 @@ async def analyze_document_stream(text: str):
     
     return EventSourceResponse(event_generator())
 
+@api_router.get("/admin/cache-stats")
+async def get_cache_stats():
+    """Get cache statistics for monitoring (admin only in production)"""
+    try:
+        stats = cache_service.get_cache_stats()
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/process/analyze", response_model=DocumentAnalysis)
 async def analyze_document(input_data: ProcessInput):
     """
