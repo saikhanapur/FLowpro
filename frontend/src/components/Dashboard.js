@@ -213,12 +213,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     }
   };
 
-  const filteredProcesses = processes.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || p.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredProcesses = processes; // Using backend search/filtering now
 
   if (loading) {
     return (
