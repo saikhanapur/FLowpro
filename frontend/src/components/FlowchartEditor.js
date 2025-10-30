@@ -117,6 +117,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     if (newIndex < 0 || newIndex >= process.nodes.length) return;
     
     setReordering(true);
+    setHasUnsavedChanges(true); // Mark as having changes
     try {
       // Swap nodes in array
       const newNodes = [...process.nodes];
@@ -125,7 +126,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       // Extract node IDs in new order
       const nodeIds = newNodes.map(n => n.id);
       
-      // Save to backend
+      // Save to backend immediately (for reordering we save right away)
       const response = await api.reorderNodes(process.id, nodeIds);
       
       // Update local state with backend response
@@ -140,6 +141,59 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       toast.error('Failed to reorder step');
     } finally {
       setReordering(false);
+    }
+  };
+
+  const handleEnterEditMode = () => {
+    setIsEditMode(true);
+    setHasUnsavedChanges(false);
+  };
+
+  const handleExitEditMode = () => {
+    if (hasUnsavedChanges) {
+      if (window.confirm('You have unsaved changes. Are you sure you want to discard them?')) {
+        setIsEditMode(false);
+        setHasUnsavedChanges(false);
+        loadProcess(); // Reload to discard changes
+      }
+    } else {
+      setIsEditMode(false);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    setSaving(true);
+    try {
+      // Already saved individual changes (nodes, reordering)
+      // This is just to finalize and check if republish needed
+      const wasPublished = process.status === 'published';
+      
+      setHasUnsavedChanges(false);
+      setIsEditMode(false);
+      
+      if (wasPublished) {
+        setShowRepublishPrompt(true);
+      } else {
+        toast.success('Changes saved successfully!');
+      }
+      
+      // Reload to ensure sync
+      await loadProcess();
+    } catch (error) {
+      toast.error('Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRepublish = async () => {
+    try {
+      await api.publishProcess(process.id);
+      setShowRepublishPrompt(false);
+      toast.success('Process republished!');
+      await loadProcess();
+    } catch (error) {
+      toast.error('Failed to republish process');
     }
   };
 
