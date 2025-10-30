@@ -68,17 +68,120 @@ const ProcessCreator = ({ currentWorkspace }) => {
   };
 
   const handleInputComplete = async (input, inputType) => {
-    // For documents, analyze first to get smart questions
+    // For documents, use streaming analysis with predictive pre-loading
     if (inputType === 'document') {
       setExtractedText(input);
-      await analyzeDocument(input, inputType);
+      
+      // Check if we have preloaded analysis (predictive pre-processing)
+      if (preloadedAnalysis) {
+        console.log('✨ Using preloaded analysis - instant result!');
+        setAnalysis(preloadedAnalysis);
+        setPreloadedAnalysis(null);
+        handleAnalysisComplete(preloadedAnalysis, input, inputType);
+      } else {
+        // Start streaming analysis
+        await analyzeDocumentWithStreaming(input, inputType);
+      }
     } else {
-      // For voice/chat, process directly (they are the input themselves)
+      // For voice/chat, process directly
       await processWithAI(input, inputType, null, null);
     }
   };
 
+  const analyzeDocumentWithStreaming = async (text, inputType) => {
+    setAnalyzing(true);
+    setShowLiveProgress(true);
+    setProgressUpdates([]);
+    
+    try {
+      const consumer = streamDocumentAnalysis(text, {
+        onProgress: (data) => {
+          setProgressUpdates(prev => [...prev, data]);
+        },
+        onComplete: (data) => {
+          setAnalysis(data);
+          setShowLiveProgress(false);
+          handleAnalysisComplete(data, text, inputType);
+        },
+        onError: (error) => {
+          console.error('Streaming analysis failed:', error);
+          toast.error('Analysis failed, trying fallback...');
+          // Fallback to regular API
+          analyzeDocumentFallback(text, inputType);
+        }
+      });
+      
+      sseConsumerRef.current = consumer;
+      
+    } catch (error) {
+      console.error('Failed to start streaming:', error);
+      analyzeDocumentFallback(text, inputType);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const analyzeDocumentFallback = async (text, inputType) => {
+    // Fallback to regular API if streaming fails
+    try {
+      const analysisResult = await api.analyzeDocument(text, inputType);
+      setAnalysis(analysisResult);
+      setShowLiveProgress(false);
+      handleAnalysisComplete(analysisResult, text, inputType);
+    } catch (error) {
+      setAnalyzing(false);
+      setShowLiveProgress(false);
+      toast.error('Analysis failed. Please try again.');
+    }
+  };
+
+  const handleAnalysisComplete = (analysisResult, text, inputType) => {
+    setAnalyzing(false);
+    
+    // Show success toast
+    toast.success(
+      <div>
+        <div className="font-semibold">✨ Analysis Complete!</div>
+        <div className="text-sm text-slate-600 mt-1">
+          {analysisResult.is_multi_process 
+            ? `${analysisResult.process_count} processes detected!`
+            : `${analysisResult.process_type} • ${analysisResult.detected_steps} steps • ${analysisResult.complexity} complexity`
+          }
+        </div>
+      </div>,
+      { duration: 4000 }
+    );
+    
+    // Skip questions for multi-process documents
+    if (analysisResult.is_multi_process) {
+      processWithAI(text, inputType, null, null);
+      return;
+    }
+    
+    // Only show questions if complexity is medium or high
+    const shouldShowQuestions = 
+      (analysisResult.complexity === 'medium' || analysisResult.complexity === 'high') &&
+      analysisResult.suggested_questions && 
+      analysisResult.suggested_questions.length > 0;
+    
+    if (shouldShowQuestions) {
+      setShowSmartQuestions(true);
+    } else {
+      processWithAI(text, inputType, null, null);
+    }
+  };
+
+  // Cleanup SSE connection on unmount
+  useEffect(() => {
+    return () => {
+      if (sseConsumerRef.current) {
+        sseConsumerRef.current.close();
+      }
+    };
+  }, []);
+
   const analyzeDocument = async (text, inputType) => {
+    // Legacy non-streaming method (kept for compatibility)
     setAnalyzing(true);
     try {
       setProcessingStep('Analyzing your document...');
