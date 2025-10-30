@@ -288,6 +288,41 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
 
   return (
     <div className="flex h-[calc(100vh-80px)]" data-testid="flowchart-editor">
+      {/* Auto-Unpublished Warning Banner */}
+      {wasAutoUnpublished && process?.status === 'draft' && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 max-w-2xl w-full px-4">
+          <div className="bg-amber-50 border-2 border-amber-400 rounded-lg p-4 shadow-lg flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-amber-900 mb-1">Flowchart Updated & Unpublished</h3>
+              <p className="text-sm text-amber-800 mb-3">
+                Your changes have been saved. This flowchart was unpublished for review. Please review the changes and republish when ready.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => setShowPublishDialog(true)}
+                  className="bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  Review & Republish
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setWasAutoUnpublished(false)}
+                  className="border-amber-600 text-amber-600 hover:bg-amber-50"
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Toolbar */}
