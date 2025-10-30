@@ -84,7 +84,7 @@ const FlowNode = ({ node, onClick, isSelected }) => {
   return (
     <div
       onClick={onClick}
-      className={`rounded-2xl p-4 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.01] mx-auto w-full overflow-visible ${getStatusStyles()} ${
+      className={`rounded-2xl p-4 cursor-pointer transition-all duration-300 ease-out hover:scale-[1.01] mx-auto w-full overflow-visible border-l-4 ${typeConfig.borderColor} ${getStatusStyles()} ${
         isSelected ? 'ring-2 ring-blue-500 ring-offset-2 scale-[1.01]' : ''
       }`}
       data-testid={`flow-node-${node.id}`}
@@ -95,7 +95,10 @@ const FlowNode = ({ node, onClick, isSelected }) => {
           {getIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold mb-1.5 leading-tight break-words tracking-tight">{node.title}</h3>
+          <h3 className="text-base font-semibold mb-1.5 leading-tight break-words tracking-tight">
+            <span className="mr-2 text-lg">{typeConfig.emoji}</span>
+            {node.title}
+          </h3>
           <p className="text-sm opacity-80 leading-relaxed mb-1.5 break-words whitespace-normal font-normal">{node.description}</p>
           
           {node.actors && node.actors.length > 0 && (
