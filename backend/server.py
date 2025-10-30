@@ -1825,6 +1825,76 @@ async def transcribe_audio(file: UploadFile = File(...)):
         logger.error(f"Transcription error: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to transcribe audio: {str(e)}")
 
+# ============ Share Endpoints ============
+
+@api_router.post("/process/{process_id}/share", response_model=Share)
+async def create_share(
+    process_id: str, 
+    share_request: CreateShareRequest,
+    request: Request
+):
+    """Create a share link for a process (owner only)"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Validate access level
+        if share_request.accessLevel not in ALLOWED_ACCESS_LEVELS:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid access level. Allowed: {', '.join(ALLOWED_ACCESS_LEVELS)}"
+            )
+        
+        # Validate expiration days
+        if share_request.expiresInDays not in ALLOWED_EXPIRATION_DAYS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid expiration. Allowed: {', '.join(map(str, [d for d in ALLOWED_EXPIRATION_DAYS if d]))}, or null for never"
+            )
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can create shares")
+        
+        # Check if process is published
+        if process.get("status") != "published":
+            raise HTTPException(
+                status_code=400, 
+                detail="Process must be published before sharing"
+            )
+        
+        # Calculate expiration date
+        expires_at = None
+        if share_request.expiresInDays:
+            expires_at = datetime.now(timezone.utc) + timedelta(days=share_request.expiresInDays)
+        
+        # Create share
+        share = Share(
+            processId=process_id,
+            accessLevel=share_request.accessLevel,
+            createdBy=user["id"],
+            createdByName=user["name"],
+            expiresAt=expires_at
+        )
+        
+        # Store in database
+        share_dict = share.model_dump()
+        await db.shares.insert_one(share_dict)
+        
+        logger.info(f"✅ Share created: {share.token} for process {process_id} by {user['email']}")
+        
+        return share
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating share: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create share: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
