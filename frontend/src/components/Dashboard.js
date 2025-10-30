@@ -65,7 +65,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   useEffect(() => {
     loadProcesses();
-  }, [currentWorkspace]); // Load when workspace changes
+  }, []); // Load on mount only
 
   // Debounced search effect
   useEffect(() => {
@@ -73,12 +73,12 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
       if (searchQuery.trim()) {
         performSearch();
       } else {
-        loadProcesses(); // Reset to filtered processes when search is empty
+        loadProcesses(); // Reset to all processes when search is empty
       }
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, filterStatus, currentWorkspace]);
+  }, [searchQuery, filterStatus]);
 
   const loadProcesses = async () => {
     setLoading(true);
