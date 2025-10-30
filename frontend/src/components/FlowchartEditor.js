@@ -37,6 +37,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [isEditMode, setIsEditMode] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showRepublishPrompt, setShowRepublishPrompt] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
 
   useEffect(() => {
     if (!processData) {
