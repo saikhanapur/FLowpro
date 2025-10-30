@@ -736,6 +736,88 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         />
       )}
 
+      {/* Move to Project Modal */}
+      <Dialog open={showMoveModal} onOpenChange={setShowMoveModal}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Move to Project</DialogTitle>
+            <DialogDescription>
+              Select a project to move this flowchart
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-6">
+            {/* Current workspace indicator */}
+            {process?.workspaceId && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <div className="flex items-center gap-2 text-sm">
+                  <FolderOpen className="w-4 h-4 text-blue-600" />
+                  <span className="text-slate-600">Current project:</span>
+                  <span className="font-semibold text-slate-800">
+                    {workspaces.find(w => w.id === process.workspaceId)?.name || 'Unknown'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Workspace grid */}
+            <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
+              {workspaces
+                .filter(ws => ws.id !== process?.workspaceId)
+                .map((workspace) => (
+                  <button
+                    key={workspace.id}
+                    onClick={() => handleMoveToWorkspace(workspace)}
+                    disabled={movingProcess}
+                    className="group p-5 border-2 border-slate-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <FolderOpen className="w-5 h-5 text-white" />
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" />
+                    </div>
+                    <h3 className="font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">
+                      {workspace.name}
+                    </h3>
+                    {workspace.description && (
+                      <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                        {workspace.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        {workspace.processCount || 0} flowcharts
+                      </Badge>
+                    </div>
+                  </button>
+                ))}
+            </div>
+
+            {/* Empty state */}
+            {workspaces.filter(ws => ws.id !== process?.workspaceId).length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FolderOpen className="w-8 h-8 text-slate-400" />
+                </div>
+                <p className="text-slate-600 mb-2">No other projects available</p>
+                <p className="text-sm text-slate-500">Create a new project to organize your flowcharts</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowMoveModal(false)}
+              disabled={movingProcess}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Republish Prompt Dialog */}
       <Dialog open={showRepublishPrompt} onOpenChange={setShowRepublishPrompt}>
         <DialogContent>
