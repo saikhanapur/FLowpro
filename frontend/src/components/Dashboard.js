@@ -102,7 +102,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const performSearch = async () => {
     console.log('🔍 Performing search with:', { 
       query: searchQuery.trim(), 
-      workspace: currentWorkspace?.id || null, 
+      workspace: null, // ALWAYS search across ALL workspaces
       status: filterStatus === 'all' ? null : filterStatus 
     });
     
@@ -110,7 +110,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     try {
       const data = await api.searchProcesses(
         searchQuery.trim(), 
-        currentWorkspace?.id || null, 
+        null, // Don't filter by workspace for search
         filterStatus === 'all' ? null : filterStatus
       );
       console.log('🔍 Search results:', data);
