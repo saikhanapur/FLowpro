@@ -34,10 +34,14 @@ const FlowchartEditor = ({ theme, readOnly = false, processData }) => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    loadProcess();
-  }, [id]);
+    if (!processData) {
+      loadProcess();
+    }
+  }, [id, processData]);
 
   const loadProcess = async () => {
+    if (processData) return; // Skip if already provided
+    
     try {
       const data = await api.getProcess(id);
       setProcess(data);
