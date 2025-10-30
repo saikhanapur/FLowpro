@@ -62,7 +62,6 @@ const ProcessCreator = ({ currentWorkspace }) => {
         toast.success('Process captured successfully!');
       }
     } catch (error) {
-      toast.dismiss(loadingToast);
       toast.error(error.response?.data?.detail || 'Failed to process input. Please try again or use a shorter document.');
       console.error(error);
     } finally {
