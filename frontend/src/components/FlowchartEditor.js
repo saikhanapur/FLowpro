@@ -271,7 +271,33 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             {/* Flowchart Nodes */}
             <div className="flex flex-col items-center space-y-0">
               {process.nodes?.map((node, idx) => (
-                <div key={node.id} className="node-container w-full max-w-4xl">
+                <div key={node.id} className="node-container w-full max-w-4xl relative">
+                  {/* Reorder Controls (Only for owner) */}
+                  {!readOnly && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full ml-2 flex flex-col gap-1 z-10">
+                      <Button
+                        onClick={() => handleMoveNode(idx, 'up')}
+                        disabled={idx === 0 || reordering}
+                        size="sm"
+                        variant="outline"
+                        className="w-8 h-8 p-0 rounded-full bg-white shadow-md hover:bg-blue-50 disabled:opacity-30"
+                        title="Move Up"
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handleMoveNode(idx, 'down')}
+                        disabled={idx === process.nodes.length - 1 || reordering}
+                        size="sm"
+                        variant="outline"
+                        className="w-8 h-8 p-0 rounded-full bg-white shadow-md hover:bg-blue-50 disabled:opacity-30"
+                        title="Move Down"
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
                   <FlowNode
                     node={node}
                     onClick={() => setSelectedNode(node)}
