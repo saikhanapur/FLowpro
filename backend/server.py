@@ -1999,10 +1999,17 @@ async def view_shared_process(token: str):
         if not share:
             raise HTTPException(status_code=404, detail="Share not found or invalid token")
         
-        # Convert datetime strings if needed
+        # Convert datetime strings if needed and ensure timezone awareness
         for date_field in ['createdAt', 'updatedAt', 'expiresAt', 'lastAccessedAt', 'revokedAt']:
             if isinstance(share.get(date_field), str):
-                share[date_field] = datetime.fromisoformat(share[date_field])
+                dt = datetime.fromisoformat(share[date_field])
+                # Make timezone-aware if naive
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                share[date_field] = dt
+            elif isinstance(share.get(date_field), datetime) and share[date_field].tzinfo is None:
+                # If already datetime but naive, make it aware
+                share[date_field] = share[date_field].replace(tzinfo=timezone.utc)
         
         # Check if share is active
         if not share.get("isActive", True):
