@@ -65,7 +65,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   useEffect(() => {
     loadProcesses();
-  }, [currentWorkspace]); // Reload when workspace changes
+  }, []); // Only load on component mount, not workspace changes
 
   // Debounced search effect
   useEffect(() => {
@@ -78,7 +78,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, filterStatus, currentWorkspace]);
+  }, [searchQuery, filterStatus]); // Removed currentWorkspace dependency
 
   const loadProcesses = async () => {
     setLoading(true);
