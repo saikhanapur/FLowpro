@@ -33,10 +33,6 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
   const [reordering, setReordering] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [showPublishDialog, setShowPublishDialog] = useState(false);
-  const [publishing, setPublishing] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!processData) {
