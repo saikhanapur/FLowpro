@@ -333,15 +333,6 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                 <FolderPlus className="w-5 h-5 mr-2 flex-shrink-0" />
                 New Project
               </Button>
-              <Button
-                onClick={() => navigate('/create')}
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-                data-testid="create-process-btn"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create an Interactive Flowchart
-              </Button>
             </div>
           </div>
         </div>
