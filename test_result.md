@@ -430,11 +430,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "AI Guard Rails and Validation"
-    - "Security and Error Handling"
-  stuck_tasks:
-    - "AI Guard Rails and Validation"
-    - "Security and Error Handling"
+    - "Dashboard UI Simplification"
+    - "Templates Page with Coming Soon Banner"
+    - "Terminology Updates"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   enterprise_requirements:
