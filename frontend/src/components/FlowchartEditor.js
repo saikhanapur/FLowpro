@@ -18,7 +18,7 @@ import ShareModal from './ShareModal';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const FlowchartEditor = ({ theme, readOnly = false, processData }) => {
+const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', processData }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [process, setProcess] = useState(processData || null);
