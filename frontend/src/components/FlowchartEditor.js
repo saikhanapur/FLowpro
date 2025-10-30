@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check, ArrowUp, ArrowDown, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check, ArrowUp, ArrowDown, Plus, Trash2, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,6 +15,7 @@ import DetailPanel from './DetailPanel';
 import IdealStateModal from './IdealStateModal';
 import ExportModal from './ExportModal';
 import ShareModal from './ShareModal';
+import AIRefineChat from './AIRefineChat';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
