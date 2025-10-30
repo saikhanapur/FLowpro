@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Request, Response, Depends
 from fastapi.responses import StreamingResponse
+from sse_starlette.sse import EventSourceResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -13,10 +14,12 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import json
 import io
+import asyncio
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import secrets
+from cache_service import cache_service
 try:
     from openai import OpenAI
     OPENAI_AVAILABLE = True
