@@ -22,11 +22,20 @@ axios.interceptors.request.use(
 
 export const api = {
   // Process endpoints
-  parseProcess: async (text, inputType, additionalContext = null) => {
+  analyzeDocument: async (text, inputType) => {
+    const res = await axios.post(`${API}/process/analyze`, { 
+      text, 
+      inputType
+    });
+    return res.data;
+  },
+
+  parseProcess: async (text, inputType, additionalContext = null, contextAnswers = null) => {
     const res = await axios.post(`${API}/process/parse`, { 
       text, 
       inputType,
-      additionalContext 
+      additionalContext,
+      contextAnswers
     });
     return res.data;
   },
