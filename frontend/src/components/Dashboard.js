@@ -598,7 +598,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                         </div>
                       )}
 
-                      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex gap-2 items-center" onClick={(e) => e.stopPropagation()}>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -607,14 +607,31 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDelete(process.id)}
-                          data-testid={`delete-btn-${process.id}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        
+                        {/* More options dropdown */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="sm" variant="ghost">
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem onClick={() => {
+                              setSelectedProcesses([process.id]);
+                              setShowMoveModal(true);
+                            }}>
+                              <FolderInput className="w-4 h-4 mr-2" />
+                              Move to Project
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDelete(process.id)}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </Card>
                   ))}
