@@ -2071,7 +2071,7 @@ Please analyze the user's request and return the COMPLETE updated process with a
   "description": "Process description (keep same unless user wants to change)",
   "nodes": [
     {{
-      "id": "unique_id",
+      "id": "existing_id_or_new_temp_id",
       "title": "Step title",
       "description": "Step description",
       "status": "current",
@@ -2085,8 +2085,8 @@ Please analyze the user's request and return the COMPLETE updated process with a
 
 IMPORTANT:
 1. Return ALL nodes (not just changed ones)
-2. Preserve IDs for unchanged nodes
-3. Create new IDs for new nodes (format: node-{timestamp})
+2. For EXISTING nodes: Keep their original "id" values
+3. For NEW nodes: Use placeholder IDs like "new-1", "new-2", etc.
 4. Update positions: y = 100.0 + (index * 150)
 5. Keep all existing data for unchanged nodes
 6. Provide clear "changes" summary
@@ -2119,9 +2119,20 @@ Return ONLY valid JSON, no markdown or explanations."""
             if 'nodes' not in refined_data:
                 raise ValueError("Response missing 'nodes' field")
             
+            # Post-process nodes: Replace placeholder IDs with proper timestamps
+            processed_nodes = []
+            timestamp_counter = int(datetime.now(timezone.utc).timestamp() * 1000)
+            
+            for node in refined_data.get("nodes", []):
+                # If node has a placeholder ID (starts with "new-"), generate a real one
+                if node.get("id", "").startswith("new-"):
+                    node["id"] = f"node-{timestamp_counter}"
+                    timestamp_counter += 1
+                processed_nodes.append(node)
+            
             # Update process in database
             update_data = {
-                "nodes": refined_data.get("nodes", process_context["nodes"]),
+                "nodes": processed_nodes,
                 "updatedAt": datetime.now(timezone.utc).isoformat()
             }
             
@@ -2144,7 +2155,7 @@ Return ONLY valid JSON, no markdown or explanations."""
                     "id": process_id,
                     "name": refined_data.get("name", process_context["name"]),
                     "description": refined_data.get("description", process_context["description"]),
-                    "nodes": refined_data["nodes"]
+                    "nodes": processed_nodes
                 },
                 "changes": refined_data.get("changes", ["Process updated based on your request"])
             }
