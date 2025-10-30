@@ -363,6 +363,101 @@ class AIService:
             'high_confidence': high_confidence
         }
     
+    async def analyze_document(self, text: str) -> DocumentAnalysis:
+        """
+        Intelligent document analysis to understand complexity and suggest contextual questions.
+        This is called BEFORE parsing to gather smart context.
+        """
+        try:
+            logger.info(f"Starting smart document analysis for {len(text)} characters")
+            
+            # Quick preprocessing to get initial metrics
+            process_detection = self._preprocess_and_detect_boundaries(text)
+            
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"analyze_{uuid.uuid4()}",
+                system_message="You are an expert at analyzing business process documents and identifying what contextual information would improve AI flowchart generation."
+            ).with_model("anthropic", "claude-4-sonnet-20250514")
+            
+            analysis_prompt = f"""TASK: Analyze this document to understand what it is and what SPECIFIC questions would help create a perfect flowchart.
+
+DOCUMENT TEXT:
+{text[:8000]}  
+
+YOUR GOAL: Identify 2-3 SMART, SPECIFIC questions that would dramatically improve flowchart accuracy.
+
+ANALYSIS REQUIREMENTS:
+1. Process Type: What kind of process is this? (e.g., "Invoice Approval", "Customer Onboarding", "Bug Triage")
+2. Complexity: Rate complexity (low: 1-3 steps, medium: 4-7 steps, high: 8+ steps or multiple decision points)
+3. Confidence: How clear is this document? (0.0-1.0)
+4. Detected Elements: Count approximate steps and actors
+5. Smart Questions: Generate 2-3 targeted questions with multiple-choice options
+
+QUESTION GUIDELINES:
+- Ask about SPECIFIC things that are AMBIGUOUS or MISSING
+- Provide 3-4 realistic multiple-choice options
+- Categories: "roles", "thresholds", "timing", "systems", "escalation"
+- ONLY ask if the answer would significantly improve the flowchart
+- Each question must have a "why_asking" explanation
+
+EXAMPLES OF GOOD QUESTIONS:
+- "What's the approval amount threshold?" (when doc mentions approval but no specific amounts)
+- "Who typically submits these requests?" (when actors are vague)
+- "What happens if approval takes > 2 days?" (when timing/escalation unclear)
+- "Which system is used for tracking?" (when "the system" is mentioned without specifics)
+
+EXAMPLES OF BAD QUESTIONS:
+- "What color should the flowchart be?" (irrelevant)
+- "Do you want detailed or simple output?" (too vague)
+- "Should we include edge cases?" (not specific enough)
+
+Return ONLY this JSON (no markdown, no explanations):
+{{
+  "process_type": "Invoice Approval Process",
+  "complexity": "medium",
+  "confidence": 0.75,
+  "detected_steps": 5,
+  "detected_actors": 3,
+  "summary": "Finance approval workflow with manager review and payment processing",
+  "suggested_questions": [
+    {{
+      "id": "q1",
+      "question": "What's the approval amount threshold?",
+      "options": ["Under $1,000", "$1,000-$5,000", "$5,000-$10,000", "Over $10,000"],
+      "why_asking": "Document mentions approval but no specific amount thresholds are defined",
+      "category": "thresholds"
+    }},
+    {{
+      "id": "q2",
+      "question": "Who submits invoices in your organization?",
+      "options": ["Employees", "Vendors/Suppliers", "Both", "Finance team only"],
+      "why_asking": "Multiple actors mentioned but submission role is unclear",
+      "category": "roles"
+    }}
+  ]
+}}"""
+            
+            response = await chat.send_message(UserMessage(content=analysis_prompt))
+            result = json.loads(response.content)
+            
+            logger.info(f"Document analysis complete: {result['process_type']} ({result['complexity']} complexity)")
+            
+            return DocumentAnalysis(**result)
+            
+        except Exception as e:
+            logger.error(f"Document analysis failed: {e}")
+            # Return basic analysis if AI fails
+            return DocumentAnalysis(
+                process_type="Business Process",
+                complexity="medium",
+                confidence=0.5,
+                detected_steps=5,
+                detected_actors=2,
+                suggested_questions=[],
+                summary="Unable to fully analyze document"
+            )
+    
     def _smart_truncate(self, text: str, max_length: int, process_titles: List[str]) -> str:
         """
         Smart truncation that tries to preserve process boundaries.
