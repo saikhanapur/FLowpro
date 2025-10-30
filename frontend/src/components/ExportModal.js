@@ -52,51 +52,51 @@ const ExportModal = ({ process, onClose }) => {
       pdf.line(margin, currentY, pageWidth - margin, currentY);
       currentY += 8;
       
-      // Get all node containers
-      const nodeContainers = document.querySelectorAll('.node-container');
+      // Get all FlowNode elements directly (not the containers)
+      const flowNodeElements = document.querySelectorAll('[data-testid^="flow-node-"]');
       
-      for (let i = 0; i < nodeContainers.length; i++) {
-        const container = nodeContainers[i];
+      for (let i = 0; i < flowNodeElements.length; i++) {
+        const nodeElement = flowNodeElements[i];
         
         // Store original styles
-        const originalOverflow = container.style.overflow;
-        const originalHeight = container.style.height;
-        const originalMinHeight = container.style.minHeight;
+        const originalOverflow = nodeElement.style.overflow;
+        const originalHeight = nodeElement.style.height;
+        const originalMinHeight = nodeElement.style.minHeight;
         
-        // Force container to render its full height with proper spacing
-        container.style.overflow = 'visible';
-        container.style.height = 'auto';
-        container.style.minHeight = 'auto';
+        // Force node to render its full height with proper spacing
+        nodeElement.style.overflow = 'visible';
+        nodeElement.style.height = 'auto';
+        nodeElement.style.minHeight = 'auto';
         
         // Wait for layout to settle
         await new Promise(resolve => setTimeout(resolve, 150));
         
         // Capture the node with enhanced quality settings
-        const canvas = await html2canvas(container, {
+        const canvas = await html2canvas(nodeElement, {
           scale: 3,
           useCORS: true,
           logging: false,
           backgroundColor: '#f8fafc',
           scrollY: -window.scrollY,
           scrollX: -window.scrollX,
-          windowWidth: container.scrollWidth,
-          windowHeight: container.scrollHeight,
-          width: container.scrollWidth,
-          height: container.scrollHeight,
+          windowWidth: nodeElement.scrollWidth,
+          windowHeight: nodeElement.scrollHeight,
+          width: nodeElement.scrollWidth,
+          height: nodeElement.scrollHeight,
           onclone: (clonedDoc) => {
             // Enhance text rendering in the cloned document
-            const clonedContainer = clonedDoc.querySelector('.node-container');
-            if (clonedContainer) {
-              clonedContainer.style.fontSmoothing = 'antialiased';
-              clonedContainer.style.webkitFontSmoothing = 'antialiased';
+            const clonedNode = clonedDoc.querySelector('[data-testid^="flow-node-"]');
+            if (clonedNode) {
+              clonedNode.style.fontSmoothing = 'antialiased';
+              clonedNode.style.webkitFontSmoothing = 'antialiased';
             }
           }
         });
         
         // Restore original styles
-        container.style.overflow = originalOverflow;
-        container.style.height = originalHeight;
-        container.style.minHeight = originalMinHeight;
+        nodeElement.style.overflow = originalOverflow;
+        nodeElement.style.height = originalHeight;
+        nodeElement.style.minHeight = originalMinHeight;
         
         const imgData = canvas.toDataURL('image/png', 1.0);
         const imgWidth = contentWidth;
