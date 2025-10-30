@@ -142,6 +142,13 @@ const AppContent = () => {
             <TemplateGallery />
           </ProtectedRoute>
         } />
+        
+        {/* Studio Mode - Creative Prototype */}
+        <Route path="/studio" element={
+          <ProtectedRoute>
+            <StudioDashboard />
+          </ProtectedRoute>
+        } />
       </Routes>
       <Toaster position="top-right" />
     </div>
