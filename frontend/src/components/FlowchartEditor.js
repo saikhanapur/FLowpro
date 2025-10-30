@@ -407,9 +407,9 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                     className="node-container relative flex items-center gap-4"
                     style={{ transition: 'all 300ms ease-out' }}
                   >
-                    {/* Left-Side Control Strip (Always Visible in Edit Mode) */}
+                    {/* Left-Side Control Strip (Always Visible in Edit Mode, Hidden in Print) */}
                     {!readOnly && isEditMode && (
-                      <div className="flex-shrink-0 w-12 bg-slate-100 rounded-xl border border-slate-200 p-2 shadow-sm">
+                      <div className="flex-shrink-0 w-12 bg-slate-100 rounded-xl border border-slate-200 p-2 shadow-sm print:hidden">
                         <div className="flex flex-col items-center gap-2">
                           <button
                             onClick={() => handleMoveNode(idx, 'up')}
