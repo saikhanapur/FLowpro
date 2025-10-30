@@ -111,6 +111,9 @@ const ProcessCreator = ({ currentWorkspace }) => {
   };
 
   if (processing) {
+    const stepNumber = processingStep.includes('Reading') ? 1 : processingStep.includes('Analyzing') ? 2 : 3;
+    const progressPercent = (stepNumber / 3) * 100;
+    
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
         <div className="text-center max-w-lg px-6">
@@ -120,9 +123,17 @@ const ProcessCreator = ({ currentWorkspace }) => {
             Analyzing Your Process...
           </h2>
           
-          <p className="text-lg text-slate-600 mb-8">
+          <p className="text-lg text-slate-600 mb-4">
             {processingStep || 'AI is extracting steps, actors, and dependencies'}
           </p>
+          
+          {/* Progress Bar */}
+          <div className="w-full bg-slate-200 rounded-full h-2 mb-8">
+            <div 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            ></div>
+          </div>
           
           <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
             <p className="text-base font-semibold text-blue-900 mb-3">
