@@ -1467,6 +1467,18 @@ async def logout(request: Request, response: Response):
         logger.error(f"Logout error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/process/analyze-stream")
+async def analyze_document_stream(text: str):
+    """
+    STREAMING endpoint for real-time analysis progress
+    Uses Server-Sent Events (SSE) for live updates
+    """
+    async def event_generator():
+        async for event in ai_service.analyze_document_stream(text):
+            yield event
+    
+    return EventSourceResponse(event_generator())
+
 @api_router.post("/process/analyze", response_model=DocumentAnalysis)
 async def analyze_document(input_data: ProcessInput):
     """
