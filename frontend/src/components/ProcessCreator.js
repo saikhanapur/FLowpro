@@ -115,7 +115,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
         id: `process-${Date.now()}`,
         name: processData.processName,
         description: processData.description || '',
-        workspaceId: currentWorkspace?.id, // Assign to current workspace
+        workspaceId: selectedWorkspace, // Use selected workspace
         nodes: processData.nodes.map((node, idx) => ({
           ...node,
           position: { x: 100, y: 100 + (idx * 150) }
