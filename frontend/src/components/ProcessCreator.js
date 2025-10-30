@@ -162,17 +162,8 @@ const ProcessCreator = ({ currentWorkspace }) => {
     }
   };
 
-  // Cleanup SSE connection on unmount
-  useEffect(() => {
-    return () => {
-      if (sseConsumerRef.current) {
-        sseConsumerRef.current.close();
-      }
-    };
-  }, []);
-
   const analyzeDocument = async (text, inputType) => {
-    // Legacy non-streaming method (kept for compatibility)
+    // Fast analysis with caching (non-streaming for speed)
     setAnalyzing(true);
     try {
       setProcessingStep('Analyzing your document...');
