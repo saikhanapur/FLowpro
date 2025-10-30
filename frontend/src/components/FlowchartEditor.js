@@ -464,9 +464,9 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 </div>
               ))}
               
-              {/* Add Step Button (Only in Edit Mode) */}
+              {/* Add Step Button (Only in Edit Mode, Hidden in Print) */}
               {!readOnly && isEditMode && (
-                <div className="w-full max-w-4xl">
+                <div className="w-full max-w-4xl print:hidden">
                   <div className="flex items-center gap-4">
                     <div className="w-12"></div> {/* Spacer for alignment with control strip */}
                     <button
