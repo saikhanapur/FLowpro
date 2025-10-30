@@ -53,13 +53,13 @@ const ShareModal = ({ isOpen, onClose, processId, processName, isPublished }) =>
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-xl">
             <Lock className="w-5 h-5 text-blue-600" />
             Share: {processName || 'Untitled Process'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-base">
             {isPublished 
               ? 'Choose who can access this published process'
               : 'Publish this process first to enable sharing'}
@@ -78,9 +78,9 @@ const ShareModal = ({ isOpen, onClose, processId, processName, isPublished }) =>
             {/* Access Level Selection */}
             <div>
               <label className="text-sm font-semibold text-slate-700 mb-3 block">
-                Access Level
+                Choose Access Level
               </label>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {accessLevels.map((level) => {
                   const Icon = level.icon;
                   const isSelected = accessLevel === level.id;
@@ -91,19 +91,19 @@ const ShareModal = ({ isOpen, onClose, processId, processName, isPublished }) =>
                       onClick={() => setAccessLevel(level.id)}
                       className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
                         isSelected
-                          ? `border-${level.color}-500 bg-${level.color}-50`
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                          ? 'border-blue-500 bg-blue-50 shadow-sm'
+                          : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-start gap-3">
-                        <Icon className={`w-5 h-5 mt-0.5 ${isSelected ? `text-${level.color}-600` : 'text-slate-400'}`} />
-                        <div className="flex-1">
+                        <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${isSelected ? 'text-blue-600' : 'text-slate-400'}`} />
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`font-semibold ${isSelected ? `text-${level.color}-900` : 'text-slate-900'}`}>
+                            <span className={`font-semibold ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
                               {level.name}
                             </span>
                             {isSelected && (
-                              <Check className={`w-4 h-4 text-${level.color}-600`} />
+                              <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
                             )}
                           </div>
                           <p className="text-sm text-slate-600">
@@ -123,12 +123,16 @@ const ShareModal = ({ isOpen, onClose, processId, processName, isPublished }) =>
                 Shareable Link
               </label>
               <div className="flex gap-2">
-                <div className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 font-mono truncate">
-                  {shareUrl}
-                </div>
+                <input
+                  type="text"
+                  value={shareUrl}
+                  readOnly
+                  className="flex-1 px-4 py-3 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-700 font-mono"
+                  onClick={(e) => e.target.select()}
+                />
                 <Button
                   onClick={handleCopyLink}
-                  className={`${copied ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+                  className={`${copied ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-600 hover:bg-blue-700'} text-white px-6`}
                 >
                   {copied ? (
                     <>
@@ -157,7 +161,7 @@ const ShareModal = ({ isOpen, onClose, processId, processName, isPublished }) =>
           </div>
         )}
 
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
