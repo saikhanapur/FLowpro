@@ -298,6 +298,19 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
               Export
             </Button>
             
+            {/* Refine with AI Button - Always Available for owners */}
+            {!readOnly && accessLevel === 'owner' && (
+              <Button 
+                onClick={() => setShowAIChat(true)} 
+                variant="outline" 
+                size="sm"
+                className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Refine with AI
+              </Button>
+            )}
+            
             {/* Action Buttons (Hidden in readOnly mode) */}
             {!readOnly && (
               <>
