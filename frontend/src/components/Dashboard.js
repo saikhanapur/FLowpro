@@ -490,8 +490,8 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                         </div>
                       ) : (
                         <>
-                          <h2 className="text-xl font-bold text-slate-900">{workspace.name}</h2>
-                          <Badge variant="secondary" className="text-xs">
+                          <h2 className="text-lg md:text-xl font-bold text-slate-900 truncate max-w-[150px] sm:max-w-[250px] md:max-w-none">{workspace.name}</h2>
+                          <Badge variant="secondary" className="text-xs flex-shrink-0">
                             {workspaceProcesses.length} flowchart{workspaceProcesses.length !== 1 ? 's' : ''}
                           </Badge>
                         </>
@@ -502,11 +502,11 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                     {editingProject !== workspace.id && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 flex-shrink-0">
                             <MoreVertical className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem
                             onClick={() => {
                               setEditingProject(workspace.id);
