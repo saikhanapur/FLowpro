@@ -83,7 +83,8 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
   const loadProcesses = async () => {
     setLoading(true);
     try {
-      const data = await api.getProcesses(currentWorkspace?.id || null);
+      // Always load ALL processes initially (don't filter by workspace)
+      const data = await api.getProcesses();
       
       // Store ALL processes for empty state check
       setAllProcesses(data);
