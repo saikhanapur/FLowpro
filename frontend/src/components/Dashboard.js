@@ -201,7 +201,7 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
         description: newWorkspaceDesc.trim() || `${newWorkspaceName} workspace`
       });
 
-      toast.success(`Workspace "${newWorkspaceName}" created!`);
+      toast.success(`Project "${newWorkspaceName}" created!`);
       
       // Reset form
       setNewWorkspaceName('');
