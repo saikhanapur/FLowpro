@@ -13,8 +13,10 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
   const [editedNode, setEditedNode] = useState(node);
   
   // Determine permissions based on access level
-  const canEdit = !readOnly && accessLevel === 'owner';
-  const canComment = !readOnly && (accessLevel === 'comment' || accessLevel === 'edit' || accessLevel === 'owner');
+  // Owner in their own view OR shared with edit access
+  const canEdit = (!readOnly && accessLevel === 'owner') || (readOnly && accessLevel === 'edit');
+  // Owner in their own view OR shared with comment/edit access
+  const canComment = (!readOnly && accessLevel === 'owner') || (readOnly && (accessLevel === 'comment' || accessLevel === 'edit'));
   const canViewComments = canComment; // Show comments section only if user can comment
 
   useEffect(() => {
