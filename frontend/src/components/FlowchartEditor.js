@@ -143,6 +143,12 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
               </div>
             )}
             
+            {/* Export Button - Always Available */}
+            <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            
             {/* Action Buttons (Hidden in readOnly mode) */}
             {!readOnly && (
               <>
@@ -185,10 +191,6 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 <Button onClick={handleGenerateIdealState} variant="outline" size="sm" data-testid="ideal-state-btn">
                   <Sparkles className="w-4 h-4 mr-2" />
                   Ideal State
-                </Button>
-                <Button onClick={() => setShowExportModal(true)} variant="outline" size="sm" data-testid="export-btn">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
                 </Button>
                 <Button onClick={handleSave} disabled={saving} size="sm" data-testid="save-btn">
                   <Save className="w-4 h-4 mr-2" />
