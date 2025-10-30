@@ -432,6 +432,18 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                       >
                         <ArrowDown className="w-3.5 h-3.5 text-slate-600" />
                       </button>
+                      <div className="h-px bg-slate-200 my-1"></div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteNode(node.id);
+                        }}
+                        disabled={process.nodes.length === 1}
+                        className="w-7 h-7 flex items-center justify-center rounded-md bg-white/90 backdrop-blur-sm shadow-sm hover:bg-red-50 hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150"
+                        title="Delete Step"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                      </button>
                     </div>
                   )}
                   
