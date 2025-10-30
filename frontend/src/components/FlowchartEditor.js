@@ -544,6 +544,27 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           isPublished={process?.status === 'published'}
         />
       )}
+
+      {/* Republish Prompt Dialog */}
+      <Dialog open={showRepublishPrompt} onOpenChange={setShowRepublishPrompt}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Republish Process?</DialogTitle>
+            <DialogDescription>
+              You've made changes to a published process. Would you like to republish it so the changes are visible to people you've shared it with?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRepublishPrompt(false)}>
+              Not Now
+            </Button>
+            <Button onClick={handleRepublish} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Republish Process
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
