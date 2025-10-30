@@ -52,51 +52,62 @@ const ExportModal = ({ process, onClose }) => {
       pdf.line(margin, currentY, pageWidth - margin, currentY);
       currentY += 8;
       
-      // Get all FlowNode elements directly (not the containers)
-      const flowNodeElements = document.querySelectorAll('[data-testid^="flow-node-"]');
+      // Get all node containers (includes arrows)
+      const nodeContainers = document.querySelectorAll('.node-container');
       
-      for (let i = 0; i < flowNodeElements.length; i++) {
-        const nodeElement = flowNodeElements[i];
+      for (let i = 0; i < nodeContainers.length; i++) {
+        const container = nodeContainers[i];
+        
+        // Temporarily hide edit controls (they won't be in PDF)
+        const editControls = container.querySelectorAll('.print\\:hidden');
+        editControls.forEach(el => el.style.display = 'none');
         
         // Store original styles
-        const originalOverflow = nodeElement.style.overflow;
-        const originalHeight = nodeElement.style.height;
-        const originalMinHeight = nodeElement.style.minHeight;
+        const originalOverflow = container.style.overflow;
+        const originalHeight = container.style.height;
+        const originalMinHeight = container.style.minHeight;
         
-        // Force node to render its full height with proper spacing
-        nodeElement.style.overflow = 'visible';
-        nodeElement.style.height = 'auto';
-        nodeElement.style.minHeight = 'auto';
+        // Force container to render its full height with proper spacing
+        container.style.overflow = 'visible';
+        container.style.height = 'auto';
+        container.style.minHeight = 'auto';
         
         // Wait for layout to settle
         await new Promise(resolve => setTimeout(resolve, 150));
         
         // Capture the node with enhanced quality settings
-        const canvas = await html2canvas(nodeElement, {
+        const canvas = await html2canvas(container, {
           scale: 3,
           useCORS: true,
           logging: false,
           backgroundColor: '#f8fafc',
           scrollY: -window.scrollY,
           scrollX: -window.scrollX,
-          windowWidth: nodeElement.scrollWidth,
-          windowHeight: nodeElement.scrollHeight,
-          width: nodeElement.scrollWidth,
-          height: nodeElement.scrollHeight,
+          windowWidth: container.scrollWidth,
+          windowHeight: container.scrollHeight,
+          width: container.scrollWidth,
+          height: container.scrollHeight,
           onclone: (clonedDoc) => {
             // Enhance text rendering in the cloned document
-            const clonedNode = clonedDoc.querySelector('[data-testid^="flow-node-"]');
-            if (clonedNode) {
-              clonedNode.style.fontSmoothing = 'antialiased';
-              clonedNode.style.webkitFontSmoothing = 'antialiased';
+            const clonedContainer = clonedDoc.querySelector('.node-container');
+            if (clonedContainer) {
+              clonedContainer.style.fontSmoothing = 'antialiased';
+              clonedContainer.style.webkitFontSmoothing = 'antialiased';
+              
+              // Hide edit controls in cloned doc too
+              const clonedEditControls = clonedContainer.querySelectorAll('.print\\:hidden');
+              clonedEditControls.forEach(el => el.style.display = 'none');
             }
           }
         });
         
         // Restore original styles
-        nodeElement.style.overflow = originalOverflow;
-        nodeElement.style.height = originalHeight;
-        nodeElement.style.minHeight = originalMinHeight;
+        container.style.overflow = originalOverflow;
+        container.style.height = originalHeight;
+        container.style.minHeight = originalMinHeight;
+        
+        // Restore edit controls visibility
+        editControls.forEach(el => el.style.display = '');
         
         const imgData = canvas.toDataURL('image/png', 1.0);
         const imgWidth = contentWidth;
