@@ -236,43 +236,31 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8" data-testid="dashboard">
-      {/* Dashboard Header with Beautiful Tagline */}
+      {/* Dashboard Header with Create Button */}
       {allProcesses.length > 0 && (
-        <div className="mb-8 text-center">
-          <h1 className="text-5xl font-bold text-slate-900 mb-3">
-            Turn Chaos into{' '}
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Clarity
-            </span>
-          </h1>
-          <p className="text-xl text-slate-600">
-            Document, visualize, and improve workflows — SuperHumanly fast
-          </p>
-        </div>
-      )}
-
-      {/* Welcome Banner (dismissible, shown for users with processes) */}
-      {showWelcomeBanner && allProcesses.length > 0 && (
-        <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-2xl">👋</div>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="font-semibold text-slate-900">
-                Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
-              </p>
-              <p className="text-sm text-slate-600">
-                Upload a doc or describe a workflow — get an interactive flowchart instantly
+              <h1 className="text-4xl font-bold text-slate-900 mb-2">
+                Turn Chaos into{' '}
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  Clarity
+                </span>
+              </h1>
+              <p className="text-lg text-slate-600">
+                Document, visualize, and improve workflows — SuperHumanly fast
               </p>
             </div>
+            <Button
+              onClick={() => navigate('/create')}
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+              data-testid="create-process-btn"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create an Interactive Flowchart
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowWelcomeBanner(false)}
-            className="text-slate-500 hover:text-slate-700"
-          >
-            <X className="w-4 h-4" />
-          </Button>
         </div>
       )}
 
