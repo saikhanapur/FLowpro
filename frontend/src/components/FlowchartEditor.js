@@ -94,8 +94,26 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       ...prev,
       ...refinedProcess
     }));
-    // Close chat after successful refinement
-    // setShowAIChat(false); // Keep open for multi-turn refinement
+    
+    // If process was published, show unpublish banner
+    if (process?.status === 'published' && refinedProcess.status === 'draft') {
+      setWasAutoUnpublished(true);
+      toast.warning('Flowchart unpublished for review. Republish when ready.');
+    }
+  };
+
+  const handleOpenAIChat = () => {
+    // Check if flowchart is published
+    if (process?.status === 'published') {
+      setShowRefineWarning(true);
+    } else {
+      setShowAIChat(true);
+    }
+  };
+
+  const handleConfirmRefine = () => {
+    setShowRefineWarning(false);
+    setShowAIChat(true);
   };
 
   const handleUnpublish = async () => {
