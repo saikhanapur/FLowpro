@@ -1798,6 +1798,122 @@ async def reorder_nodes(process_id: str, node_order: dict, request: Request):
         logger.error(f"Error reordering nodes: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to reorder nodes: {str(e)}")
 
+@api_router.post("/process/{process_id}/node")
+async def add_node(process_id: str, node_data: dict, request: Request):
+    """Add a new node to a process (owner only)"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can add nodes")
+        
+        # Get current nodes
+        nodes = process.get("nodes", [])
+        
+        # Create new node with default values
+        new_node = {
+            "id": f"node-{int(datetime.now(timezone.utc).timestamp() * 1000)}",
+            "title": node_data.get("title", "New Step"),
+            "description": node_data.get("description", "Click to add details"),
+            "status": node_data.get("status", "current"),
+            "actors": node_data.get("actors", []),
+            "subSteps": node_data.get("subSteps", []),
+            "position": {"x": 100.0, "y": 100.0 + (len(nodes) * 150)}
+        }
+        
+        # Determine where to insert (default: at the end)
+        insert_index = node_data.get("insertIndex", len(nodes))
+        if insert_index < 0 or insert_index > len(nodes):
+            insert_index = len(nodes)
+        
+        # Insert the new node
+        nodes.insert(insert_index, new_node)
+        
+        # Update positions for all nodes
+        for i, node in enumerate(nodes):
+            node["position"] = {"x": 100.0, "y": 100.0 + (i * 150)}
+        
+        # Update the process with new nodes
+        await db.processes.update_one(
+            {"id": process_id},
+            {
+                "$set": {
+                    "nodes": nodes,
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        logger.info(f"✅ Node added to process {process_id} by {user['email']}")
+        
+        return {"success": True, "node": new_node, "nodes": nodes}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error adding node: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to add node: {str(e)}")
+
+@api_router.delete("/process/{process_id}/node/{node_id}")
+async def delete_node(process_id: str, node_id: str, request: Request):
+    """Delete a node from a process (owner only)"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can delete nodes")
+        
+        # Get current nodes
+        nodes = process.get("nodes", [])
+        
+        # Check if process has only one node
+        if len(nodes) <= 1:
+            raise HTTPException(status_code=400, detail="Cannot delete the last node. Process must have at least one step.")
+        
+        # Find and remove the node
+        original_length = len(nodes)
+        nodes = [n for n in nodes if n.get("id") != node_id]
+        
+        if len(nodes) == original_length:
+            raise HTTPException(status_code=404, detail="Node not found")
+        
+        # Update positions for remaining nodes
+        for i, node in enumerate(nodes):
+            node["position"] = {"x": 100.0, "y": 100.0 + (i * 150)}
+        
+        # Update the process
+        await db.processes.update_one(
+            {"id": process_id},
+            {
+                "$set": {
+                    "nodes": nodes,
+                    "updatedAt": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        logger.info(f"✅ Node {node_id} deleted from process {process_id} by {user['email']}")
+        
+        return {"success": True, "nodes": nodes}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting node: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete node: {str(e)}")
+
 @api_router.patch("/process/{process_id}/workspace")
 async def move_process_to_workspace(process_id: str, data: dict, request: Request):
     """Move a process to a different workspace"""
