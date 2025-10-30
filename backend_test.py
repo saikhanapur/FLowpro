@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 # Configuration
-BASE_URL = "https://superhuman-flow-1.preview.emergentagent.com/api"
+BASE_URL = "https://chart-genius-8.preview.emergentagent.com/api"
 TIMEOUT = 120  # Increased for AI operations
 
 class BackendTester:
