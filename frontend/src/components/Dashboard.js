@@ -252,18 +252,29 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                 </span>
               </h1>
               <p className="text-lg text-slate-600">
-                Document, visualize, and improve workflows — SuperHumanly fast
+                {currentWorkspace ? `${currentWorkspace.name} • ${processes.length} flowchart${processes.length !== 1 ? 's' : ''}` : 'Document, visualize, and improve workflows'}
               </p>
             </div>
-            <Button
-              onClick={() => navigate('/create')}
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-              data-testid="create-process-btn"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create an Interactive Flowchart
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowCreateWorkspaceModal(true)}
+                variant="outline"
+                size="lg"
+                className="px-6 py-6 text-base font-semibold"
+              >
+                <FolderPlus className="w-5 h-5 mr-2" />
+                New Project
+              </Button>
+              <Button
+                onClick={() => navigate('/create')}
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-6 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                data-testid="create-process-btn"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create an Interactive Flowchart
+              </Button>
+            </div>
           </div>
         </div>
       )}
