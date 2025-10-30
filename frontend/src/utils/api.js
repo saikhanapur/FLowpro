@@ -186,5 +186,11 @@ export const api = {
   getSharedProcess: async (token) => {
     const res = await axios.get(`${API}/view/${token}`);
     return res.data;
+  },
+
+  // Node editing
+  updateNode: async (processId, nodeId, nodeData) => {
+    const res = await axios.patch(`${API}/process/${processId}/node/${nodeId}`, nodeData);
+    return res.data;
   }
 };
