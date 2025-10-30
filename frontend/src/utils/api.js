@@ -223,5 +223,11 @@ export const api = {
   deleteNode: async (processId, nodeId) => {
     const res = await axios.delete(`${API}/process/${processId}/node/${nodeId}`);
     return res.data;
+  },
+
+  // AI Refinement
+  refineProcess: async (processId, message) => {
+    const res = await axios.post(`${API}/process/${processId}/refine`, { message });
+    return res.data;
   }
 };
