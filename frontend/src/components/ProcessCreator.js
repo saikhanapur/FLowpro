@@ -196,6 +196,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
           processesData={extractedData}
           onBack={() => setExtractedData(null)}
           currentWorkspace={currentWorkspace}
+          selectedWorkspace={selectedWorkspace}
         />
       );
     }
