@@ -1895,6 +1895,43 @@ async def create_share(
         logger.error(f"Error creating share: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create share: {str(e)}")
 
+@api_router.get("/process/{process_id}/shares", response_model=List[Share])
+async def list_shares(process_id: str, request: Request):
+    """List all shares for a process (owner only)"""
+    try:
+        # Authenticate user
+        user = await require_auth(request)
+        
+        # Get process and verify ownership
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        if process.get("userId") != user["id"]:
+            raise HTTPException(status_code=403, detail="Only process owner can view shares")
+        
+        # Get all shares for this process
+        shares = await db.shares.find(
+            {"processId": process_id},
+            {"_id": 0}
+        ).to_list(1000)
+        
+        # Convert datetime strings to datetime objects if needed
+        for share in shares:
+            for date_field in ['createdAt', 'updatedAt', 'expiresAt', 'lastAccessedAt', 'revokedAt']:
+                if isinstance(share.get(date_field), str):
+                    share[date_field] = datetime.fromisoformat(share[date_field])
+        
+        logger.info(f"✅ Listed {len(shares)} shares for process {process_id}")
+        
+        return shares
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error listing shares: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list shares: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
