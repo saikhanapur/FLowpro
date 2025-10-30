@@ -420,26 +420,112 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
           </Button>
         </div>
       ) : (
-        // Group processes by workspace/project
-        <div className="space-y-8">
-          {workspaces.map((workspace) => {
-            const workspaceProcesses = filteredProcesses.filter(p => p.workspaceId === workspace.id);
-            
-            return (
-              <div key={workspace.id} className="space-y-4">
-                {/* Project Header */}
-                <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                  <div className="flex items-center gap-3">
-                    <FolderOpen className="w-5 h-5 text-slate-600" />
-                    <h2 className="text-2xl font-bold text-slate-900">{workspace.name}</h2>
-                    <Badge variant="secondary" className="text-xs">
-                      {workspaceProcesses.length} flowchart{workspaceProcesses.length !== 1 ? 's' : ''}
-                    </Badge>
+        // Group processes by workspace/project - show projects WITH flowcharts first, then empty ones
+        <div className="space-y-6">
+          {workspaces
+            .sort((a, b) => {
+              const aCount = filteredProcesses.filter(p => p.workspaceId === a.id).length;
+              const bCount = filteredProcesses.filter(p => p.workspaceId === b.id).length;
+              // Projects with flowcharts first, then empty ones
+              if (aCount > 0 && bCount === 0) return -1;
+              if (aCount === 0 && bCount > 0) return 1;
+              return 0;
+            })
+            .map((workspace) => {
+              const workspaceProcesses = filteredProcesses.filter(p => p.workspaceId === workspace.id);
+              const isCollapsed = collapsedProjects.has(workspace.id);
+              const isEmpty = workspaceProcesses.length === 0;
+              
+              return (
+                <div key={workspace.id} className="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm">
+                  {/* Project Header - Collapsible */}
+                  <div className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                    <div 
+                      className="flex items-center gap-3 flex-1 cursor-pointer"
+                      onClick={() => toggleProjectCollapse(workspace.id)}
+                    >
+                      {isCollapsed ? (
+                        <ChevronRight className="w-5 h-5 text-slate-600" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-slate-600" />
+                      )}
+                      <FolderOpen className="w-5 h-5 text-slate-600" />
+                      
+                      {editingProject === workspace.id ? (
+                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                          <Input
+                            value={editProjectName}
+                            onChange={(e) => setEditProjectName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleEditProject(workspace.id);
+                              if (e.key === 'Escape') {
+                                setEditingProject(null);
+                                setEditProjectName('');
+                              }
+                            }}
+                            className="h-8 w-64"
+                            autoFocus
+                          />
+                          <Button size="sm" onClick={() => handleEditProject(workspace.id)}>
+                            Save
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={() => {
+                              setEditingProject(null);
+                              setEditProjectName('');
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <h2 className="text-xl font-bold text-slate-900">{workspace.name}</h2>
+                          <Badge variant="secondary" className="text-xs">
+                            {workspaceProcesses.length} flowchart{workspaceProcesses.length !== 1 ? 's' : ''}
+                          </Badge>
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* Project Actions */}
+                    {editingProject !== workspace.id && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingProject(workspace.id);
+                              setEditProjectName(workspace.name);
+                            }}
+                          >
+                            <Pencil className="w-4 h-4 mr-2" />
+                            Rename Project
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setDeletingProject(workspace);
+                              setShowDeleteProjectModal(true);
+                            }}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete Project
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
-                </div>
-                
-                {/* Empty project state OR Process Grid */}
-                {workspaceProcesses.length === 0 ? (
+                  
+                  {/* Project Content - Collapsible */}
+                  {!isCollapsed && (
+                    <div className="px-4 pb-4">
                   <div className="text-center py-12 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Plus className="w-8 h-8 text-blue-600" />
