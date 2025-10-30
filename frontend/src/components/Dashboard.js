@@ -299,27 +299,6 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
             Published
           </Button>
         </div>
-        
-        {/* Multi-select toggle */}
-        <Button
-          variant={selectMode ? 'default' : 'outline'}
-          onClick={toggleSelectMode}
-          className={`gap-2 transition-all duration-300 ${selectMode ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-          data-testid="select-mode-btn"
-        >
-          {selectMode ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-          Select
-        </Button>
-        
-        {/* Create Workspace Button */}
-        <Button
-          variant="outline"
-          onClick={() => setShowCreateWorkspaceModal(true)}
-          className="gap-2"
-        >
-          <FolderPlus className="w-4 h-4" />
-          New Workspace
-        </Button>
       </div>
 
       {/* Process Grid */}
