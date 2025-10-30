@@ -58,18 +58,68 @@ const ProcessCreator = ({ currentWorkspace }) => {
   };
 
   const handleInputComplete = async (input, inputType) => {
-    // For documents, show context adder before processing
+    // For documents, analyze first to get smart questions
     if (inputType === 'document') {
       setExtractedText(input);
-      setShowContextAdder(true);
-      toast.success('Document text extracted! Add context if needed, or skip to continue.');
+      await analyzeDocument(input, inputType);
     } else {
       // For voice/chat, process directly (they are the input themselves)
-      await processWithAI(input, inputType, null);
+      await processWithAI(input, inputType, null, null);
     }
   };
 
-  const processWithAI = async (input, inputType, additionalContext) => {
+  const analyzeDocument = async (text, inputType) => {
+    setAnalyzing(true);
+    try {
+      setProcessingStep('Analyzing your document...');
+      const analysisResult = await api.analyzeDocument(text, inputType);
+      setAnalysis(analysisResult);
+      
+      // Show engaging analysis results
+      toast.success(
+        <div>
+          <div className="font-semibold">✨ Analysis Complete!</div>
+          <div className="text-sm text-slate-600 mt-1">
+            {analysisResult.process_type} • {analysisResult.detected_steps} steps • {analysisResult.complexity} complexity
+          </div>
+        </div>,
+        { duration: 4000 }
+      );
+      
+      // Only show questions if complexity is medium or high
+      const shouldShowQuestions = 
+        (analysisResult.complexity === 'medium' || analysisResult.complexity === 'high') &&
+        analysisResult.suggested_questions && 
+        analysisResult.suggested_questions.length > 0;
+      
+      if (shouldShowQuestions) {
+        setShowSmartQuestions(true);
+      } else {
+        // Low complexity or no questions - proceed directly
+        await processWithAI(text, inputType, null, null);
+      }
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      toast.error('Analysis failed, proceeding with generation...');
+      // Proceed anyway
+      await processWithAI(text, inputType, null, null);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleSmartQuestionsComplete = async (answers) => {
+    setContextAnswers(answers);
+    setShowSmartQuestions(false);
+    await processWithAI(extractedText, 'document', null, answers);
+  };
+
+  const handleSkipSmartQuestions = async () => {
+    setShowSmartQuestions(false);
+    await processWithAI(extractedText, 'document', null, null);
+  };
+
+  const processWithAI = async (input, inputType, additionalContext, smartAnswers) => {
     setProcessing(true);
     setShowContextAdder(false);
     
@@ -81,7 +131,7 @@ const ProcessCreator = ({ currentWorkspace }) => {
       // Step 2: Analyzing
       setProcessingStep('Analyzing structure and extracting steps...');
       
-      const data = await api.parseProcess(input, inputType, additionalContext);
+      const data = await api.parseProcess(input, inputType, additionalContext, smartAnswers);
       
       // Step 3: Generating
       setProcessingStep('Generating interactive flowchart...');
