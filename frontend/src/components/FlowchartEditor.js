@@ -334,7 +334,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             </Button>
             <div className="min-w-0 flex-1">
               <h2 className="text-base sm:text-lg font-bold text-slate-800 truncate">{process.name}</h2>
-              <p className="text-xs sm:text-sm text-slate-600">v{process.version} • {process.nodes?.length || 0} steps</p>
+              <p className="text-xs sm:text-sm text-slate-600 mt-0.5">v{process.version} • {process.nodes?.length || 0} steps</p>
             </div>
           </div>
           
