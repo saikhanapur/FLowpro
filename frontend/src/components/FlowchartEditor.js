@@ -197,6 +197,49 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     }
   };
 
+  const handleAddNode = async () => {
+    try {
+      const response = await api.addNode(process.id, {
+        title: "New Step",
+        description: "Click to add details",
+        status: "current",
+        actors: [],
+        subSteps: []
+      });
+      
+      setProcess({
+        ...process,
+        nodes: response.nodes
+      });
+      setHasUnsavedChanges(true);
+      toast.success('Step added!');
+    } catch (error) {
+      console.error('Failed to add node:', error);
+      toast.error('Failed to add step');
+    }
+  };
+
+  const handleDeleteNode = async (nodeId) => {
+    if (!window.confirm('Are you sure you want to delete this step? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      const response = await api.deleteNode(process.id, nodeId);
+      
+      setProcess({
+        ...process,
+        nodes: response.nodes
+      });
+      setHasUnsavedChanges(true);
+      setSelectedNode(null); // Close detail panel if deleting selected node
+      toast.success('Step deleted');
+    } catch (error) {
+      console.error('Failed to delete node:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete step');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
