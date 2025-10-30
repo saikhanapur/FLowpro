@@ -394,65 +394,68 @@ const Dashboard = ({ currentWorkspace, workspaces, onWorkspacesUpdate }) => {
                       onClick={() => navigate(`/edit/${process.id}`)}
                       data-testid={`process-card-${process.id}`}
                     >
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">
-                    {process.name}
-                  </h3>
-                  <p className="text-sm text-slate-600 line-clamp-2">
-                    {process.description || 'No description'}
-                  </p>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-slate-800 mb-1">
+                            {process.name}
+                          </h3>
+                          <p className="text-sm text-slate-600 line-clamp-2">
+                            {process.description || 'No description'}
+                          </p>
+                        </div>
+                        <Badge 
+                          variant={process.status === 'published' ? 'default' : 'secondary'}
+                          className={process.status === 'published' ? 'bg-emerald-600' : ''}
+                        >
+                          {process.status === 'published' ? '✓ Published' : 'Draft'}
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-4 h-4" />
+                          {process.views || 0}
+                        </span>
+                        <span>
+                          {process.nodes?.length || 0} steps
+                        </span>
+                        <span>
+                          v{process.version}
+                        </span>
+                      </div>
+
+                      {/* Published Date - only show for published processes */}
+                      {process.status === 'published' && process.publishedAt && (
+                        <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg mb-4 w-fit">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span className="font-medium">{formatPublishedDate(process.publishedAt)}</span>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => navigate(`/edit/${process.id}`)}
+                          data-testid={`edit-btn-${process.id}`}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(process.id)}
+                          data-testid={`delete-btn-${process.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
                 </div>
-                <Badge 
-                  variant={process.status === 'published' ? 'default' : 'secondary'}
-                  className={process.status === 'published' ? 'bg-emerald-600' : ''}
-                >
-                  {process.status === 'published' ? '✓ Published' : 'Draft'}
-                </Badge>
               </div>
-
-              <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
-                <span className="flex items-center gap-1">
-                  <Eye className="w-4 h-4" />
-                  {process.views || 0}
-                </span>
-                <span>
-                  {process.nodes?.length || 0} steps
-                </span>
-                <span>
-                  v{process.version}
-                </span>
-              </div>
-
-              {/* Published Date - only show for published processes */}
-              {process.status === 'published' && process.publishedAt && (
-                <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg mb-4 w-fit">
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span className="font-medium">{formatPublishedDate(process.publishedAt)}</span>
-                </div>
-              )}
-
-              {!selectMode && (
-                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => navigate(`/edit/${process.id}`)}
-                    data-testid={`edit-btn-${process.id}`}
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleDelete(process.id)}
-                    data-testid={`delete-btn-${process.id}`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-            </Card>
-          ))}
+            );
+          })}
         </div>
       )}
       
