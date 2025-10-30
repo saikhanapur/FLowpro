@@ -68,6 +68,9 @@ const Signup = () => {
           </div>
           <h1 className="text-2xl font-bold text-slate-800 mb-2">Create account</h1>
           <p className="text-slate-600">Work SuperHumanly fast</p>
+          <span className="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+            EARLY ACCESS
+          </span>
         </div>
 
         {/* Signup Form */}
