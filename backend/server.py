@@ -486,6 +486,151 @@ Return ONLY this JSON (no markdown, no explanations):
                 process_count=1
             )
     
+    async def analyze_document_stream(self, text: str):
+        """
+        STREAMING version with real-time progress updates
+        Yields SSE events to show what AI is finding
+        """
+        try:
+            # Event 1: Start
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "start",
+                    "message": "Starting intelligent analysis...",
+                    "progress": 10
+                })
+            }
+            
+            await asyncio.sleep(0.1)  # Small delay for UX
+            
+            # Event 2: Check cache
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "cache_check",
+                    "message": "🔍 Checking cache for similar documents...",
+                    "progress": 20
+                })
+            }
+            
+            cached = cache_service.get_analysis_cache(text)
+            if cached:
+                yield {
+                    "event": "progress",
+                    "data": json.dumps({
+                        "step": "cache_hit",
+                        "message": "✨ Found cached analysis! (Instant result)",
+                        "progress": 100
+                    })
+                }
+                
+                yield {
+                    "event": "complete",
+                    "data": json.dumps(cached)
+                }
+                return
+            
+            # Event 3: Preprocessing
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "preprocessing",
+                    "message": f"📄 Analyzing {len(text):,} characters...",
+                    "progress": 30
+                })
+            }
+            
+            process_detection = self._preprocess_and_detect_boundaries(text)
+            is_multi_process = process_detection['process_count'] >= 2 and process_detection['high_confidence']
+            
+            if is_multi_process:
+                yield {
+                    "event": "progress",
+                    "data": json.dumps({
+                        "step": "multi_process",
+                        "message": f"📊 Detected {process_detection['process_count']} distinct processes!",
+                        "progress": 60
+                    })
+                }
+                
+                result = {
+                    "process_type": "Multiple Processes Detected",
+                    "complexity": "high",
+                    "confidence": 0.9,
+                    "detected_steps": process_detection['process_count'] * 5,
+                    "detected_actors": process_detection['process_count'] * 2,
+                    "suggested_questions": [],
+                    "summary": f"Found {process_detection['process_count']} distinct processes. You'll review each one individually.",
+                    "is_multi_process": True,
+                    "process_count": process_detection['process_count']
+                }
+                
+                yield {
+                    "event": "complete",
+                    "data": json.dumps(result)
+                }
+                return
+            
+            # Event 4: AI Analysis
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "ai_analysis",
+                    "message": "🧠 Claude AI analyzing document structure...",
+                    "progress": 50
+                })
+            }
+            
+            # Perform actual analysis (non-streaming for now)
+            analysis = await self.analyze_document(text)
+            
+            # Event 5: Extracting insights
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "extracting",
+                    "message": f"✨ Found: {analysis.process_type}",
+                    "progress": 70
+                })
+            }
+            
+            await asyncio.sleep(0.2)
+            
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "actors",
+                    "message": f"👥 Detected {analysis.detected_actors} actors, {analysis.detected_steps} steps",
+                    "progress": 85
+                })
+            }
+            
+            # Cache the result
+            cache_service.set_analysis_cache(text, analysis.dict())
+            
+            yield {
+                "event": "progress",
+                "data": json.dumps({
+                    "step": "caching",
+                    "message": "💾 Caching for future use...",
+                    "progress": 95
+                })
+            }
+            
+            # Event 6: Complete
+            yield {
+                "event": "complete",
+                "data": json.dumps(analysis.dict())
+            }
+            
+        except Exception as e:
+            logger.error(f"Streaming analysis failed: {e}")
+            yield {
+                "event": "error",
+                "data": json.dumps({"error": str(e)})
+            }
+    
     def _smart_truncate(self, text: str, max_length: int, process_titles: List[str]) -> str:
         """
         Smart truncation that tries to preserve process boundaries.
