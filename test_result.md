@@ -367,6 +367,18 @@ frontend:
         agent: "main"
         comment: "Multi-process detection working. When document contains multiple processes (detected by AI), shows MultiProcessReview component allowing user to: 1) Review each detected process 2) Edit process names/descriptions 3) Create all or selected processes 4) Merge into one process. Successfully tested with Data Migration document (detected 4-5 processes). All processes assigned to current workspace. CREATE ALL and individual creation tested and working."
 
+  - task: "Authentication Flow (Email/Password)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ AUTHENTICATION FLOW FULLY FUNCTIONAL. Comprehensive testing completed: 1) User Signup: Email/password registration working with JWT token generation and proper validation (password strength, duplicate email checks). 2) User Login: Authentication successful with proper session management and JWT token issuance. 3) Session Persistence: JWT tokens persist correctly across requests, /auth/me endpoint working. 4) Logout Flow: Session invalidation working properly, tokens cleared and access revoked. 5) Protected Endpoints: All secured endpoints (/workspaces, /process, /auth/me) properly require authentication and return 401 for unauthorized access. Ready for enterprise deployment."
+
   - task: "Document Processing After EMERGENT_LLM_KEY Fix"
     implemented: true
     working: true
