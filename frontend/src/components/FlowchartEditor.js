@@ -403,10 +403,11 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             <div className="flex flex-col items-center space-y-0">
               {process.nodes?.map((node, idx) => (
                 <div key={node.id} className="node-container w-full max-w-4xl relative">
-                  {/* Left-Side Control Strip (Only in Edit Mode, Hidden in Print) */}
+                  {/* Split Edit Controls - Arrows Left, Delete Right */}
                   {!readOnly && isEditMode && (
-                    <div className="absolute -left-16 top-1/2 -translate-y-1/2 w-12 bg-slate-100 rounded-xl border border-slate-200 p-2 shadow-sm print:hidden">
-                      <div className="flex flex-col items-center gap-2">
+                    <>
+                      {/* Left Side - Reorder Arrows */}
+                      <div className="absolute -left-14 top-1/2 -translate-y-1/2 flex flex-col gap-2 print:hidden">
                         <button
                           onClick={() => handleMoveNode(idx, 'up')}
                           disabled={idx === 0 || reordering}
@@ -424,9 +425,10 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                         >
                           <ArrowDown className="w-4 h-4 text-slate-600" />
                         </button>
-                        
-                        <div className="w-6 h-px bg-slate-300 my-1"></div>
-                        
+                      </div>
+
+                      {/* Right Side - Delete Button */}
+                      <div className="absolute -right-14 top-1/2 -translate-y-1/2 print:hidden">
                         <button
                           onClick={() => handleDeleteNode(node.id)}
                           disabled={process.nodes.length === 1}
@@ -436,7 +438,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                           <Trash2 className="w-4 h-4 text-red-600" />
                         </button>
                       </div>
-                    </div>
+                    </>
                   )}
                   
                   <FlowNode
