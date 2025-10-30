@@ -321,7 +321,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             {/* Refine with AI Button - Always Available for owners */}
             {!readOnly && accessLevel === 'owner' && (
               <Button 
-                onClick={() => setShowAIChat(true)} 
+                onClick={handleOpenAIChat}
                 variant="outline" 
                 size="sm"
                 className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 text-blue-700"
