@@ -11,6 +11,8 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
   const [newComment, setNewComment] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedNode, setEditedNode] = useState(node);
+  const [saving, setSaving] = useState(false);
+  const [actorInput, setActorInput] = useState('');
   
   // Determine permissions based on access level
   // Owner in their own view OR shared with edit access
@@ -19,9 +21,18 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
   const canComment = (!readOnly && accessLevel === 'owner') || (readOnly && (accessLevel === 'comment' || accessLevel === 'edit'));
   const canViewComments = canComment; // Show comments section only if user can comment
 
+  const statusOptions = [
+    { value: 'trigger', label: 'Trigger', color: 'bg-blue-100 text-blue-800' },
+    { value: 'current', label: 'Active/Current', color: 'bg-emerald-100 text-emerald-800' },
+    { value: 'warning', label: 'Warning/Issue', color: 'bg-amber-100 text-amber-800' },
+    { value: 'completed', label: 'Completed', color: 'bg-slate-100 text-slate-800' },
+    { value: 'critical-gap', label: 'Critical Gap', color: 'bg-red-100 text-red-800' }
+  ];
+
   useEffect(() => {
     loadComments();
-  }, [processId]);
+    setEditedNode(node); // Reset edited node when node prop changes
+  }, [node, processId]);
 
   const loadComments = async () => {
     try {
@@ -53,10 +64,34 @@ const DetailPanel = ({ node, processId, onClose, onUpdate, readOnly = false, acc
     }
   };
 
-  const handleSave = () => {
-    onUpdate(editedNode);
-    setIsEditing(false);
-    toast.success('Node updated');
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      // Call backend API to update the node
+      await api.updateNode(processId, node.id, editedNode);
+      
+      // Update local state
+      onUpdate(editedNode);
+      setIsEditing(false);
+      toast.success('Node updated successfully!');
+    } catch (error) {
+      console.error('Failed to save node:', error);
+      toast.error(error.response?.data?.detail || 'Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddActor = () => {
+    if (!actorInput.trim()) return;
+    const newActors = [...(editedNode.actors || []), actorInput.trim()];
+    setEditedNode({ ...editedNode, actors: newActors });
+    setActorInput('');
+  };
+
+  const handleRemoveActor = (index) => {
+    const newActors = editedNode.actors.filter((_, i) => i !== index);
+    setEditedNode({ ...editedNode, actors: newActors });
   };
 
   return (
