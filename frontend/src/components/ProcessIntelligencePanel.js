@@ -376,11 +376,16 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
         {intelligence.issues && intelligence.issues.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-bold text-slate-900 mb-3">
-              {viewMode === 'summary' ? `Top Issues (${Math.min(3, intelligence.issues.length)})` : `Issues Detected (${intelligence.issues.length})`}
+              {isSimpleProcess 
+                ? 'Quick Tips' 
+                : viewMode === 'summary' 
+                  ? `Top Issues (${Math.min(3, intelligence.issues.length)})` 
+                  : `Issues Detected (${intelligence.issues.length})`
+              }
             </h3>
             <div className="space-y-3">
               {intelligence.issues
-                .slice(0, viewMode === 'summary' ? 3 : intelligence.issues.length)
+                .slice(0, isSimpleProcess ? 2 : (viewMode === 'summary' ? 3 : intelligence.issues.length))
                 .map((issue, idx) => (
                 <div key={idx} className="bg-white rounded-xl border-2 border-slate-200 overflow-hidden">
                   {/* Issue Header - Always Visible */}
