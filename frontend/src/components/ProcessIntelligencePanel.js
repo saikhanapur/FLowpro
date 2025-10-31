@@ -525,8 +525,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
           </div>
         )}
 
-        {/* Recommendations */}
-        {intelligence.recommendations && intelligence.recommendations.length > 0 && (
+        {/* Recommendations - Only in detailed view */}
+        {viewMode === 'detailed' && intelligence.recommendations && intelligence.recommendations.length > 0 && (
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-blue-600" />
