@@ -280,7 +280,9 @@ class GuestModeTester:
                     
                     if login_response.status_code == 200:
                         login_result = login_response.json()
-                        auth_token = login_result.get('token')
+                        auth_token = login_result.get('access_token') or login_result.get('token')
+                        
+                        print(f"Login result: {json.dumps(login_result, indent=2)}")
                         
                         # Step 4: Set auth token and get processes
                         self.session.cookies.clear()
