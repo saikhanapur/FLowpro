@@ -725,6 +725,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           loading={intelligenceLoading}
           onRefresh={loadIntelligence}
           onRegenerate={regenerateIntelligence}
+          onClose={() => setShowIntelligence(false)}
         />
       )}
 
