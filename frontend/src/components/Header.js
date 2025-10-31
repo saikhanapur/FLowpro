@@ -122,7 +122,9 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
+        )}
 
+        {!isGuest && (
         <div className="md:hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -145,6 +147,7 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        )}
       </div>
     </header>
   );
