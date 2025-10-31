@@ -278,7 +278,7 @@ const ProcessCreator = ({ currentWorkspace, isGuestMode = false }) => {
         id: `process-${Date.now()}`,
         name: processData.processName,
         description: processData.description || '',
-        workspaceId: selectedWorkspace, // Use selected workspace
+        workspaceId: isGuestMode ? null : selectedWorkspace, // No workspace for guest
         nodes: processData.nodes.map((node, idx) => ({
           ...node,
           position: { x: 100, y: 100 + (idx * 150) }
@@ -295,9 +295,25 @@ const ProcessCreator = ({ currentWorkspace, isGuestMode = false }) => {
 
       const created = await api.createProcess(process);
       toast.success('Process created!');
-      navigate(`/edit/${created.id}`);
+      
+      // Navigate to guest-edit for guest users, regular edit for authenticated users
+      if (isGuestMode) {
+        navigate(`/guest-edit/${created.id}`);
+      } else {
+        navigate(`/edit/${created.id}`);
+      }
     } catch (error) {
-      toast.error('Failed to create process');
+      // Check if guest limit reached
+      if (error.response?.status === 403) {
+        toast.error('Guest users can only create one flowchart. Sign up to create more!', {
+          action: {
+            label: 'Sign Up',
+            onClick: () => navigate('/signup')
+          }
+        });
+      } else {
+        toast.error('Failed to create process');
+      }
       console.error(error);
     }
   };
