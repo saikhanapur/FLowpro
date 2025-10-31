@@ -461,7 +461,7 @@ Return ONLY this JSON (no markdown, no explanations):
 }}"""
             
             response = await chat.send_message(UserMessage(text=analysis_prompt))
-            result = json.loads(response.content)
+            result = json.loads(response)
             
             # Add multi-process info
             result['is_multi_process'] = False
