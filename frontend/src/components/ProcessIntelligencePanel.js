@@ -172,7 +172,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
           )}
         </div>
 
-        {/* Health Score */}
+        {/* Health Score - Only for complex processes */}
+        {!isSimpleProcess && (
         <div className={`rounded-xl p-6 border-2 mb-6 ${getHealthBgColor(intelligence.health_score)}`}>
           <div className="text-center">
             <div className="flex items-center justify-center mb-2">
