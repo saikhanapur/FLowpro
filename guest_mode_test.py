@@ -260,7 +260,7 @@ class GuestModeTester:
             
             if signup_response.status_code == 200:
                 signup_result = signup_response.json()
-                new_user_token = signup_result.get('token')
+                new_user_token = signup_result.get('access_token') or signup_result.get('token')
                 new_user_id = signup_result.get('user', {}).get('id')
                 
                 if new_user_token and new_user_id:
