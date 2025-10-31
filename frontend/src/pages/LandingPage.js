@@ -189,25 +189,25 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Step 2: Add Context */}
+            {/* Step 2: AI Analysis */}
             <div className="relative bg-white p-8 rounded-2xl border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl transition-all group">
               <div className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  <Mic className="w-10 h-10 text-white" />
+                  <Sparkles className="w-10 h-10 text-white" />
                 </div>
                 <div className="mb-4">
                   <span className="inline-block px-3 py-1 bg-purple-100 text-purple-600 text-xs font-bold rounded-full mb-3">
                     STEP 2
                   </span>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">Add Context</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-3">AI Analyzes</h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Speak or type additional details. Our AI uses your context for precision.
+                  AI spots bottlenecks, calculates costs, and shows you what's slowing things down.
                 </p>
               </div>
             </div>
 
-            {/* Step 3: Get Flowchart */}
+            {/* Step 3: See Results */}
             <div className="relative bg-white p-8 rounded-2xl border-2 border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all group">
               <div className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
@@ -218,9 +218,9 @@ const LandingPage = () => {
                     STEP 3
                   </span>
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">Get Flowchart</h3>
+                <h3 className="text-2xl font-bold text-slate-900 mb-3">Get Insights + Fixes</h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Receive an interactive flowchart with gaps identified and insights highlighted.
+                  See your process visualized, plus smart recommendations to save time and money.
                 </p>
               </div>
             </div>
