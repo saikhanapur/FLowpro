@@ -1223,49 +1223,6 @@ Return ONLY valid JSON (no markdown):
     "industry_comparison": "slower"
   }}
 }}"""
-
-4. BENCHMARKS:
-   - expected_duration_days: How long this should take (industry standard)
-   - current_estimated_duration_days: How long it currently takes (estimate from steps)
-   - industry_comparison: "faster", "slower", or "average"
-
-IMPORTANT GUIDELINES:
-- Be specific and actionable
-- Focus on time wasted and money lost
-- Provide realistic cost estimates
-- Make recommendations practical
-- Identify REAL problems (bottlenecks, risks, delays)
-
-Return ONLY valid JSON (no markdown, no explanations):
-{{
-  "health_score": 67,
-  "score_breakdown": {{
-    "clarity": 85,
-    "efficiency": 45,
-    "reliability": 70,
-    "risk_management": 68
-  }},
-  "issues": [
-    {{
-      "title": "Bottleneck at approval step",
-      "description": "CFO approval taking average 3-4 days, blocking the entire process",
-      "severity": "high",
-      "cost_impact": 2400
-    }}
-  ],
-  "recommendations": [
-    {{
-      "title": "Implement auto-approval for <$500",
-      "description": "Automatically approve low-value invoices to speed up process",
-      "savings_potential": 1800
-    }}
-  ],
-  "benchmarks": {{
-    "expected_duration_days": 1,
-    "current_estimated_duration_days": 4.5,
-    "industry_comparison": "slower"
-  }}
-}}"""
             
             response = await chat.send_message(UserMessage(content=intelligence_prompt))
             result = json.loads(response.content)
