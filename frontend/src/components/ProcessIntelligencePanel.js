@@ -102,6 +102,14 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
   return (
     <div className="w-96 border-l border-slate-200 bg-slate-50 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 140px)' }}>
       <div className="p-6">
+        {/* AI Disclaimer */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex gap-2">
+          <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-blue-700">
+            <span className="font-semibold">AI-Generated Analysis:</span> This analysis identifies common patterns in process documentation. It does not assess operational risk or system reliability. Consult domain experts before implementing changes.
+          </div>
+        </div>
+
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
