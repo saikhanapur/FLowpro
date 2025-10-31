@@ -304,11 +304,17 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
               </div>
               <div className="flex-1">
                 <div className="text-2xl font-bold text-green-700 mb-1">
-                  ${intelligence.total_savings_potential.toLocaleString()}<span className="text-sm font-normal">/month</span>
+                  ~${intelligence.total_savings_potential.toLocaleString()}<span className="text-sm font-normal">/month</span>
                 </div>
-                <p className="text-xs text-slate-700 font-medium">
-                  {intelligence.roi_summary || 'Total potential savings from fixing detected issues'}
+                <p className="text-xs text-slate-700 font-medium mb-2">
+                  {intelligence.roi_summary || 'Estimated opportunity based on detected issues'}
                 </p>
+                {viewMode === 'summary' && (
+                  <div className="flex items-center gap-2 text-xs text-slate-600">
+                    <Info className="w-3.5 h-3.5" />
+                    <span>Based on industry patterns • Estimates may vary</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
