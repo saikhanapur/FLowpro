@@ -88,14 +88,6 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const loadIntelligence = async () => {
     if (!id || readOnly) return; // Skip for read-only views
     
-    // Check process complexity first
-    const stepCount = process?.steps?.length || 0;
-    
-    // Don't load intelligence for simple processes (≤10 steps)
-    if (stepCount <= 10) {
-      return;
-    }
-    
     setIntelligenceLoading(true);
     try {
       const data = await api.getProcessIntelligence(id);
