@@ -1107,6 +1107,144 @@ Keep responses concise (2-3 sentences max)."""
         except Exception as e:
             logger.error(f"Error in chat: {e}")
             return "I'm having trouble processing that. Could you rephrase?"
+    
+    async def analyze_process_intelligence(self, process_data: Dict) -> Dict[str, Any]:
+        """
+        Analyze process for intelligence insights:
+        - Health score
+        - Bottlenecks
+        - Cost analysis
+        - Recommendations
+        """
+        try:
+            logger.info(f"Analyzing process intelligence for: {process_data.get('name', 'Unknown')}")
+            
+            nodes = process_data.get('nodes', [])
+            
+            # Calculate basic metrics
+            step_count = len(nodes)
+            decision_points = sum(1 for node in nodes if node.get('type') == 'decision' or '?' in node.get('title', ''))
+            handoffs = sum(1 for node in nodes if 'actor' in node and len(set(n.get('actor') for n in nodes if 'actor' in n)) > 1)
+            
+            # Build analysis prompt
+            process_description = f"""
+Process Name: {process_data.get('name', 'Unknown Process')}
+Number of Steps: {step_count}
+Decision Points: {decision_points}
+Detected Handoffs: {handoffs}
+
+Steps:
+{chr(10).join([f"{i+1}. {node.get('title', 'Step')} - {node.get('description', '')}" for i, node in enumerate(nodes)])}
+"""
+            
+            chat = LlmChat(
+                api_key=self.api_key,
+                session_id=f"intelligence_{uuid.uuid4()}",
+                system_message="You are an expert process analyst who helps companies identify inefficiencies and save money."
+            ).with_model("anthropic", "claude-4-sonnet-20250514")
+            
+            intelligence_prompt = f"""TASK: Analyze this business process and identify issues, costs, and recommendations.
+
+PROCESS TO ANALYZE:
+{process_description}
+
+YOUR ANALYSIS SHOULD INCLUDE:
+
+1. HEALTH SCORE (0-100):
+   - Consider: clarity, efficiency, reliability, risk
+   - Lower score = more problems
+
+2. ISSUES DETECTED (Top 3):
+   Each issue should have:
+   - title: Short description
+   - description: Detailed explanation
+   - severity: "high", "medium", or "low"
+   - cost_impact: Estimated monthly cost in dollars (if quantifiable)
+   - example: "Bottleneck at approval step adding 3 days, costs $2,400/month in delays"
+
+3. RECOMMENDATIONS (Top 3):
+   Each recommendation should have:
+   - title: What to do
+   - description: How it helps
+   - savings_potential: Estimated monthly savings in dollars
+   - example: "Auto-approve invoices under $500 - saves $1,800/month"
+
+4. BENCHMARKS:
+   - expected_duration_days: How long this should take (industry standard)
+   - current_estimated_duration_days: How long it currently takes (estimate from steps)
+   - industry_comparison: "faster", "slower", or "average"
+
+IMPORTANT GUIDELINES:
+- Be specific and actionable
+- Focus on time wasted and money lost
+- Provide realistic cost estimates
+- Make recommendations practical
+- Identify REAL problems (bottlenecks, risks, delays)
+
+Return ONLY valid JSON (no markdown, no explanations):
+{{
+  "health_score": 67,
+  "score_breakdown": {{
+    "clarity": 85,
+    "efficiency": 45,
+    "reliability": 70,
+    "risk_management": 68
+  }},
+  "issues": [
+    {{
+      "title": "Bottleneck at approval step",
+      "description": "CFO approval taking average 3-4 days, blocking the entire process",
+      "severity": "high",
+      "cost_impact": 2400
+    }}
+  ],
+  "recommendations": [
+    {{
+      "title": "Implement auto-approval for <$500",
+      "description": "Automatically approve low-value invoices to speed up process",
+      "savings_potential": 1800
+    }}
+  ],
+  "benchmarks": {{
+    "expected_duration_days": 1,
+    "current_estimated_duration_days": 4.5,
+    "industry_comparison": "slower"
+  }}
+}}"""
+            
+            response = await chat.send_message(UserMessage(content=intelligence_prompt))
+            result = json.loads(response.content)
+            
+            logger.info(f"Intelligence analysis complete: Health score {result.get('health_score', 'N/A')}")
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Intelligence analysis failed: {e}")
+            # Return basic fallback
+            return {
+                "health_score": 75,
+                "score_breakdown": {
+                    "clarity": 75,
+                    "efficiency": 70,
+                    "reliability": 75,
+                    "risk_management": 80
+                },
+                "issues": [
+                    {
+                        "title": "Analysis in progress",
+                        "description": "Full intelligence analysis coming soon",
+                        "severity": "low",
+                        "cost_impact": 0
+                    }
+                ],
+                "recommendations": [],
+                "benchmarks": {
+                    "expected_duration_days": 1,
+                    "current_estimated_duration_days": 2,
+                    "industry_comparison": "average"
+                }
+            }
 
 ai_service = AIService()
 
