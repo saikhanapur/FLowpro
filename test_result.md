@@ -412,6 +412,18 @@ frontend:
         agent: "main"
         comment: "MAJOR BACKEND ENHANCEMENT: Completely rewrote analyze_process_intelligence prompt with detailed TIER 1 issue detection logic. New capabilities: 1) Missing Error Handling: Detects external dependencies without fallbacks, calculates failure rates (8% emergency busy, 15% manager unavailable), estimates risk costs. 2) Serial Bottleneck Detection: Identifies parallel opportunities, calculates time savings and monthly ROI. 3) Unclear Ownership: Flags generic actors, estimates delay costs (2-5 days avg). 4) Missing Timeouts: Detects indefinite waits, calculates stall costs. 5) Missing Handoff Documentation: Identifies actor changes without triggers. Enhanced output includes: node-specific issues with issue_type, detected_pattern, industry_benchmark, failure_rate_estimate, implementation_difficulty, calculation_basis for ROI. Explainable health scores with deduction rules. Comprehensive benchmarks and roi_summary. Need to test: GET /api/process/{id}/intelligence with real processes, verify Claude generates TIER 1 detections, check JSON structure, verify quantifiable ROI calculations."
 
+  - task: "Process Intelligence Simplification - Hide by Default"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/FlowchartEditor.js, /app/frontend/src/components/ProcessIntelligencePanel.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "MAJOR UX SIMPLIFICATION: Intelligence panel now hidden by default per user feedback on information overload. Changes: 1) HIDDEN BY DEFAULT: Intelligence panel no longer shows automatically, setShowIntelligence defaults to false. 2) COMPLEXITY-BASED LOADING: Intelligence only loads for processes with >10 steps. Simple processes (≤10 steps) don't trigger intelligence loading at all. 3) SUBTLE BADGE NOTIFICATION: When intelligence is available and has issues, amber badge appears in header: 'X improvements found' with Sparkles icon. Badge is dismissable, non-intrusive. 4) OPT-IN INTERACTION: User clicks badge to open intelligence panel. Panel now has X close button to dismiss. 5) FLOWCHART-FIRST EXPERIENCE: Users see clean flowchart immediately, intelligence is optional enhancement not forced feature. Goal: Reduce cognitive load, respect user's primary intent (visualize process), make intelligence feel like helpful bonus not required homework. User feedback: 'Enterprises are drowning in documentation - don't add more unless they ask for it.' Philosophy change: From 'analyze everything' to 'visualize first, analyze if needed.' Need to test: 1) Badge appears for >10 step processes with issues 2) Badge click opens panel 3) X button closes panel 4) ≤10 step processes don't show badge at all 5) Panel stays hidden until user requests"
+
   - task: "Enhanced Process Intelligence - Frontend Visual UI (Phase 2)"
     implemented: true
     working: "NA"
