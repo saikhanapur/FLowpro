@@ -721,6 +721,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           onRefresh={loadIntelligence}
           onRegenerate={regenerateIntelligence}
           onClose={() => setShowIntelligence(false)}
+          isSimpleProcess={(process?.steps?.length || 0) <= 10}
         />
       )}
 
