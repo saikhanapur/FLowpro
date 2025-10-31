@@ -56,46 +56,54 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-12 px-6">
+      {/* Hero Section - Don Draper Style: Bold, Clean, Outcome-focused */}
+      <section className="pt-32 pb-20 px-6">
         <div className="max-w-6xl mx-auto text-center">
+          {/* Badge - Minimal, purposeful */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 mb-8">
             <Zap className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-medium text-blue-600">Superhuman Process Intelligence</span>
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-            Upload a doc. Get an <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">interactive</span> flowchart.
+          {/* Hero Headline - The Transformation */}
+          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight tracking-tight">
+            Turn process chaos into clarity.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
               Instantly.
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Add voice or context. AI turns your messy processes into clarity — instantly visualized, editable, and ready to share.
+          {/* Subheadline - The Outcome Promise */}
+          <p className="text-xl md:text-2xl text-slate-600 mb-10 max-w-4xl mx-auto leading-relaxed font-light">
+            Upload a doc. Get an interactive flowchart that shows you exactly what's broken, what's costing you money, and how to fix it.
           </p>
 
-          <div className="flex items-center justify-center gap-4">
+          {/* CTA - Clear, Action-oriented */}
+          <div className="flex items-center justify-center gap-4 mb-6">
             <Button 
               size="lg"
               onClick={() => navigate('/create-process')}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-7 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
             >
-              Create your first Flowchart
+              Try it now
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
 
-          <p className="text-sm text-slate-500 mt-4">
-            Try it now — no login required!
+          {/* Trust indicators - Minimal, confident */}
+          <p className="text-sm text-slate-500 mb-1">
+            No login required • See results in seconds
           </p>
           
-          <p className="text-sm text-slate-400 mt-2">
-            Create one flowchart for free • Sign up to save & share
+          <p className="text-xs text-slate-400">
+            Create one flowchart free • Sign up to save & share
           </p>
         </div>
       </section>
+
+      {/* Generous white space - Don Draper principle */}
+      <div className="h-12"></div>
 
       {/* Subtle Section Separator */}
       <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
