@@ -56,9 +56,20 @@ class GuestModeTester:
                     {
                         "id": "node-1",
                         "type": "start",
+                        "status": "trigger",
                         "title": "Start",
                         "description": "Begin process",
                         "actors": ["Guest User"],
+                        "subSteps": [],
+                        "dependencies": [],
+                        "parallelWith": [],
+                        "failures": [],
+                        "blocking": None,
+                        "currentState": None,
+                        "idealState": None,
+                        "gap": None,
+                        "impact": None,
+                        "timeEstimate": None,
                         "position": {"x": 100, "y": 100}
                     }
                 ],
