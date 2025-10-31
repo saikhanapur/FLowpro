@@ -56,136 +56,106 @@ const LandingPage = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-12 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 mb-8">
-            <Zap className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-600">AI-Powered Process Visualization</span>
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+      {/* Hero Section - DOMINATES THE SCREEN */}
+      <section className="min-h-screen flex items-center justify-center px-6 pt-20">
+        <div className="max-w-5xl mx-auto text-center">
+          
+          <h1 className="text-6xl md:text-8xl font-bold text-slate-900 mb-8 leading-tight">
             Upload your process document.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Get an interactive flowchart in 30 seconds.
+              Get an interactive flowchart
+            </span>
+            <br />
+            <span className="text-slate-400 text-5xl md:text-7xl">
+              in 30 seconds.
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-            No design skills needed. Just upload and visualize.
-          </p>
-
-          <div className="flex items-center justify-center gap-4">
+          <div className="mt-12">
             <Button 
               size="lg"
               onClick={() => navigate('/signup')}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-8 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all rounded-2xl"
             >
               Create Your First Flowchart
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <ArrowRight className="w-6 h-6 ml-3" />
             </Button>
           </div>
 
-          <p className="text-sm text-slate-500 mt-6">
-            No credit card required • Free to start • Takes 30 seconds
+          <p className="text-sm text-slate-400 mt-8">
+            Free to start • No credit card • Takes 30 seconds
           </p>
         </div>
       </section>
 
-      {/* Subtle Section Separator */}
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-
-      {/* Simple Features Preview - Moved Intelligence features further down */}
-      <section id="features" className="py-20 px-6 bg-slate-50">
+      {/* How It Works - SIMPLE, VISUAL, CLEAR */}
+      <section className="py-32 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 - Core Value */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200">
-              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
-                <Upload className="w-6 h-6 text-blue-600" />
+          <h2 className="text-5xl font-bold text-slate-900 text-center mb-20">
+            How it works
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-16">
+            
+            {/* Step 1 */}
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <Upload className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Upload Anything</h3>
-              <p className="text-sm text-slate-600">
-                Word docs, PDFs, text files - we handle it all. No formatting needed.
+              <div className="text-sm font-bold text-blue-600 mb-3">STEP 1</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Upload</h3>
+              <p className="text-slate-600">
+                Drop any process document
               </p>
             </div>
 
-            {/* Feature 2 - Core Value */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200">
-              <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
-                <Network className="w-6 h-6 text-purple-600" />
+            {/* Arrow */}
+            <div className="hidden md:flex items-center justify-center">
+              <ChevronRight className="w-8 h-8 text-slate-300" />
+            </div>
+
+            {/* Step 2 */}
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <Sparkles className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Interactive Flowcharts</h3>
-              <p className="text-sm text-slate-600">
-                Click, edit, and refine. Your flowchart is fully interactive and easy to modify.
+              <div className="text-sm font-bold text-purple-600 mb-3">STEP 2</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Visualize</h3>
+              <p className="text-slate-600">
+                Get an interactive flowchart
               </p>
             </div>
 
-            {/* Feature 3 - Core Value */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200">
-              <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-emerald-600" />
+            {/* Arrow */}
+            <div className="hidden md:flex items-center justify-center">
+              <ChevronRight className="w-8 h-8 text-slate-300" />
+            </div>
+
+            {/* Step 3 */}
+            <div className="text-center">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <Users className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Share Instantly</h3>
-              <p className="text-sm text-slate-600">
-                Generate a link and share with anyone. No login required for viewers.
+              <div className="text-sm font-bold text-emerald-600 mb-3">STEP 3</div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Share</h3>
+              <p className="text-slate-600">
+                Send a link to anyone
               </p>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Intelligence Features - Moved Down */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 mb-4">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              <span className="text-sm font-medium text-amber-600">Bonus: AI-Powered Insights</span>
-            </div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-3">
-              Get smart recommendations (optional)
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              For complex processes, our AI can spot improvement opportunities
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-10">
-            {/* Intelligence Feature 1 */}
-            <div className="p-6 rounded-xl border border-slate-200 bg-white">
-              <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Spot Bottlenecks</h3>
-              <p className="text-sm text-slate-600">
-                AI identifies slow steps and improvement opportunities in your process.
-              </p>
-            </div>
-
-            {/* Intelligence Feature 2 */}
-            <div className="p-6 rounded-xl border border-slate-200 bg-white">
-              <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Estimate Costs</h3>
-              <p className="text-sm text-slate-600">
-                Get rough estimates of what inefficiencies might be costing you.
-              </p>
-            </div>
-
-            {/* Intelligence Feature 3 */}
-            <div className="p-6 rounded-xl border border-slate-200 bg-white">
-              <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center mb-4">
-                <CheckCircle className="w-6 h-6 text-emerald-600" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Get Recommendations</h3>
-              <p className="text-sm text-slate-600">
-                Receive actionable suggestions to improve efficiency and reduce delays.
-              </p>
-            </div>
+          {/* CTA */}
+          <div className="text-center mt-20">
+            <Button 
+              size="lg"
+              onClick={() => navigate('/signup')}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all rounded-xl"
+            >
+              Try it now — it's free
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
