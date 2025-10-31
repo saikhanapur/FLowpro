@@ -460,7 +460,7 @@ Return ONLY this JSON (no markdown, no explanations):
   ]
 }}"""
             
-            response = await chat.send_message(UserMessage(content=analysis_prompt))
+            response = await chat.send_message(UserMessage(text=analysis_prompt))
             result = json.loads(response.content)
             
             # Add multi-process info
