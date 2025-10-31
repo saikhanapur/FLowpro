@@ -509,7 +509,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                   ) : (
                     /* View Mode Buttons */
                     <>
-                      {process?.status === 'published' && (
+                      {!isGuestMode && process?.status === 'published' && (
                         <Button 
                           onClick={handleShare} 
                           variant="default" 
@@ -537,13 +537,13 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                       
                       {process?.status !== 'published' && (
                         <Button 
-                          onClick={() => setShowPublishDialog(true)} 
+                          onClick={() => isGuestMode ? setShowGuestSignupPrompt(true) : setShowPublishDialog(true)} 
                           variant="default" 
                           size="sm"
                           className="bg-emerald-600 hover:bg-emerald-700 text-white flex-shrink-0"
                         >
                           <CheckCircle className="w-4 h-4 sm:mr-2" />
-                          <span className="hidden sm:inline">Publish</span>
+                          <span className="hidden sm:inline">{isGuestMode ? 'Sign Up to Publish' : 'Publish'}</span>
                         </Button>
                       )}
                     </>
