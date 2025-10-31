@@ -138,10 +138,16 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
               {intelligence.health_score}
             </div>
             <p className="text-sm font-semibold text-slate-700">Health Score</p>
+            
+            {viewMode === 'summary' && intelligence.overall_explanation && (
+              <p className="text-xs text-slate-600 mt-3 leading-relaxed">
+                {intelligence.overall_explanation}
+              </p>
+            )}
           </div>
 
-          {/* Score Breakdown */}
-          {intelligence.score_breakdown && (
+          {/* Score Breakdown - Only show in detailed view or if expanded in summary */}
+          {viewMode === 'detailed' && intelligence.score_breakdown && (
             <div className="mt-4 pt-4 border-t border-slate-200">
               <button
                 onClick={() => setExpandedScores(!expandedScores)}
