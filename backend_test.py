@@ -2095,6 +2095,9 @@ class BackendTester:
         """Test Guest Mode - Auto Migration on Signup"""
         print("\n🔄 Testing Guest Mode - Auto Migration on Signup...")
         
+        # Clear auth headers and set guest session cookie
+        original_headers = self.session.headers.copy()
+        
         try:
             # Step 1: Ensure we have a guest process and session
             if not (hasattr(self, 'guest_process_id') and hasattr(self, 'guest_session_cookie')):
@@ -2106,8 +2109,6 @@ class BackendTester:
             new_user_password = "MigrationTest123!"
             new_user_name = "Migration Test User"
             
-            # Clear auth headers and set guest session cookie
-            original_headers = self.session.headers.copy()
             if 'Authorization' in self.session.headers:
                 del self.session.headers['Authorization']
             self.session.cookies.set('guest_session', self.guest_session_cookie)
