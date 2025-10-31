@@ -214,8 +214,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
           )}
         </div>
 
-        {/* Benchmarks */}
-        {intelligence.benchmarks && (
+        {/* Benchmarks - Only in detailed view */}
+        {viewMode === 'detailed' && intelligence.benchmarks && (
           <div className="bg-white rounded-xl p-4 border border-slate-200 mb-6">
             <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-blue-600" />
