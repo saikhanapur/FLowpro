@@ -95,9 +95,20 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-slate-900">Process Intelligence</h2>
-          <Button variant="ghost" size="sm" onClick={onRefresh}>
-            <Sparkles className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleRegenerate}
+              disabled={regenerating}
+              title="Regenerate fresh analysis"
+            >
+              <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onRefresh}>
+              <Sparkles className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Health Score */}
