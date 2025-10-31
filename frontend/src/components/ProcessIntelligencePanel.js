@@ -563,8 +563,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
               ))}
             </div>
             
-            {/* Show More Button - Summary View Only */}
-            {viewMode === 'summary' && intelligence.issues.length > 3 && (
+            {/* Show More Button - Summary View Only for complex processes */}
+            {!isSimpleProcess && viewMode === 'summary' && intelligence.issues.length > 3 && (
               <button
                 onClick={toggleViewMode}
                 className="w-full mt-3 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
