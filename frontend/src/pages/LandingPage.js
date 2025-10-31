@@ -158,31 +158,31 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-10">
-            {/* Feature 1 */}
-            <div className="p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Zap className="w-7 h-7 text-white" />
+            {/* Intelligence Feature 1 */}
+            <div className="p-6 rounded-xl border border-slate-200 bg-white">
+              <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center mb-4">
+                <Zap className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Spot What's Broken</h3>
-              <p className="text-slate-600 leading-relaxed">
-                AI instantly identifies bottlenecks, delays, and risks in your processes. No manual analysis needed.
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Spot Bottlenecks</h3>
+              <p className="text-sm text-slate-600">
+                AI identifies slow steps and improvement opportunities in your process.
               </p>
             </div>
 
-            {/* Feature 2 */}
-            <div className="p-8 rounded-2xl border border-slate-100 hover:border-purple-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Users className="w-7 h-7 text-white" />
+            {/* Intelligence Feature 2 */}
+            <div className="p-6 rounded-xl border border-slate-200 bg-white">
+              <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Calculate Real Costs</h3>
-              <p className="text-slate-600 leading-relaxed">
-                See exactly how much slow processes cost you every month. Get recommendations to save money.
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Estimate Costs</h3>
+              <p className="text-sm text-slate-600">
+                Get rough estimates of what inefficiencies might be costing you.
               </p>
             </div>
 
-            {/* Feature 3 */}
-            <div className="p-8 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            {/* Intelligence Feature 3 */}
+            <div className="p-6 rounded-xl border border-slate-200 bg-white">
+              <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center mb-4">
                 <Shield className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">Track Improvements</h3>
