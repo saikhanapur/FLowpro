@@ -21,7 +21,7 @@ import ProcessIntelligencePanel from './ProcessIntelligencePanel';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', processData }) => {
+const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', processData, isGuestMode = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [process, setProcess] = useState(processData || null);
@@ -43,6 +43,9 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [showRefineWarning, setShowRefineWarning] = useState(false);
   const [wasAutoUnpublished, setWasAutoUnpublished] = useState(false);
   
+  // Guest mode state
+  const [showGuestSignupPrompt, setShowGuestSignupPrompt] = useState(false);
+  
   // Move to project state
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
@@ -58,9 +61,11 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     if (!processData) {
       loadProcess();
     }
-    loadWorkspaces();
+    if (!isGuestMode) {
+      loadWorkspaces();
+    }
     loadIntelligence();
-  }, [id, processData]);
+  }, [id, processData, isGuestMode]);
 
   const loadProcess = async () => {
     if (processData) return; // Skip if already provided
