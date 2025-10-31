@@ -91,6 +91,12 @@ export const api = {
     return res.data;
   },
 
+  // Process Intelligence
+  getProcessIntelligence: async (id) => {
+    const res = await axios.get(`${API}/process/${id}/intelligence`);
+    return res.data;
+  },
+
   // Workspace APIs
   getWorkspaces: async () => {
     const res = await axios.get(`${API}/workspaces`);
