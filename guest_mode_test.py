@@ -224,6 +224,122 @@ class GuestModeTester:
             # Restore original headers
             self.session.headers = original_headers
     
+    def test_guest_to_user_migration(self):
+        """Test Guest Mode - Auto Migration on Signup"""
+        print("\n🔄 Testing Guest Mode - Auto Migration on Signup...")
+        
+        # Clear auth headers and set guest session cookie
+        original_headers = self.session.headers.copy()
+        
+        try:
+            # Step 1: Ensure we have a guest process and session
+            if not (hasattr(self, 'guest_process_id') and hasattr(self, 'guest_session_cookie')):
+                self.log_result("Guest Migration", False, "No guest process/session to test migration")
+                return
+            
+            # Step 2: Create new user account with guest_session cookie
+            new_user_email = f"migration_test_{uuid.uuid4().hex[:8]}@flowforge.test"
+            new_user_password = "MigrationTest123!"
+            new_user_name = "Migration Test User"
+            
+            if 'Authorization' in self.session.headers:
+                del self.session.headers['Authorization']
+            self.session.cookies.set('guest_session', self.guest_session_cookie)
+            
+            signup_payload = {
+                "email": new_user_email,
+                "password": new_user_password,
+                "name": new_user_name
+            }
+            
+            signup_response = self.session.post(f"{self.base_url}/auth/signup", 
+                                              json=signup_payload, timeout=TIMEOUT)
+            
+            print(f"Signup response status: {signup_response.status_code}")
+            print(f"Signup response: {signup_response.text}")
+            
+            if signup_response.status_code == 200:
+                signup_result = signup_response.json()
+                new_user_token = signup_result.get('token')
+                new_user_id = signup_result.get('user', {}).get('id')
+                
+                if new_user_token and new_user_id:
+                    self.log_result("Guest Migration (Signup)", True, 
+                                  f"Successfully signed up user: {new_user_email}")
+                    
+                    # Step 3: Login with new credentials and check if guest process was migrated
+                    login_payload = {
+                        "email": new_user_email,
+                        "password": new_user_password
+                    }
+                    
+                    login_response = self.session.post(f"{self.base_url}/auth/login", 
+                                                     json=login_payload, timeout=TIMEOUT)
+                    
+                    print(f"Login response status: {login_response.status_code}")
+                    
+                    if login_response.status_code == 200:
+                        login_result = login_response.json()
+                        auth_token = login_result.get('token')
+                        
+                        # Step 4: Set auth token and get processes
+                        self.session.cookies.clear()
+                        self.session.headers['Authorization'] = f"Bearer {auth_token}"
+                        
+                        processes_response = self.session.get(f"{self.base_url}/process", timeout=TIMEOUT)
+                        
+                        print(f"Processes response status: {processes_response.status_code}")
+                        
+                        if processes_response.status_code == 200:
+                            processes = processes_response.json()
+                            
+                            print(f"User processes after migration: {len(processes)}")
+                            
+                            # Look for the migrated process
+                            migrated_process = None
+                            for process in processes:
+                                if process.get('id') == self.guest_process_id:
+                                    migrated_process = process
+                                    break
+                            
+                            if migrated_process:
+                                print(f"Found migrated process: {json.dumps(migrated_process, indent=2)}")
+                                
+                                # Verify migration properties
+                                is_migrated = (
+                                    migrated_process.get('isGuest') == False and
+                                    migrated_process.get('userId') == new_user_id and
+                                    migrated_process.get('workspaceId') is not None
+                                )
+                                
+                                if is_migrated:
+                                    self.log_result("Guest Migration (Process Transfer)", True, 
+                                                  f"Guest process successfully migrated to user {new_user_id}")
+                                else:
+                                    self.log_result("Guest Migration (Process Transfer)", False, 
+                                                  f"Process not properly migrated. isGuest: {migrated_process.get('isGuest')}, userId: {migrated_process.get('userId')}")
+                            else:
+                                self.log_result("Guest Migration (Process Transfer)", False, 
+                                              "Guest process not found in user's processes after migration")
+                        else:
+                            self.log_result("Guest Migration (Process Transfer)", False, 
+                                          f"Could not retrieve processes after login: {processes_response.status_code}")
+                    else:
+                        self.log_result("Guest Migration (Login)", False, 
+                                      f"Could not login after signup: {login_response.status_code}")
+                else:
+                    self.log_result("Guest Migration (Signup)", False, 
+                                  f"Signup response missing token or user ID")
+            else:
+                self.log_result("Guest Migration (Signup)", False, 
+                              f"Signup failed: HTTP {signup_response.status_code}: {signup_response.text}")
+        
+        except Exception as e:
+            self.log_result("Guest Migration", False, f"Error: {str(e)}")
+        finally:
+            # Restore original headers
+            self.session.headers = original_headers
+
     def run_tests(self):
         """Run all guest mode tests"""
         print("🚀 Starting Guest Mode Testing Suite")
@@ -233,6 +349,7 @@ class GuestModeTester:
         self.test_guest_process_creation()
         self.test_guest_process_listing()
         self.test_guest_publish_gating()
+        self.test_guest_to_user_migration()
         
         # Summary
         print("\n" + "=" * 60)
