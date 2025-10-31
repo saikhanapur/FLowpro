@@ -28,7 +28,8 @@ def authenticate():
     
     if response.status_code == 200:
         result = response.json()
-        token = result.get('token')
+        print(f"Login response: {result}")
+        token = result.get('token') or result.get('access_token')
         if token:
             session.headers.update({'Authorization': f'Bearer {token}'})
             print(f"✅ Authenticated as test@superhumanly.ai")
