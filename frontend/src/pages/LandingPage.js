@@ -68,16 +68,12 @@ const LandingPage = () => {
             Upload your process document.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Get a visual, interactive flowchart in 30 seconds.
+              Get an interactive flowchart in 30 seconds.
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            No design skills needed. Just upload, and watch your process transform into a shareable, interactive flowchart instantly.
-          </p>
-          
-          <p className="text-lg text-slate-700 mb-12">
-            Perfect for teams who need clarity, not complexity.
+          <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            No design skills needed. Just upload and visualize.
           </p>
 
           <div className="flex items-center justify-center gap-4">
