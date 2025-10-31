@@ -1967,6 +1967,13 @@ async def publish_process(process_id: str):
         if not process:
             raise HTTPException(status_code=404, detail="Process not found")
         
+        # Check if guest trying to publish
+        if process.get('isGuest', False):
+            raise HTTPException(
+                status_code=403,
+                detail="Guest users cannot publish. Sign up to share your flowchart!"
+            )
+        
         # Update status to published
         update_data = {
             "status": "published",
