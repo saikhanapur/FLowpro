@@ -1143,85 +1143,318 @@ Steps:
                 system_message="You are an expert process analyst who helps companies identify inefficiencies and save money."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            intelligence_prompt = f"""TASK: Analyze this business process and identify issues, costs, and recommendations WITH SPECIFIC EXPLANATIONS.
+            intelligence_prompt = f"""You are an elite process intelligence analyst. Your goal: identify ACTIONABLE, QUANTIFIABLE issues that make companies say "this tool pays for itself."
 
 PROCESS TO ANALYZE:
 {process_description}
 
-YOUR ANALYSIS MUST INCLUDE:
+🎯 TIER 1 DETECTION PRIORITIES - FOCUS ON THESE FIRST:
 
-1. HEALTH SCORE (0-100) WITH DETAILED REASONING:
-   - Overall score
-   - Breakdown scores: clarity, efficiency, reliability, risk_management
-   - FOR EACH score, provide "explanation" field explaining WHY that score
-   
-   Example:
-   "clarity": 85,
-   "clarity_explanation": "Process steps are well-defined with clear descriptions. Minor improvement needed in handoff documentation."
+═══════════════════════════════════════════════════════
+1. MISSING ERROR HANDLING / "HAPPY PATH SYNDROME"
+═══════════════════════════════════════════════════════
+WHAT TO DETECT:
+- Steps with external dependencies (services, people, systems) but no "what if it fails" branch
+- Decision points without alternative paths
+- Steps that could fail but have no documented fallback/escalation
+- Single points of failure (one critical step with no backup)
 
-2. NODE-SPECIFIC ISSUES (Critical for visual highlighting):
-   For EACH issue, specify which step/node it affects:
-   - node_id: The step number (1, 2, 3, etc.) where issue occurs
-   - node_title: The step name
-   - title: Issue summary
+DETECTION RULES:
+✓ Step mentions: "call", "contact", "notify", "send", "request" → Check for failure handling
+✓ Actor is external system/service → Must have error branch
+✓ Step requires user input/action → Must have timeout or escalation
+✓ "Wait for" or "monitor" steps → Must have max duration and escalation path
+
+EXAMPLE ISSUES TO FLAG:
+- "Contact Emergency Services" with no backup if line is busy
+- "Await Manager Approval" with no escalation if manager is unavailable
+- "Submit to External API" with no retry logic or fallback
+
+IMPACT CALCULATION:
+- Cost = (Failure rate % × Monthly occurrences × Average cost per failure)
+- Industry avg failure rate for external calls: 5-10%
+- Emergency services busy rate: 8%
+- Manager unavailability: 15%
+
+═══════════════════════════════════════════════════════
+2. BOTTLENECKS / SERIAL WORK THAT SHOULD BE PARALLEL
+═══════════════════════════════════════════════════════
+WHAT TO DETECT:
+- Steps happening in sequence that could run simultaneously
+- Independent steps with different actors running serially
+- No shared data dependency between consecutive steps
+
+DETECTION RULES:
+✓ Consecutive steps with different actors → Likely can be parallel
+✓ Steps don't reference output of previous step → Can run parallel
+✓ Both steps are "notify" or "inform" actions → Definitely parallel
+✓ Steps with "THEN" between them → Check if dependency is real
+
+EXAMPLE ISSUES TO FLAG:
+- Step 3: "Notify Manager" THEN Step 4: "Call Emergency Services" (both independent)
+- Step 2: "Check Inventory" THEN Step 3: "Send Email" (no dependency)
+
+TIME SAVINGS CALCULATION:
+- Time saved = (Longer step duration) - (Overlap time)
+- Example: Step A (5 min) + Step B (3 min) in sequence = 8 min total
+- If parallel: max(5, 3) = 5 min total → Save 3 min per occurrence
+- Monthly savings = 3 min × occurrences/month × hourly rate
+
+═══════════════════════════════════════════════════════
+3. UNCLEAR OWNERSHIP / "WHO DOES THIS?"
+═══════════════════════════════════════════════════════
+WHAT TO DETECT:
+- Steps without actor/owner assignment
+- Generic actors like "Team", "Management", "Department"
+- Multiple actors on one step without clear RACI (who's Responsible vs Consulted)
+- Ambiguous phrasing: "Review and approve" without specifying who
+
+DETECTION RULES:
+✓ Actor is missing or null → Flag immediately
+✓ Actor contains: "Team", "Group", "Department", "Staff" → Too generic
+✓ Step has multiple actors → Must clarify roles (who initiates, who confirms, who escalates)
+✓ Action verbs: "Review", "Approve", "Monitor" → Need clear single owner
+
+EXAMPLE ISSUES TO FLAG:
+- Step with actor "Management" instead of "CFO" or "VP Operations"
+- "Notify stakeholders" without defining which stakeholders
+- Multiple people listed but unclear who's accountable
+
+IMPACT CALCULATION:
+- Delay cost = (Average delay days × Daily cost of delay × Occurrences/month)
+- Industry avg: Unclear ownership adds 2-5 days delay
+- Onboarding time per unclear step: 30 minutes per new employee
+
+═══════════════════════════════════════════════════════
+4. MISSING TIMEOUTS / SLAs
+═══════════════════════════════════════════════════════
+WHAT TO DETECT:
+- Steps without time limit or expected duration
+- "Wait for" or "Monitor" steps with no max duration
+- Approval steps without timeout
+- No defined SLAs for customer-facing steps
+
+DETECTION RULES:
+✓ Words like "wait", "monitor", "review", "assess" → Must have timeout
+✓ Approval steps → Must have max wait time and escalation
+✓ Customer-facing steps → Must have SLA
+✓ Any step that could stall indefinitely → Flag
+
+EXAMPLE ISSUES TO FLAG:
+- "Assess Situation" with no max time (could take indefinitely)
+- "Wait for Manager Response" with no escalation after X time
+- "Monitor Until Complete" with no end condition
+
+IMPACT CALCULATION:
+- Cost of delay = (Average stall time × Hourly rate × Occurrences)
+- Customer satisfaction impact: Every 10 min delay = 5% satisfaction drop
+- SLA breach penalties: Calculate based on contract terms
+
+═══════════════════════════════════════════════════════
+5. MISSING HANDOFF DOCUMENTATION
+═══════════════════════════════════════════════════════
+WHAT TO DETECT:
+- Actor changes between consecutive steps without documented handoff
+- No clear trigger mechanism when responsibility shifts
+- No data/information specified to pass between actors
+- Missing confirmation/acknowledgment step
+
+DETECTION RULES:
+✓ Actor changes from Step N to Step N+1 → Check for handoff details
+✓ No trigger mechanism specified → How does next person know to start?
+✓ No data artifacts mentioned → What information is passed?
+✓ No confirmation → How to verify handoff completed?
+
+EXAMPLE ISSUES TO FLAG:
+- Step 2 (User) → Step 3 (Call Handler): How does Call Handler know to start?
+- Step 4 (Sales) → Step 5 (Finance): What data is passed? Invoice? Customer ID?
+- No acknowledgment that next actor received the handoff
+
+IMPACT CALCULATION:
+- Information loss cost = (% info lost × Rework cost × Occurrences)
+- Handoff delay = (Average wait time for next actor to realize it's their turn)
+- Industry avg: Poor handoffs lose 20% of critical info
+
+═══════════════════════════════════════════════════════
+
+🎯 ANALYSIS OUTPUT FORMAT:
+
+For EACH issue detected, you MUST provide:
+
+1. THE ISSUE (What's wrong):
+   - node_id: Specific step number
+   - node_title: Step name
+   - issue_type: One of ["missing_error_handling", "serial_bottleneck", "unclear_ownership", "missing_timeout", "missing_handoff"]
+   - title: Short issue summary
    - description: Detailed explanation
-   - severity: "high", "medium", or "low"
-   - cost_impact: Estimated monthly cost
+
+2. THE IMPACT (Why it matters):
+   - severity: "critical", "high", "medium", "low"
    - why_this_matters: Business impact explanation
+   - risk_description: What bad thing happens if not fixed
 
-3. RECOMMENDATIONS with SPECIFIC REASONING:
-   - title: What to do
-   - description: How to implement
-   - why_it_works: Explain the reasoning
-   - savings_potential: Monthly savings
-   - affected_nodes: Which steps this improves (array of node numbers)
+3. THE EVIDENCE (Prove it's real):
+   - detected_pattern: What pattern triggered this detection
+   - industry_benchmark: Relevant industry data/standard
+   - failure_rate_estimate: % likelihood of this issue causing problems
 
-4. SCORE EXPLANATIONS:
-   - overall_explanation: Why the overall health score is what it is
-   - top_strength: Best aspect of this process
-   - top_weakness: Biggest problem area
+4. THE FIX (What to do):
+   - recommendation_title: Clear action item
+   - recommendation_description: Step-by-step how to fix
+   - implementation_difficulty: "easy", "medium", "hard"
 
-Return ONLY valid JSON (no markdown):
+5. THE VALUE (ROI):
+   - cost_impact_monthly: Estimated monthly cost of NOT fixing (in dollars)
+   - time_savings_minutes: Time saved per occurrence (if applicable)
+   - risk_mitigation_value: Risk cost avoided (if applicable)
+   - calculation_basis: Show your math/assumptions
+
+═══════════════════════════════════════════════════════
+
+HEALTH SCORE CALCULATION RULES:
+
+Base score = 100
+
+DEDUCTIONS:
+- Missing error handling (Critical): -15 points per occurrence
+- Serial bottleneck (High): -10 points per major bottleneck
+- Unclear ownership (High): -12 points per unclear step
+- Missing timeout (Medium): -8 points per step
+- Missing handoff (Medium): -7 points per handoff
+
+CLARITY SCORE (0-100):
+- Deduct 10 pts for each generic actor
+- Deduct 15 pts for missing actor
+- Deduct 8 pts for ambiguous terminology
+- Deduct 5 pts for poor handoff documentation
+
+EFFICIENCY SCORE (0-100):
+- Deduct 20 pts for each major serial bottleneck
+- Deduct 10 pts for unnecessary steps
+- Deduct 15 pts for duplicate work
+
+RELIABILITY SCORE (0-100):
+- Deduct 20 pts for each missing error handler
+- Deduct 15 pts for single points of failure
+- Deduct 10 pts for missing escalation paths
+
+RISK MANAGEMENT SCORE (0-100):
+- Deduct 15 pts for each critical missing timeout
+- Deduct 10 pts for compliance gaps
+- Deduct 12 pts for unclear accountability
+
+═══════════════════════════════════════════════════════
+
+Return ONLY valid JSON (no markdown, no code blocks):
+
 {{
-  "health_score": 67,
+  "health_score": 68,
   "score_breakdown": {{
-    "clarity": 85,
-    "clarity_explanation": "Steps are clearly defined with good descriptions",
-    "efficiency": 45,
-    "efficiency_explanation": "Multiple sequential bottlenecks slow the process significantly",
-    "reliability": 70,
-    "reliability_explanation": "Basic error handling present but missing escalation paths",
+    "clarity": 72,
+    "clarity_explanation": "Most steps are clear but 2 actors are too generic ('Team' instead of specific role) and 1 handoff lacks documentation",
+    "efficiency": 55,
+    "efficiency_explanation": "Major bottleneck detected: Steps 3-4 run serially but could be parallel, wasting 8 min per incident. Total potential savings: 400 min/month",
+    "reliability": 45,
+    "reliability_explanation": "Critical: 3 steps have external dependencies with no error handling. Emergency services call has no backup (8% failure rate), manager notification has no escalation (15% unavailability)",
     "risk_management": 68,
-    "risk_management_explanation": "Some risks identified but no mitigation strategies documented"
+    "risk_management_explanation": "2 steps lack timeouts allowing indefinite stalls. 'Assess Situation' could take indefinitely with no escalation trigger"
   }},
-  "overall_explanation": "Process has clear structure but suffers from efficiency issues due to sequential bottlenecks and lack of parallel execution",
-  "top_strength": "Clear documentation and well-defined responsibilities",
-  "top_weakness": "Critical bottleneck at approval step causing 3-day delays",
+  "overall_explanation": "Process has serious reliability gaps due to missing error handling on critical external dependencies. Combined with serial bottleneck in steps 3-4, current process is 3x slower than industry benchmark and fails in ~12% of cases. Quick fixes could save $3,200/month and improve success rate to 99%.",
+  "top_strength": "Clear step definitions and well-documented standard path",
+  "top_weakness": "No fallback plans for any external failures - single points of failure everywhere",
   "issues": [
     {{
+      "node_id": 4,
+      "node_title": "Contact Emergency Services",
+      "issue_type": "missing_error_handling",
+      "title": "Missing Error Handling: No backup for busy emergency line",
+      "description": "Step relies on external emergency services with no documented fallback if line is busy or unavailable",
+      "severity": "critical",
+      "why_this_matters": "Emergency services have 8% busy rate during peak hours. Failed connection causes 5-10 min delays in critical situations, potentially life-threatening",
+      "risk_description": "In 8 of 100 emergency cases, responders cannot reach emergency services, leading to dangerous delays",
+      "detected_pattern": "External dependency (emergency services) with no alternative branch or retry logic",
+      "industry_benchmark": "Emergency response protocols require minimum 2 contact methods with 30-second failover",
+      "failure_rate_estimate": 8,
+      "recommendation_title": "Add backup emergency contact method",
+      "recommendation_description": "Add decision node after Step 4: 'If no answer within 30 seconds, immediately call backup emergency line [555-EMERGENCY] or use emergency app notification'",
+      "implementation_difficulty": "easy",
+      "cost_impact_monthly": 2500,
+      "time_savings_minutes": 0,
+      "risk_mitigation_value": 2500,
+      "calculation_basis": "8% failure rate × 50 incidents/month × $625 average emergency delay cost = $2,500/month risk"
+    }},
+    {{
       "node_id": 3,
-      "node_title": "CFO Approval",
-      "title": "Bottleneck at approval step",
-      "description": "CFO approval is a single point of failure with 3-4 day average wait time",
+      "node_title": "Notify Escalation Contacts",
+      "issue_type": "serial_bottleneck",
+      "title": "Serial Bottleneck: Steps 3-4 should run in parallel",
+      "description": "Steps 3 (Notify Escalation Contacts) and 4 (Contact Emergency Services) run sequentially but are independent actions that could happen simultaneously",
       "severity": "high",
-      "cost_impact": 2400,
-      "why_this_matters": "Every invoice waits here, blocking cash flow and vendor relationships"
+      "why_this_matters": "Current process: Step 3 takes 4 min, then Step 4 takes 4 min = 8 min total. If parallel: max(4,4) = 4 min total. Saves 4 min per incident in time-critical emergency response",
+      "risk_description": "Unnecessary 4-minute delay in emergency response due to sequential execution of independent tasks",
+      "detected_pattern": "Two consecutive steps with different actors (Call Handler for both) performing independent actions with no data dependency",
+      "industry_benchmark": "Emergency response best practice: Parallel notification of all parties within 30 seconds",
+      "failure_rate_estimate": 0,
+      "recommendation_title": "Restructure to parallel execution",
+      "recommendation_description": "After Step 2 (Assess Situation), split into parallel branches: Branch A: Notify Escalation Contacts (Step 3), Branch B: Contact Emergency Services (Step 4). Both execute simultaneously then merge to Step 5 (Provide Information)",
+      "implementation_difficulty": "medium",
+      "cost_impact_monthly": 1400,
+      "time_savings_minutes": 4,
+      "risk_mitigation_value": 0,
+      "calculation_basis": "4 min saved × 50 incidents/month × $7/min (emergency response rate at $420/hour) = $1,400/month"
+    }},
+    {{
+      "node_id": 2,
+      "node_title": "Assess Situation",
+      "issue_type": "missing_timeout",
+      "title": "Missing Timeout: Assessment has no time limit",
+      "description": "Step 2 'Assess Situation' has no maximum duration or escalation trigger if assessment takes too long",
+      "severity": "high",
+      "why_this_matters": "In emergency scenarios, assessment paralysis is common. Without timeout, responder could stall indefinitely trying to gather perfect information instead of acting",
+      "risk_description": "Critical delays if responder overthinks assessment. Industry data shows untimed assessments average 3-5 min vs optimal 1-2 min",
+      "detected_pattern": "Decision-making step ('Assess') with no documented time limit or escalation path for prolonged assessment",
+      "industry_benchmark": "Emergency triage protocols specify 60-120 second assessment windows with forced escalation if exceeded",
+      "failure_rate_estimate": 25,
+      "recommendation_title": "Add 2-minute timeout with escalation",
+      "recommendation_description": "Add timeout trigger: 'If assessment not complete within 2 minutes, automatically escalate to supervisor and proceed with high-priority emergency response protocol'",
+      "implementation_difficulty": "easy",
+      "cost_impact_monthly": 875,
+      "time_savings_minutes": 3,
+      "risk_mitigation_value": 0,
+      "calculation_basis": "25% of cases exceed optimal time × 3 min avg delay × 50 incidents/month × $7/min = $875/month + faster response improves outcomes"
     }}
   ],
   "recommendations": [
     {{
-      "title": "Implement auto-approval for low-value items",
-      "description": "Automatically approve invoices under $500 without CFO review",
-      "why_it_works": "Reduces CFO workload by 60% and speeds up 80% of invoices",
-      "savings_potential": 1800,
-      "affected_nodes": [3]
+      "title": "Quick Win: Add backup emergency contact",
+      "description": "Immediately document backup emergency numbers and train all call handlers on 30-second failover protocol",
+      "why_it_works": "Eliminates single point of failure in most critical step. Industry standard for emergency services. Takes 1 hour to implement.",
+      "savings_potential": 2500,
+      "affected_nodes": [4],
+      "implementation_effort": "1 hour setup + 30 min training",
+      "expected_impact": "Reduces emergency response failure rate from 8% to <1%"
+    }},
+    {{
+      "title": "Medium Win: Parallelize notifications",
+      "description": "Update process documentation to show Steps 3-4 happening simultaneously. Update training materials and call handler scripts.",
+      "why_it_works": "Steps are truly independent - Call Handler can dial emergency services while system simultaneously sends notifications to escalation contacts. No technical barriers.",
+      "savings_potential": 1400,
+      "affected_nodes": [3, 4],
+      "implementation_effort": "2 hours documentation + system configuration if automated",
+      "expected_impact": "Saves 4 minutes per incident, improves emergency response time by 33%"
     }}
   ],
   "benchmarks": {{
-    "expected_duration_days": 1,
-    "current_estimated_duration_days": 4.5,
-    "industry_comparison": "slower"
-  }}
+    "expected_duration_minutes": 8,
+    "current_estimated_duration_minutes": 15,
+    "industry_comparison": "67% slower than best-in-class emergency response",
+    "success_rate_current": 88,
+    "success_rate_potential": 99,
+    "estimated_monthly_incidents": 50
+  }},
+  "total_savings_potential": 4775,
+  "total_risk_mitigation": 2500,
+  "roi_summary": "Implementing top 3 fixes saves $4,775/month with 4 hours implementation effort. Break-even in first month."
 }}"""
             
             response = await chat.send_message(UserMessage(content=intelligence_prompt))
