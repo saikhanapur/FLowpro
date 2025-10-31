@@ -79,7 +79,7 @@ const LandingPage = () => {
           <div className="flex items-center justify-center gap-4">
             <Button 
               size="lg"
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate('/create-process')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
             >
               Create your first Flowchart
@@ -88,11 +88,11 @@ const LandingPage = () => {
           </div>
 
           <p className="text-sm text-slate-500 mt-4">
-            See your process come alive — no setup, no jargon.
+            Try it now — no login required!
           </p>
           
           <p className="text-sm text-slate-400 mt-2">
-            No credit card required • Free 14-day trial • Cancel anytime
+            Create one flowchart for free • Sign up to save & share
           </p>
         </div>
       </section>
