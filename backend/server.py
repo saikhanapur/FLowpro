@@ -177,7 +177,7 @@ class Process(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str = ""
-    userId: Optional[str] = None  # Owner of the process
+    userId: Optional[str] = None  # Owner of the process (or guest session ID)
     workspaceId: Optional[str] = None  # Link to workspace
     createdAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updatedAt: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -191,6 +191,9 @@ class Process(BaseModel):
     theme: str = "minimalist"
     healthScore: int = 0
     views: int = 0
+    isGuest: bool = False  # Guest mode flag
+    guestCreatedAt: Optional[str] = None  # When guest process was created
+    guestEditCount: int = 0  # Track edits in guest mode (limit to 1)
 
 class ProcessInput(BaseModel):
     text: str
