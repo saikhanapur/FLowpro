@@ -1458,7 +1458,7 @@ Return ONLY valid JSON (no markdown, no code blocks):
 }}"""
             
             response = await chat.send_message(UserMessage(text=intelligence_prompt))
-            result = json.loads(response.content)
+            result = json.loads(response)
             
             logger.info(f"Intelligence analysis complete: Health score {result.get('health_score', 'N/A')}")
             
