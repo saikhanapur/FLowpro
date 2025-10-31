@@ -126,6 +126,54 @@ user_problem_statement: |
   - Plan for team collaboration later
 
 backend:
+  - task: "Guest Mode - Process Creation Without Auth"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: Guest mode process creation endpoint. POST /api/process now supports unauthenticated users. Creates guest session ID (guest_{uuid}), stores in cookie, limits to 1 flowchart. Sets isGuest=True, guestCreatedAt timestamp. Need to test: 1) Create process without auth 2) Guest session cookie set 3) Limit to 1 flowchart (403 on second attempt) 4) Process marked as guest"
+
+  - task: "Guest Mode - Process Listing for Guest Users"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: GET /api/process endpoint now supports optional authentication. Returns guest processes when no auth token (filtered by guest_session cookie). Returns authenticated user processes when auth token present. Need to test: 1) List processes as guest (with guest_session cookie) 2) Returns only guest's process 3) List processes as authenticated user 4) Returns only user's processes"
+
+  - task: "Guest Mode - Publish Gating"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: PATCH /api/process/{id}/publish endpoint now checks isGuest flag. Returns 403 with message 'Guest users cannot publish. Sign up to share your flowchart!' Need to test: 1) Try to publish guest process 2) Verify 403 response 3) Verify error message"
+
+  - task: "Guest Mode - Auto Migration on Signup"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "NEW FEATURE: POST /api/auth/signup and POST /api/auth/google/session now auto-migrate guest processes. On signup, checks for guest_session cookie, finds guest process, converts to user process (updates userId, workspaceId, removes guest fields), assigns to default workspace. Need to test: 1) Create guest process 2) Sign up with email/password 3) Verify process migrated to user 4) Verify workspace assigned 5) Test same flow with Google OAuth"
+
   - task: "Process CRUD API endpoints"
     implemented: true
     working: true
