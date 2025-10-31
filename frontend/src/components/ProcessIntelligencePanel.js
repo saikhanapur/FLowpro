@@ -278,32 +278,201 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
           </div>
         )}
 
+        {/* ROI Summary Banner */}
+        {intelligence.total_savings_potential > 0 && (
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-200 mb-6">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                <DollarSign className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="text-2xl font-bold text-green-700 mb-1">
+                  ${intelligence.total_savings_potential.toLocaleString()}<span className="text-sm font-normal">/month</span>
+                </div>
+                <p className="text-xs text-slate-700 font-medium">
+                  {intelligence.roi_summary || 'Total potential savings from fixing detected issues'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Issues */}
         {intelligence.issues && intelligence.issues.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-bold text-slate-900 mb-3">Issues Detected ({intelligence.issues.length})</h3>
             <div className="space-y-3">
               {intelligence.issues.map((issue, idx) => (
-                <div key={idx} className="bg-white rounded-xl p-4 border border-slate-200">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${getSeverityColor(issue.severity)}`}>
-                      {getSeverityIcon(issue.severity)}
+                <div key={idx} className="bg-white rounded-xl border-2 border-slate-200 overflow-hidden">
+                  {/* Issue Header - Always Visible */}
+                  <div 
+                    className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+                    onClick={() => toggleIssue(idx)}
+                  >
+                    <div className="flex items-start gap-3">
+                      {/* Issue Type Icon */}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${getSeverityColor(issue.severity)}`}>
+                        {getIssueTypeIcon(issue.issue_type)}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        {/* Node Badge */}
+                        {issue.node_id && (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 text-xs font-semibold mb-2">
+                            <Target className="w-3 h-3" />
+                            Step {issue.node_id}: {issue.node_title}
+                          </div>
+                        )}
+                        
+                        {/* Issue Type Label */}
+                        {issue.issue_type && (
+                          <div className="text-xs font-semibold text-slate-500 mb-1">
+                            {getIssueTypeLabel(issue.issue_type)}
+                          </div>
+                        )}
+                        
+                        {/* Title */}
+                        <h4 className="font-semibold text-sm text-slate-900 mb-1">
+                          {issue.title}
+                        </h4>
+                        
+                        {/* Quick Stats */}
+                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                          {/* Severity */}
+                          <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold ${getSeverityColor(issue.severity)}`}>
+                            {getSeverityIcon(issue.severity)}
+                            <span className="capitalize">{issue.severity}</span>
+                          </div>
+                          
+                          {/* Cost Impact */}
+                          {issue.cost_impact_monthly > 0 && (
+                            <div className="inline-flex items-center gap-1 text-xs font-semibold text-red-600">
+                              <DollarSign className="w-3.5 h-3.5" />
+                              <span>${issue.cost_impact_monthly.toLocaleString()}/mo</span>
+                            </div>
+                          )}
+                          
+                          {/* Time Savings */}
+                          {issue.time_savings_minutes > 0 && (
+                            <div className="inline-flex items-center gap-1 text-xs font-semibold text-green-600">
+                              <Clock className="w-3.5 h-3.5" />
+                              <span>{issue.time_savings_minutes} min saved</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Expand Indicator */}
+                        <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-medium">
+                          {expandedIssues[idx] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          <span>{expandedIssues[idx] ? 'Hide details' : 'View details'}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm text-slate-900 mb-1">
-                        {issue.title}
-                      </h4>
-                      <p className="text-xs text-slate-600 mb-2 leading-relaxed">
-                        {issue.description}
-                      </p>
-                      {issue.cost_impact > 0 && (
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-red-600">
-                          <DollarSign className="w-3.5 h-3.5" />
-                          <span>${issue.cost_impact.toLocaleString()}/month cost</span>
+                  </div>
+                  
+                  {/* Expanded Details */}
+                  {expandedIssues[idx] && (
+                    <div className="px-4 pb-4 pt-2 border-t border-slate-200 bg-slate-50 space-y-3">
+                      {/* Description */}
+                      <div>
+                        <div className="text-xs font-semibold text-slate-700 mb-1">The Issue</div>
+                        <p className="text-xs text-slate-600 leading-relaxed">
+                          {issue.description}
+                        </p>
+                      </div>
+                      
+                      {/* Why This Matters */}
+                      {issue.why_this_matters && (
+                        <div>
+                          <div className="text-xs font-semibold text-slate-700 mb-1">Why This Matters</div>
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            {issue.why_this_matters}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Risk Description */}
+                      {issue.risk_description && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex gap-2">
+                            <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <div className="text-xs font-semibold text-red-700 mb-1">Risk</div>
+                              <p className="text-xs text-red-600 leading-relaxed">
+                                {issue.risk_description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Evidence */}
+                      {(issue.detected_pattern || issue.industry_benchmark || issue.failure_rate_estimate !== undefined) && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="text-xs font-semibold text-blue-700 mb-2">Evidence</div>
+                          <div className="space-y-2">
+                            {issue.detected_pattern && (
+                              <div>
+                                <span className="text-xs font-medium text-blue-700">Pattern: </span>
+                                <span className="text-xs text-blue-600">{issue.detected_pattern}</span>
+                              </div>
+                            )}
+                            {issue.industry_benchmark && (
+                              <div>
+                                <span className="text-xs font-medium text-blue-700">Industry Standard: </span>
+                                <span className="text-xs text-blue-600">{issue.industry_benchmark}</span>
+                              </div>
+                            )}
+                            {issue.failure_rate_estimate !== undefined && (
+                              <div>
+                                <span className="text-xs font-medium text-blue-700">Failure Rate: </span>
+                                <span className="text-xs text-blue-600">{issue.failure_rate_estimate}%</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Recommendation */}
+                      {issue.recommendation_title && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <div className="flex gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <div className="text-xs font-semibold text-green-700 mb-1">
+                                {issue.recommendation_title}
+                              </div>
+                              {issue.recommendation_description && (
+                                <p className="text-xs text-green-600 leading-relaxed mb-2">
+                                  {issue.recommendation_description}
+                                </p>
+                              )}
+                              {issue.implementation_difficulty && (
+                                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-200 text-green-800 text-xs font-semibold">
+                                  Difficulty: {issue.implementation_difficulty}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* ROI Calculation */}
+                      {issue.calculation_basis && (
+                        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                          <div className="flex gap-2">
+                            <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <div className="text-xs font-semibold text-amber-700 mb-1">How We Calculated This</div>
+                              <p className="text-xs text-amber-600 leading-relaxed font-mono">
+                                {issue.calculation_basis}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>
