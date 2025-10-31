@@ -3536,10 +3536,25 @@ app.add_middleware(
 async def startup_db_indexes():
     """Create database indexes on startup"""
     try:
+        # Process indexes for performance
+        await db.processes.create_index("userId")
+        await db.processes.create_index("workspaceId")
+        await db.processes.create_index([("userId", 1), ("isGuest", 1)])
+        await db.processes.create_index([("userId", 1), ("status", 1)])
+        
+        # Workspace indexes
+        await db.workspaces.create_index("userId")
+        await db.workspaces.create_index([("userId", 1), ("isDefault", 1)])
+        
+        # User indexes
+        await db.users.create_index("email", unique=True)
+        await db.users.create_index("id", unique=True)
+        
         # Shares indexes for performance
         await db.shares.create_index("token", unique=True)
         await db.shares.create_index("processId")
         await db.shares.create_index([("processId", 1), ("isActive", 1)])
+        
         logger.info("✅ Database indexes created successfully")
     except Exception as e:
         logger.warning(f"⚠️ Error creating indexes (may already exist): {e}")
