@@ -118,9 +118,9 @@ const LandingPage = () => {
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Zap className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">AI-Powered Analysis</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Spot What's Broken</h3>
               <p className="text-slate-600 leading-relaxed">
-                Advanced AI analyzes your processes, identifies gaps, bottlenecks, and suggests improvements automatically.
+                AI instantly identifies bottlenecks, delays, and risks in your processes. No manual analysis needed.
               </p>
             </div>
 
@@ -129,9 +129,9 @@ const LandingPage = () => {
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Users className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Multi-Input Capture</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Calculate Real Costs</h3>
               <p className="text-slate-600 leading-relaxed">
-                Upload documents, record voice, or chat with AI. Add context to refine outputs. Works your way.
+                See exactly how much slow processes cost you every month. Get recommendations to save money.
               </p>
             </div>
 
@@ -140,9 +140,9 @@ const LandingPage = () => {
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Shield className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Enterprise Security</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Track Improvements</h3>
               <p className="text-slate-600 leading-relaxed">
-                SOC 2 compliant, encrypted at rest and in transit. Your data never leaves your control.
+                Implement fixes and prove ROI. Show executives exactly how much you saved.
               </p>
             </div>
           </div>
