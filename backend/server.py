@@ -2243,36 +2243,70 @@ async def delete_workspace(workspace_id: str, request: Request):
         raise HTTPException(status_code=500, detail=f"Failed to unpublish process: {str(e)}")
 
 @api_router.post("/process", response_model=Process)
-async def create_process(process_data: dict, request: Request):
+async def create_process(process_data: dict, request: Request, response: Response):
     """Create a new process with security validation"""
     try:
-        # Get authenticated user
-        user = await require_auth(request)
-        user_id = user.get('id')
+        # Check if this is guest mode (no auth header)
+        user = await get_current_user(request)
         
-        # CRITICAL: Assign userId to the process
-        process_data['userId'] = user_id
-        
-        # If no workspaceId provided, assign to user's default workspace
-        if 'workspaceId' not in process_data or not process_data.get('workspaceId'):
-            default_workspace = await db.workspaces.find_one({"userId": user_id, "isDefault": True})
-            if default_workspace:
-                process_data['workspaceId'] = default_workspace['id']
-                logger.info(f"✅ Assigned process to default workspace: {default_workspace['id']}")
-            else:
-                # Create default workspace if it doesn't exist
-                default_workspace = Workspace(
-                    name="My Workspace",
-                    description="Your default workspace",
-                    userId=user_id,
-                    isDefault=True
+        if not user:
+            # GUEST MODE - Create temporary process
+            guest_id = await get_guest_session(request)
+            
+            # Set guest session cookie
+            response.set_cookie(
+                key="guest_session",
+                value=guest_id,
+                httponly=True,
+                samesite="lax",
+                max_age=None  # Session cookie (expires when browser closes)
+            )
+            
+            # Mark as guest process
+            process_data['userId'] = guest_id
+            process_data['isGuest'] = True
+            process_data['guestCreatedAt'] = datetime.now(timezone.utc).isoformat()
+            
+            # Check if guest already has a process (limit: 1)
+            existing_guest_process = await db.processes.find_one({
+                "userId": guest_id,
+                "isGuest": True
+            })
+            
+            if existing_guest_process:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Guest users can only create one flowchart. Sign up to create more!"
                 )
-                workspace_dict = default_workspace.model_dump()
-                workspace_dict['createdAt'] = workspace_dict['createdAt'].isoformat()
-                workspace_dict['updatedAt'] = workspace_dict['updatedAt'].isoformat()
-                await db.workspaces.insert_one(workspace_dict)
-                process_data['workspaceId'] = default_workspace.id
-                logger.info(f"✅ Created default workspace and assigned process to it")
+            
+            logger.info(f"🎭 Creating GUEST process for session: {guest_id}")
+        else:
+            # AUTHENTICATED USER MODE
+            user_id = user.get('id')
+            process_data['userId'] = user_id
+            process_data['isGuest'] = False
+            
+            # If no workspaceId provided, assign to user's default workspace
+            if 'workspaceId' not in process_data or not process_data.get('workspaceId'):
+                default_workspace = await db.workspaces.find_one({"userId": user_id, "isDefault": True})
+                if default_workspace:
+                    process_data['workspaceId'] = default_workspace['id']
+                    logger.info(f"✅ Assigned process to default workspace: {default_workspace['id']}")
+                else:
+                    # Create default workspace if it doesn't exist
+                    default_workspace = Workspace(
+                        name="My Workspace",
+                        description="Your default workspace",
+                        userId=user_id,
+                        isDefault=True
+                    )
+                    workspace_dict = default_workspace.model_dump()
+                    workspace_dict['createdAt'] = workspace_dict['createdAt'].isoformat()
+                    workspace_dict['updatedAt'] = workspace_dict['updatedAt'].isoformat()
+                    await db.workspaces.insert_one(workspace_dict)
+                    process_data['workspaceId'] = default_workspace.id
+                    logger.info(f"✅ Created default workspace and assigned process to it")
+        
         
         # SECURITY: Sanitize text fields to prevent XSS
         text_fields = ['name', 'description']
