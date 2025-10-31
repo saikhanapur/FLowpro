@@ -889,3 +889,117 @@ agent_communication:
       🎉 RESULT: All 5 smoke tests passed (100% success rate)
       
       CONCLUSION: Backend APIs are completely stable after frontend UI/UX changes. No backend functionality was affected by the dashboard simplification, terminology updates, or Templates page changes. The system is ready for continued use.
+
+  - agent: "main"
+    message: |
+      🎭 GUEST MODE IMPLEMENTATION - PHASE 1 COMPLETE (BACKEND & FRONTEND)
+      
+      USER REQUIREMENT:
+      Implement "Guest Mode" to allow users to create one flowchart without signing up, while gating advanced features (save, publish, share) behind signup.
+      
+      BACKEND IMPLEMENTATION COMPLETE:
+      
+      ✅ Guest Session Management:
+      - Created `create_guest_session()` function - generates unique guest session IDs (guest_{uuid})
+      - Created `get_guest_session()` function - retrieves or creates guest session from cookies
+      - Guest session stored in httpOnly cookie (session-based, expires on browser close)
+      
+      ✅ Process Model Updates:
+      - Added `isGuest` boolean field to Process model (line 194)
+      - Added `guestCreatedAt` optional datetime field (line 195)
+      - Added `guestEditCount` integer field for tracking guest edits (line 196)
+      
+      ✅ Guest Process Creation:
+      - Updated POST /api/process endpoint (lines 2255-2350):
+        * Detects guest mode when no auth token present
+        * Creates guest process with guest session ID as userId
+        * Limits guest users to 1 flowchart (returns 403 if limit reached)
+        * Sets guest session cookie on process creation
+      
+      ✅ Guest Process Listing:
+      - Updated GET /api/process endpoint (lines 2462-2495):
+        * Supports optional authentication (guest or authenticated)
+        * Returns guest processes for guest users (filtered by guest_session cookie)
+        * Returns user processes for authenticated users (filtered by userId)
+      
+      ✅ Publish Gating:
+      - Updated PATCH /api/process/{id}/publish endpoint (lines 1971-1975):
+        * Checks if process has isGuest flag
+        * Returns 403 with "Sign up to share your flowchart!" message
+      
+      ✅ Guest-to-User Migration (AUTO):
+      - Updated POST /api/auth/signup endpoint (lines 1655-1684):
+        * Checks for guest_session cookie on signup
+        * Finds guest process associated with session
+        * Converts guest process to user process (updates userId, workspaceId, removes guest fields)
+        * Assigns to user's default workspace
+        * Updates workspace process count
+      - Updated POST /api/auth/google/session endpoint (lines 1835-1876):
+        * Same migration logic for Google OAuth signup
+        * Only migrates for new users (not existing users logging in)
+      
+      FRONTEND IMPLEMENTATION COMPLETE:
+      
+      ✅ Landing Page Updates:
+      - Changed CTA button from "/signup" to "/create-process" (direct guest access)
+      - Updated messaging: "Try it now — no login required!"
+      - Changed subtitle: "Create one flowchart for free • Sign up to save & share"
+      
+      ✅ Routing Updates (App.js):
+      - Added guest-accessible "/create-process" route (no ProtectedRoute wrapper)
+      - Added guest-accessible "/guest-edit/:id" route for guest flowchart editing
+      - Both routes conditionally show Header with isGuest prop for unauthenticated users
+      
+      ✅ Header Component Updates:
+      - Added `isGuest` prop (defaults to false)
+      - Guest mode navigation: Shows "Login" and "Sign Up to Save" buttons
+      - Authenticated mode navigation: Shows workspace selector, theme, user menu
+      - Logo click navigates to "/" for guests, "/dashboard" for authenticated
+      
+      ✅ ProcessCreator Component Updates:
+      - Added `isGuestMode` prop (defaults to false)
+      - Skips workspace loading for guest users
+      - Sets workspaceId to null for guest processes
+      - Updated handleGenerate to navigate to "/guest-edit/:id" for guests
+      - Shows error toast with "Sign Up" action if guest limit reached (403)
+      
+      ✅ FlowchartEditor Component Updates:
+      - Added `isGuestMode` prop (defaults to false)
+      - Added `showGuestSignupPrompt` state
+      - Updated handlePublish to check for guest mode before publishing
+      - Changed Publish button text to "Sign Up to Publish" for guests
+      - Hides Share button for guest users
+      - Created "Sign Up to Save & Share" dialog with benefits list:
+        * Save unlimited flowcharts
+        * Publish & share with team
+        * AI-powered process intelligence
+        * Export to PDF and share links
+      - Dialog navigates to /signup on "Create Free Account" button
+      
+      USER FLOW:
+      1. Guest lands on homepage → Clicks "Create your first Flowchart"
+      2. Redirected to /create-process (no login required)
+      3. Uploads document/voice/chat to create process
+      4. AI generates flowchart → Redirected to /guest-edit/:id
+      5. Can view and edit flowchart (limited to 1 flowchart)
+      6. Clicks "Sign Up to Publish" or tries to publish → Shows signup prompt
+      7. Signs up → Guest process automatically migrated to user account
+      8. Now authenticated → Can create unlimited, publish, share
+      
+      STORAGE STRATEGY:
+      - Guest session ID stored in localStorage (persists across browser sessions for better UX)
+      - Server uses httpOnly cookie for security (session-based)
+      - Both approaches ensure guest can return to their flowchart
+      
+      LIMITATIONS GATED:
+      - ✅ Publishing processes (403 error + signup prompt)
+      - ✅ Sharing processes (button hidden for guests)
+      - ✅ Creating multiple processes (1 flowchart limit)
+      - ✅ Saving to workspaces (guest processes have no workspace)
+      
+      NEXT STEPS:
+      1. Backend restart applied ✅
+      2. Test backend guest process creation and publish gating
+      3. Test frontend guest flow end-to-end
+      4. Test guest-to-user migration on signup
+      5. Verify localStorage/cookie persistence
