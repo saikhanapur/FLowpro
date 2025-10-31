@@ -199,29 +199,81 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
               Industry Benchmark
             </h3>
             <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-600">Expected Duration</span>
-                  <span className="font-semibold text-emerald-600">
-                    {intelligence.benchmarks.expected_duration_days} days
-                  </span>
+              {/* Duration Comparison */}
+              {intelligence.benchmarks.expected_duration_minutes !== undefined ? (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-600">Expected Duration</span>
+                    <span className="font-semibold text-emerald-600">
+                      {intelligence.benchmarks.expected_duration_minutes} min
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">Current Duration</span>
+                    <span className="font-semibold text-slate-800">
+                      {intelligence.benchmarks.current_estimated_duration_minutes} min
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-600">Current Duration</span>
-                  <span className="font-semibold text-slate-800">
-                    {intelligence.benchmarks.current_estimated_duration_days} days
-                  </span>
+              ) : (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-600">Expected Duration</span>
+                    <span className="font-semibold text-emerald-600">
+                      {intelligence.benchmarks.expected_duration_days} days
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">Current Duration</span>
+                    <span className="font-semibold text-slate-800">
+                      {intelligence.benchmarks.current_estimated_duration_days} days
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
+              
+              {/* Success Rates */}
+              {intelligence.benchmarks.success_rate_current !== undefined && (
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-600">Current Success Rate</span>
+                    <span className="font-semibold text-slate-800">
+                      {intelligence.benchmarks.success_rate_current}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">Potential Success Rate</span>
+                    <span className="font-semibold text-emerald-600">
+                      {intelligence.benchmarks.success_rate_potential}%
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Industry Comparison Badge */}
               <div className={`px-3 py-2 rounded-lg text-xs font-semibold text-center ${
                 intelligence.benchmarks.industry_comparison === 'faster' ? 'bg-green-50 text-green-700' :
                 intelligence.benchmarks.industry_comparison === 'slower' ? 'bg-red-50 text-red-700' :
                 'bg-blue-50 text-blue-700'
               }`}>
-                {intelligence.benchmarks.industry_comparison === 'faster' ? '✓ Faster than average' :
-                 intelligence.benchmarks.industry_comparison === 'slower' ? '⚠ Slower than average' :
-                 '= Average speed'}
+                {typeof intelligence.benchmarks.industry_comparison === 'string' && intelligence.benchmarks.industry_comparison.includes('%') 
+                  ? intelligence.benchmarks.industry_comparison
+                  : intelligence.benchmarks.industry_comparison === 'faster' ? '✓ Faster than average' :
+                    intelligence.benchmarks.industry_comparison === 'slower' ? '⚠ Slower than average' :
+                    '= Average speed'}
               </div>
+              
+              {/* Monthly Incidents */}
+              {intelligence.benchmarks.estimated_monthly_incidents !== undefined && (
+                <div className="pt-2 border-t border-slate-200">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">Est. Monthly Incidents</span>
+                    <span className="font-semibold text-slate-800">
+                      {intelligence.benchmarks.estimated_monthly_incidents}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
