@@ -108,49 +108,51 @@ const LandingPage = () => {
       {/* Subtle Section Separator */}
       <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
 
-      {/* Features Section */}
-      <section id="features" className="py-16 px-6">
+      {/* Features Section - Outcome-focused, not feature-focused */}
+      <section id="features" className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
+          {/* Section header - Simple, bold */}
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-slate-900 mb-4">
-              Everything you need to map processes
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              See what's broken. Fix what matters.
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Powerful AI, intuitive interface, enterprise-grade security
+              From chaos to clarity in 60 seconds
             </p>
           </div>
 
+          {/* Feature cards - Outcome over feature */}
           <div className="grid md:grid-cols-3 gap-10">
-            {/* Feature 1 - Interactive Flowcharts */}
+            {/* Outcome 1 - Find Issues */}
             <div className="p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Network className="w-7 h-7 text-white" />
+                <Target className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Click Any Step to Explore</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Find what's broken</h3>
               <p className="text-slate-600 leading-relaxed">
-                Interactive flowcharts reveal dependencies, owners, and risks. Edit nodes, add details, refine on the fly.
+                AI spots bottlenecks, missing steps, and slow handoffs instantly. No more guessing where time and money disappear.
               </p>
             </div>
 
-            {/* Feature 2 - Voice + Context */}
+            {/* Outcome 2 - Understand Impact */}
             <div className="p-8 rounded-2xl border border-slate-100 hover:border-purple-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Mic className="w-7 h-7 text-white" />
+                <TrendingUp className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Add Voice Notes — AI Listens</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">See what it costs</h3>
               <p className="text-slate-600 leading-relaxed">
-                Speak additional context, edge cases, or "what ifs." AI weaves them into your flowchart automatically.
+                Get real ROI estimates. Know exactly how much each broken process costs in time, money, and team frustration.
               </p>
             </div>
 
-            {/* Feature 3 - AI Intelligence */}
+            {/* Outcome 3 - Fix Fast */}
             <div className="p-8 rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white group">
               <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Sparkles className="w-7 h-7 text-white" />
+                <Zap className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Spot Gaps & Bottlenecks</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Fix it fast</h3>
               <p className="text-slate-600 leading-relaxed">
-                AI identifies missing steps, slow handoffs, and risks — so you can fix what's broken before it costs you.
+                Get AI-powered recommendations you can actually use. Edit, share, implement — all in one place.
               </p>
             </div>
           </div>
