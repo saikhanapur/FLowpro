@@ -1655,6 +1655,10 @@ class BackendTester:
         print("\n🎯 AI PROCESSING - Edge Cases...")
         self.test_edge_cases_ai_processing()
         
+        # CRITICAL: Enhanced Process Intelligence - TIER 1 Detection
+        print("\n🧠 ENHANCED PROCESS INTELLIGENCE - TIER 1 Detection...")
+        self.test_enhanced_process_intelligence()
+        
         # DATA INTEGRITY AT SCALE
         print("\n📊 DATA INTEGRITY AT SCALE...")
         self.test_data_integrity_at_scale()
