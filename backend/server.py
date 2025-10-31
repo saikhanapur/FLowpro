@@ -2461,14 +2461,24 @@ async def create_process(process_data: dict, request: Request, response: Respons
 
 @api_router.get("/process", response_model=List[Process])
 async def get_processes(request: Request, workspace_id: Optional[str] = None):
-    """Get all processes for the authenticated user, optionally filtered by workspace"""
+    """Get all processes for the authenticated user or guest, optionally filtered by workspace"""
     try:
-        # Get current user
-        user = await require_auth(request)
-        user_id = user.get('id')
+        # Try to get current user (optional for guest mode)
+        user = await get_current_user(request)
         
-        # Filter by userId
-        query = {"userId": user_id}
+        if user:
+            # AUTHENTICATED USER - Get their processes
+            user_id = user.get('id')
+            query = {"userId": user_id, "isGuest": False}
+        else:
+            # GUEST MODE - Get guest processes
+            guest_id = request.cookies.get("guest_session")
+            if not guest_id:
+                # No user and no guest session - return empty list
+                return []
+            
+            query = {"userId": guest_id, "isGuest": True}
+        
         if workspace_id:
             query['workspaceId'] = workspace_id
         
