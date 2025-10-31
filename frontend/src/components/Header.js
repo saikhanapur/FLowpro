@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspaceChange, onWorkspacesUpdate }) => {
+const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspaceChange, onWorkspacesUpdate, isGuest = false }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -33,7 +33,7 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div 
           className="flex items-center gap-3 cursor-pointer"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(isGuest ? '/' : '/dashboard')}
           data-testid="header-logo"
         >
           <div className="w-10 h-10 rounded-lg gradient-blue flex items-center justify-center">
@@ -44,7 +44,28 @@ const Header = ({ theme, onThemeChange, currentWorkspace, workspaces, onWorkspac
           </h1>
         </div>
 
-        <nav className="hidden md:flex items-center gap-4">
+        {isGuest ? (
+          // Guest mode navigation
+          <nav className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/login')}
+              className="text-sm font-medium"
+            >
+              Login
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('/signup')}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium"
+            >
+              Sign Up to Save
+            </Button>
+          </nav>
+        ) : (
+          // Authenticated user navigation
+          <nav className="hidden md:flex items-center gap-4">
           <button
             onClick={() => navigate('/templates')}
             className="text-sm text-slate-700 hover:text-slate-900 font-medium transition-colors px-3 py-2 rounded-md hover:bg-slate-100"
