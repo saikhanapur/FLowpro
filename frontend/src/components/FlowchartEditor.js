@@ -462,6 +462,20 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 </Button>
               )}
               
+              {/* Intelligence Badge Notification - Only shows when intelligence available */}
+              {!readOnly && accessLevel === 'owner' && intelligenceBadgeVisible && !showIntelligence && (
+                <button
+                  onClick={() => setShowIntelligence(true)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors text-sm font-medium text-amber-700 flex-shrink-0"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span className="hidden sm:inline">
+                    {intelligence?.issues?.length || 0} improvement{intelligence?.issues?.length !== 1 ? 's' : ''} found
+                  </span>
+                  <span className="sm:hidden">{intelligence?.issues?.length || 0}</span>
+                </button>
+              )}
+              
               {/* Action Buttons (Hidden in readOnly mode) */}
               {!readOnly && (
                 <>
