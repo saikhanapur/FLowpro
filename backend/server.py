@@ -2512,6 +2512,42 @@ async def get_process_intelligence(process_id: str, request: Request):
         logger.error(f"Intelligence analysis error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/process/{process_id}/intelligence/regenerate")
+async def regenerate_intelligence(process_id: str, request: Request):
+    """Regenerate intelligence for a process (clears cache and generates fresh analysis)"""
+    try:
+        # Get the process
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Check access
+        user = await get_current_user(request)
+        is_owner = user and user.get('id') == process.get('userId')
+        
+        if not is_owner:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Clear cached intelligence
+        logger.info(f"Regenerating intelligence for process {process_id}")
+        intelligence = await ai_service.analyze_process_intelligence(process)
+        
+        # Update cache
+        await db.processes.update_one(
+            {"id": process_id},
+            {"$set": {"intelligence": intelligence, "intelligenceGeneratedAt": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return intelligence
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Intelligence regeneration error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.delete("/process/{process_id}")
 async def delete_process(process_id: str):
     """Delete a process"""
