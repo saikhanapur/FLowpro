@@ -100,15 +100,60 @@ const LandingPage = () => {
       {/* Subtle Section Separator */}
       <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
 
-      {/* Features Section */}
-      <section id="features" className="py-16 px-6">
+      {/* Simple Features Preview - Moved Intelligence features further down */}
+      <section id="features" className="py-20 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-slate-900 mb-4">
-              Everything you need to map processes
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1 - Core Value */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200">
+              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <Upload className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Upload Anything</h3>
+              <p className="text-sm text-slate-600">
+                Word docs, PDFs, text files - we handle it all. No formatting needed.
+              </p>
+            </div>
+
+            {/* Feature 2 - Core Value */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200">
+              <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center mb-4">
+                <Network className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Interactive Flowcharts</h3>
+              <p className="text-sm text-slate-600">
+                Click, edit, and refine. Your flowchart is fully interactive and easy to modify.
+              </p>
+            </div>
+
+            {/* Feature 3 - Core Value */}
+            <div className="p-6 rounded-xl bg-white border border-slate-200">
+              <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Share Instantly</h3>
+              <p className="text-sm text-slate-600">
+                Generate a link and share with anyone. No login required for viewers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Intelligence Features - Moved Down */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 mb-4">
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              <span className="text-sm font-medium text-amber-600">Bonus: AI-Powered Insights</span>
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">
+              Get smart recommendations (optional)
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Powerful AI, intuitive interface, enterprise-grade security
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              For complex processes, our AI can spot improvement opportunities
             </p>
           </div>
 
