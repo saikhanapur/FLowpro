@@ -17,6 +17,7 @@ import IdealStateModal from './IdealStateModal';
 import ExportModal from './ExportModal';
 import ShareModal from './ShareModal';
 import AIRefineChat from './AIRefineChat';
+import ProcessIntelligencePanel from './ProcessIntelligencePanel';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
@@ -46,6 +47,11 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
   const [movingProcess, setMovingProcess] = useState(false);
+
+  // Process Intelligence state
+  const [intelligence, setIntelligence] = useState(null);
+  const [intelligenceLoading, setIntelligenceLoading] = useState(false);
+  const [showIntelligence, setShowIntelligence] = useState(true);
 
   useEffect(() => {
     if (!processData) {
