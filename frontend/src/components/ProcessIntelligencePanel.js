@@ -345,8 +345,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
           </div>
         )}
 
-        {/* ROI Summary Banner */}
-        {intelligence.total_savings_potential > 0 && (
+        {/* ROI Summary Banner - Only for complex processes */}
+        {!isSimpleProcess && intelligence.total_savings_potential > 0 && (
           <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border-2 border-green-200 mb-6">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
