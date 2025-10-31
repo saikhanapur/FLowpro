@@ -1778,7 +1778,7 @@ async def login(data: LoginRequest, response: Response):
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/auth/google/session")
-async def google_session(data: GoogleSessionRequest, response: Response):
+async def google_session(data: GoogleSessionRequest, request: Request, response: Response):
     """Process Emergent Google OAuth session"""
     try:
         import httpx
@@ -1801,6 +1801,8 @@ async def google_session(data: GoogleSessionRequest, response: Response):
         
         # Check if user exists
         user = await db.users.find_one({"email": session_data['email'].lower()})
+        
+        is_new_user = not user
         
         if not user:
             logger.info(f"🆕 Creating new user: {session_data['email']}")
@@ -1834,6 +1836,40 @@ async def google_session(data: GoogleSessionRequest, response: Response):
             
             await db.workspaces.insert_one(workspace_dict)
             logger.info(f"✅ Created default workspace for Google user: {user['email']}")
+            
+            # Migrate guest process if exists (for new users only)
+            guest_id = request.cookies.get("guest_session")
+            if guest_id:
+                guest_process = await db.processes.find_one({
+                    "userId": guest_id,
+                    "isGuest": True
+                })
+                
+                if guest_process:
+                    # Convert guest process to user process
+                    await db.processes.update_one(
+                        {"id": guest_process['id']},
+                        {
+                            "$set": {
+                                "userId": user['id'],
+                                "workspaceId": workspace_dict['id'],
+                                "isGuest": False,
+                                "updatedAt": datetime.now(timezone.utc).isoformat()
+                            },
+                            "$unset": {
+                                "guestCreatedAt": "",
+                                "guestEditCount": ""
+                            }
+                        }
+                    )
+                    
+                    # Update workspace process count
+                    await db.workspaces.update_one(
+                        {"id": workspace_dict['id']},
+                        {"$inc": {"processCount": 1}}
+                    )
+                    
+                    logger.info(f"🎉 Migrated guest process {guest_process['id']} to Google user {user['id']}")
         else:
             logger.info(f"✅ Found existing user: {user['email']} (ID: {user['id']})")
         
