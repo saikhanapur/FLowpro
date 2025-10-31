@@ -1605,7 +1605,7 @@ async def root():
 # ============ Authentication Endpoints ============
 
 @api_router.post("/auth/signup")
-async def signup(data: SignupRequest):
+async def signup(data: SignupRequest, request: Request):
     """Register a new user with email and password"""
     try:
         # Validate password strength
@@ -1651,6 +1651,40 @@ async def signup(data: SignupRequest):
         
         await db.workspaces.insert_one(workspace_dict)
         logger.info(f"✅ Created default workspace for new user: {user.email}")
+        
+        # Migrate guest process if exists
+        guest_id = request.cookies.get("guest_session")
+        if guest_id:
+            guest_process = await db.processes.find_one({
+                "userId": guest_id,
+                "isGuest": True
+            })
+            
+            if guest_process:
+                # Convert guest process to user process
+                await db.processes.update_one(
+                    {"id": guest_process['id']},
+                    {
+                        "$set": {
+                            "userId": user.id,
+                            "workspaceId": default_workspace.id,
+                            "isGuest": False,
+                            "updatedAt": datetime.now(timezone.utc).isoformat()
+                        },
+                        "$unset": {
+                            "guestCreatedAt": "",
+                            "guestEditCount": ""
+                        }
+                    }
+                )
+                
+                # Update workspace process count
+                await db.workspaces.update_one(
+                    {"id": default_workspace.id},
+                    {"$inc": {"processCount": 1}}
+                )
+                
+                logger.info(f"🎉 Migrated guest process {guest_process['id']} to user {user.id}")
         
         # Create access token
         access_token = create_access_token(data={"sub": user.id})
