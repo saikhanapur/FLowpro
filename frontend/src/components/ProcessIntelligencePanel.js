@@ -391,7 +391,7 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                   {/* Issue Header - Always Visible */}
                   <div 
                     className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
-                    onClick={() => viewMode === 'detailed' && toggleIssue(idx)}
+                    onClick={() => !isSimpleProcess && viewMode === 'detailed' && toggleIssue(idx)}
                   >
                     <div className="flex items-start gap-3">
                       {/* Issue Type Icon */}
