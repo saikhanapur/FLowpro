@@ -65,15 +65,15 @@ const LandingPage = () => {
           </div>
 
           <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-            Upload a doc. Get a flowchart.
+            Upload a doc. Get an <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">interactive</span> flowchart.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
               Instantly.
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Add voice context, get dynamic insights — work SuperHumanly fast.
+          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Add voice or context. AI turns your messy processes into clarity — instantly visualized, editable, and ready to share.
           </p>
 
           <div className="flex items-center justify-center gap-4">
@@ -87,7 +87,11 @@ const LandingPage = () => {
             </Button>
           </div>
 
-          <p className="text-sm text-slate-500 mt-6">
+          <p className="text-sm text-slate-500 mt-4">
+            See your process come alive — no setup, no jargon.
+          </p>
+          
+          <p className="text-sm text-slate-400 mt-2">
             No credit card required • Free 14-day trial • Cancel anytime
           </p>
         </div>
