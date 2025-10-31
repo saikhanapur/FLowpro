@@ -6,6 +6,10 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
   const [expandedIssues, setExpandedIssues] = useState({});
   const [expandedScores, setExpandedScores] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [viewMode, setViewMode] = useState(() => {
+    // Load saved preference from localStorage, default to 'summary'
+    return localStorage.getItem('intelligence_view_mode') || 'summary';
+  });
 
   const toggleIssue = (idx) => {
     setExpandedIssues(prev => ({
@@ -21,6 +25,12 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
     } finally {
       setRegenerating(false);
     }
+  };
+
+  const toggleViewMode = () => {
+    const newMode = viewMode === 'summary' ? 'detailed' : 'summary';
+    setViewMode(newMode);
+    localStorage.setItem('intelligence_view_mode', newMode);
   };
   if (loading) {
     return (
