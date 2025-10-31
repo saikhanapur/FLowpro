@@ -1,0 +1,191 @@
+import React from 'react';
+import { Sparkles, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Clock, Activity } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh }) => {
+  if (loading) {
+    return (
+      <div className="w-96 border-l border-slate-200 bg-slate-50 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-sm text-slate-600">Analyzing process...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!intelligence) {
+    return null;
+  }
+
+  const getHealthColor = (score) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-amber-600';
+    return 'text-red-600';
+  };
+
+  const getHealthBgColor = (score) => {
+    if (score >= 80) return 'bg-green-50 border-green-200';
+    if (score >= 60) return 'bg-amber-50 border-amber-200';
+    return 'bg-red-50 border-red-200';
+  };
+
+  const getSeverityColor = (severity) => {
+    switch (severity) {
+      case 'high': return 'bg-red-100 text-red-700 border-red-200';
+      case 'medium': return 'bg-amber-100 text-amber-700 border-amber-200';
+      default: return 'bg-blue-100 text-blue-700 border-blue-200';
+    }
+  };
+
+  const getSeverityIcon = (severity) => {
+    switch (severity) {
+      case 'high': return <AlertTriangle className="w-4 h-4" />;
+      case 'medium': return <AlertTriangle className="w-4 h-4" />;
+      default: return <Activity className="w-4 h-4" />;
+    }
+  };
+
+  return (
+    <div className="w-96 border-l border-slate-200 bg-slate-50 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 140px)' }}>
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg font-bold text-slate-900">Process Intelligence</h2>
+          <Button variant="ghost" size="sm" onClick={onRefresh}>
+            <Sparkles className="w-4 h-4" />
+          </Button>
+        </div>
+
+        {/* Health Score */}
+        <div className={`rounded-xl p-6 border-2 mb-6 ${getHealthBgColor(intelligence.health_score)}`}>
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-2">
+              <Activity className={`w-5 h-5 ${getHealthColor(intelligence.health_score)}`} />
+            </div>
+            <div className={`text-5xl font-bold ${getHealthColor(intelligence.health_score)} mb-2`}>
+              {intelligence.health_score}
+            </div>
+            <p className="text-sm font-semibold text-slate-700">Health Score</p>
+          </div>
+
+          {/* Score Breakdown */}
+          {intelligence.score_breakdown && (
+            <div className="mt-4 pt-4 border-t border-slate-200 space-y-2">
+              {Object.entries(intelligence.score_breakdown).map(([key, value]) => (
+                <div key={key} className="flex items-center justify-between text-xs">
+                  <span className="text-slate-600 capitalize">{key.replace('_', ' ')}</span>
+                  <span className="font-semibold text-slate-800">{value}/100</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Benchmarks */}
+        {intelligence.benchmarks && (
+          <div className="bg-white rounded-xl p-4 border border-slate-200 mb-6">
+            <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+              Industry Benchmark
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-slate-600">Expected Duration</span>
+                  <span className="font-semibold text-emerald-600">
+                    {intelligence.benchmarks.expected_duration_days} days
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-600">Current Duration</span>
+                  <span className="font-semibold text-slate-800">
+                    {intelligence.benchmarks.current_estimated_duration_days} days
+                  </span>
+                </div>
+              </div>
+              <div className={`px-3 py-2 rounded-lg text-xs font-semibold text-center ${
+                intelligence.benchmarks.industry_comparison === 'faster' ? 'bg-green-50 text-green-700' :
+                intelligence.benchmarks.industry_comparison === 'slower' ? 'bg-red-50 text-red-700' :
+                'bg-blue-50 text-blue-700'
+              }`}>
+                {intelligence.benchmarks.industry_comparison === 'faster' ? '✓ Faster than average' :
+                 intelligence.benchmarks.industry_comparison === 'slower' ? '⚠ Slower than average' :
+                 '= Average speed'}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Issues */}
+        {intelligence.issues && intelligence.issues.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-bold text-slate-900 mb-3">Issues Detected ({intelligence.issues.length})</h3>
+            <div className="space-y-3">
+              {intelligence.issues.map((issue, idx) => (
+                <div key={idx} className="bg-white rounded-xl p-4 border border-slate-200">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border ${getSeverityColor(issue.severity)}`}>
+                      {getSeverityIcon(issue.severity)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm text-slate-900 mb-1">
+                        {issue.title}
+                      </h4>
+                      <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                        {issue.description}
+                      </p>
+                      {issue.cost_impact > 0 && (
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-red-600">
+                          <DollarSign className="w-3.5 h-3.5" />
+                          <span>${issue.cost_impact.toLocaleString()}/month cost</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recommendations */}
+        {intelligence.recommendations && intelligence.recommendations.length > 0 && (
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              AI Recommendations
+            </h3>
+            <div className="space-y-3">
+              {intelligence.recommendations.map((rec, idx) => (
+                <div key={idx} className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm text-slate-900 mb-1">
+                        {rec.title}
+                      </h4>
+                      <p className="text-xs text-slate-600 mb-2 leading-relaxed">
+                        {rec.description}
+                      </p>
+                      {rec.savings_potential > 0 && (
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-green-600 mb-2">
+                          <DollarSign className="w-3.5 h-3.5" />
+                          <span>Save ${rec.savings_potential.toLocaleString()}/month</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProcessIntelligencePanel;
