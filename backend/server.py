@@ -1143,31 +1143,86 @@ Steps:
                 system_message="You are an expert process analyst who helps companies identify inefficiencies and save money."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            intelligence_prompt = f"""TASK: Analyze this business process and identify issues, costs, and recommendations.
+            intelligence_prompt = f"""TASK: Analyze this business process and identify issues, costs, and recommendations WITH SPECIFIC EXPLANATIONS.
 
 PROCESS TO ANALYZE:
 {process_description}
 
-YOUR ANALYSIS SHOULD INCLUDE:
+YOUR ANALYSIS MUST INCLUDE:
 
-1. HEALTH SCORE (0-100):
-   - Consider: clarity, efficiency, reliability, risk
-   - Lower score = more problems
+1. HEALTH SCORE (0-100) WITH DETAILED REASONING:
+   - Overall score
+   - Breakdown scores: clarity, efficiency, reliability, risk_management
+   - FOR EACH score, provide "explanation" field explaining WHY that score
+   
+   Example:
+   "clarity": 85,
+   "clarity_explanation": "Process steps are well-defined with clear descriptions. Minor improvement needed in handoff documentation."
 
-2. ISSUES DETECTED (Top 3):
-   Each issue should have:
-   - title: Short description
+2. NODE-SPECIFIC ISSUES (Critical for visual highlighting):
+   For EACH issue, specify which step/node it affects:
+   - node_id: The step number (1, 2, 3, etc.) where issue occurs
+   - node_title: The step name
+   - title: Issue summary
    - description: Detailed explanation
    - severity: "high", "medium", or "low"
-   - cost_impact: Estimated monthly cost in dollars (if quantifiable)
-   - example: "Bottleneck at approval step adding 3 days, costs $2,400/month in delays"
+   - cost_impact: Estimated monthly cost
+   - why_this_matters: Business impact explanation
 
-3. RECOMMENDATIONS (Top 3):
-   Each recommendation should have:
+3. RECOMMENDATIONS with SPECIFIC REASONING:
    - title: What to do
-   - description: How it helps
-   - savings_potential: Estimated monthly savings in dollars
-   - example: "Auto-approve invoices under $500 - saves $1,800/month"
+   - description: How to implement
+   - why_it_works: Explain the reasoning
+   - savings_potential: Monthly savings
+   - affected_nodes: Which steps this improves (array of node numbers)
+
+4. SCORE EXPLANATIONS:
+   - overall_explanation: Why the overall health score is what it is
+   - top_strength: Best aspect of this process
+   - top_weakness: Biggest problem area
+
+Return ONLY valid JSON (no markdown):
+{{
+  "health_score": 67,
+  "score_breakdown": {{
+    "clarity": 85,
+    "clarity_explanation": "Steps are clearly defined with good descriptions",
+    "efficiency": 45,
+    "efficiency_explanation": "Multiple sequential bottlenecks slow the process significantly",
+    "reliability": 70,
+    "reliability_explanation": "Basic error handling present but missing escalation paths",
+    "risk_management": 68,
+    "risk_management_explanation": "Some risks identified but no mitigation strategies documented"
+  }},
+  "overall_explanation": "Process has clear structure but suffers from efficiency issues due to sequential bottlenecks and lack of parallel execution",
+  "top_strength": "Clear documentation and well-defined responsibilities",
+  "top_weakness": "Critical bottleneck at approval step causing 3-day delays",
+  "issues": [
+    {{
+      "node_id": 3,
+      "node_title": "CFO Approval",
+      "title": "Bottleneck at approval step",
+      "description": "CFO approval is a single point of failure with 3-4 day average wait time",
+      "severity": "high",
+      "cost_impact": 2400,
+      "why_this_matters": "Every invoice waits here, blocking cash flow and vendor relationships"
+    }}
+  ],
+  "recommendations": [
+    {{
+      "title": "Implement auto-approval for low-value items",
+      "description": "Automatically approve invoices under $500 without CFO review",
+      "why_it_works": "Reduces CFO workload by 60% and speeds up 80% of invoices",
+      "savings_potential": 1800,
+      "affected_nodes": [3]
+    }}
+  ],
+  "benchmarks": {{
+    "expected_duration_days": 1,
+    "current_estimated_duration_days": 4.5,
+    "industry_comparison": "slower"
+  }}
+}}"""
 
 4. BENCHMARKS:
    - expected_duration_days: How long this should take (industry standard)
