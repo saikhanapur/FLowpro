@@ -49,6 +49,22 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_DAYS = 7
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Guest mode configuration
+GUEST_SESSION_COLLECTION = "guest_sessions"
+
+async def create_guest_session(request: Request) -> str:
+    """Create a temporary guest session ID"""
+    # Use a combination of IP and timestamp for guest session
+    guest_id = f"guest_{uuid.uuid4().hex[:12]}"
+    return guest_id
+
+async def get_guest_session(request: Request) -> Optional[str]:
+    """Get guest session ID from cookie or create new"""
+    guest_id = request.cookies.get("guest_session")
+    if not guest_id:
+        guest_id = await create_guest_session(request)
+    return guest_id
+
 # Helper functions for password hashing
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
