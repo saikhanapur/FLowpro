@@ -651,6 +651,92 @@ agent_communication:
 
   - agent: "main"
     message: |
+      🧠 PROCESS INTELLIGENCE ENHANCEMENT - TIER 1 ISSUE DETECTION (PHASE 1)
+      
+      USER FEEDBACK:
+      Initial Process Intelligence Panel was underwhelming with vague insights:
+      - Generic "Health Score: 75" with no reasoning
+      - "Issues Detected: Analysis in progress" - no actionable value
+      - Lacked node-specific problem detection
+      - No explainable scores or clear ROI
+      
+      BACKEND ENHANCEMENT IMPLEMENTED:
+      
+      ✅ Enhanced `analyze_process_intelligence` in /app/backend/server.py:
+      
+      🎯 TIER 1 ISSUE DETECTION (Detailed Rules):
+      
+      1. **Missing Error Handling Detection**:
+         - Detects steps with external dependencies without fallback plans
+         - Identifies single points of failure
+         - Calculates failure rates and risk costs
+         - Industry benchmarks: 8% emergency line busy rate, 15% manager unavailability
+      
+      2. **Serial Bottleneck Detection**:
+         - Identifies consecutive independent steps that could run parallel
+         - Checks for different actors, no data dependencies
+         - Calculates time savings per occurrence and monthly ROI
+         - Example: Step A (5 min) + Step B (3 min) sequential → Parallel = 5 min (saves 3 min)
+      
+      3. **Unclear Ownership Detection**:
+         - Flags missing or generic actors ("Team", "Department", "Management")
+         - Detects multiple actors without clear RACI roles
+         - Estimates delay costs from unclear accountability
+         - Industry avg: 2-5 days delay from unclear ownership
+      
+      4. **Missing Timeout Detection**:
+         - Identifies "wait", "monitor", "review" steps without time limits
+         - Flags approval steps without escalation triggers
+         - Calculates stall costs and SLA breach impacts
+         - Best practice: 60-120 sec emergency assessment timeouts
+      
+      5. **Missing Handoff Documentation**:
+         - Detects actor changes without trigger mechanisms
+         - Identifies missing data/information transfer specs
+         - Flags lack of confirmation/acknowledgment
+         - Industry avg: Poor handoffs lose 20% of critical info
+      
+      🎯 ENHANCED OUTPUT FORMAT (Per Issue):
+      - **The Issue**: node_id, issue_type, detailed description
+      - **The Impact**: severity, why_this_matters, risk_description
+      - **The Evidence**: detected_pattern, industry_benchmark, failure_rate_estimate
+      - **The Fix**: recommendation with implementation difficulty
+      - **The Value**: cost_impact_monthly, time_savings, risk_mitigation_value, calculation_basis
+      
+      🎯 EXPLAINABLE HEALTH SCORES:
+      - Base score 100 with clear deduction rules
+      - Clarity score: -10 pts per generic actor, -15 for missing actor
+      - Efficiency score: -20 pts per major bottleneck
+      - Reliability score: -20 pts per missing error handler
+      - Risk Management score: -15 pts per critical missing timeout
+      - Each score includes detailed explanation of WHY that score
+      
+      🎯 ROI CALCULATIONS:
+      - Quantifiable cost impacts per issue (monthly $)
+      - Time savings per occurrence (minutes)
+      - Risk mitigation value (avoided costs)
+      - Total savings potential with implementation effort
+      - Break-even analysis
+      
+      🎯 COMPREHENSIVE OUTPUT:
+      - overall_explanation: Why health score is what it is
+      - top_strength & top_weakness
+      - Benchmarks: industry comparison, success rates, estimated incidents
+      - roi_summary: Total monthly savings with implementation time
+      
+      NEXT STEPS:
+      1. Test backend intelligence API endpoint
+      2. Verify AI detects TIER 1 issues with real process data
+      3. Phase 2: Update frontend ProcessIntelligencePanel to display enhanced insights
+      4. Phase 2: Add visual node highlighting in FlowchartEditor
+      
+      PRIORITY TESTING:
+      - Test POST /api/process/{id}/intelligence with existing processes
+      - Verify Claude API generates TIER 1 issue detection
+      - Check JSON structure matches new format
+      - Verify quantifiable ROI calculations appear
+  - agent: "main"
+    message: |
       🎨 UI/UX IMPROVEMENTS - TERMINOLOGY & DASHBOARD SIMPLIFICATION
       
       USER FEEDBACK:
