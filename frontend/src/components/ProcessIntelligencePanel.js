@@ -258,6 +258,7 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
             </div>
           )}
         </div>
+        )}
 
         {/* Benchmarks - Only in detailed view */}
         {viewMode === 'detailed' && intelligence.benchmarks && (
