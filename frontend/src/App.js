@@ -82,6 +82,42 @@ const AppContent = () => {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsOfService />} />
         
+        {/* Guest-accessible Process Creator */}
+        <Route path="/create-process" element={
+          <>
+            {!isAuthenticated && (
+              <Header 
+                theme={theme} 
+                onThemeChange={setTheme}
+                currentWorkspace={null}
+                workspaces={[]}
+                onWorkspaceChange={() => {}}
+                onWorkspacesUpdate={() => {}}
+                isGuest={true}
+              />
+            )}
+            <ProcessCreator currentWorkspace={currentWorkspace} isGuestMode={!isAuthenticated} />
+          </>
+        } />
+        
+        {/* Guest Flowchart Editor */}
+        <Route path="/guest-edit/:id" element={
+          <>
+            {!isAuthenticated && (
+              <Header 
+                theme={theme} 
+                onThemeChange={setTheme}
+                currentWorkspace={null}
+                workspaces={[]}
+                onWorkspaceChange={() => {}}
+                onWorkspacesUpdate={() => {}}
+                isGuest={true}
+              />
+            )}
+            <FlowchartEditor theme={theme} isGuestMode={!isAuthenticated} />
+          </>
+        } />
+        
         {/* Protected Routes */}
         <Route path="/dashboard" element={
           <ProtectedRoute>
