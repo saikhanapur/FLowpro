@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sparkles, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Clock, Activity, RefreshCw, ChevronDown, ChevronRight, AlertCircle, Zap, Users, Timer, FileText, Target, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenerate }) => {
+const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenerate, onClose }) => {
   const [expandedIssues, setExpandedIssues] = useState({});
   const [expandedScores, setExpandedScores] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
