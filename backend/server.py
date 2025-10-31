@@ -1175,21 +1175,21 @@ WHAT TO DETECT:
 - Single points of failure (one critical step with no backup)
 
 DETECTION RULES:
-✓ Step mentions: "call", "contact", "notify", "send", "request" → Check for failure handling
-✓ Actor is external system/service → Must have error branch
-✓ Step requires user input/action → Must have timeout or escalation
-✓ "Wait for" or "monitor" steps → Must have max duration and escalation path
+✓ Step mentions: "call", "contact", "notify", "send", "request" → Check if alternative is documented
+✓ Actor is external system/service → Look for documented backup procedure
+✓ Step requires user input/action → Check if timeout guidance exists
+✓ "Wait for" or "monitor" steps → Check for max duration guidance
 
-EXAMPLE ISSUES TO FLAG:
-- "Contact Emergency Services" with no backup if line is busy
-- "Await Manager Approval" with no escalation if manager is unavailable
-- "Submit to External API" with no retry logic or fallback
+EXAMPLE PATTERNS TO IDENTIFY:
+- "Contact Emergency Services" without documented backup contact method
+- "Await Manager Approval" without documented escalation for unavailability
+- "Submit to External API" without documented retry or alternative procedure
 
-IMPACT CALCULATION:
-- Cost = (Failure rate % × Monthly occurrences × Average cost per failure)
-- Industry avg failure rate for external calls: 5-10%
-- Emergency services busy rate: 8%
-- Manager unavailability: 15%
+IMPACT ESTIMATION (Use as Guidelines, Not Absolutes):
+- Frame as: "Based on typical patterns in similar processes..."
+- Typical external service unavailability: 5-10% during peak periods
+- Common escalation contact unavailability: 10-15%
+- Present as estimates with clear calculation basis
 
 ═══════════════════════════════════════════════════════
 2. BOTTLENECKS / SERIAL WORK THAT SHOULD BE PARALLEL
