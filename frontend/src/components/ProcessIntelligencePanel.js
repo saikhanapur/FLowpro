@@ -115,8 +115,15 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
             >
               <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
             </Button>
-            <Button variant="ghost" size="sm" onClick={onRefresh}>
-              <Sparkles className="w-4 h-4" />
+            <Button 
+              variant={viewMode === 'detailed' ? 'default' : 'ghost'}
+              size="sm" 
+              onClick={toggleViewMode}
+              title={viewMode === 'summary' ? 'Switch to detailed view' : 'Switch to summary view'}
+            >
+              <span className="text-xs font-medium">
+                {viewMode === 'summary' ? 'Detailed' : 'Summary'}
+              </span>
             </Button>
           </div>
         </div>
