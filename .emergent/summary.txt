@@ -1,0 +1,86 @@
+<analysis>
+The trajectory details a dynamic development process for the SuperHumanly application, starting from an MVP state. Initial efforts addressed critical frontend bugs and introduced a Smart Context Analyzer and Redis caching for AI performance. A significant strategic shift towards Process Intelligence redefined the app's purpose from flowchart creation to identifying and fixing broken business processes, leading to the development of a  and related backend endpoints.
+
+User feedback highlighted the initial intelligence panel's lack of actionable insights, prompting a major iteration to enhance backend intelligence with node-specific issues and better explanations, followed by frontend visual improvements. The conversation then focused on addressing information overload and credibility concerns related to AI-generated cost estimates and benchmarks, leading to multiple rounds of simplification and a segmented control UI for toggling between summary and detailed views. Critical legal and ethical concerns regarding life-safety risks language from the AI were addressed by removing alarmist phrases and adding disclaimers.
+
+Finally, the discussion pivoted to the core value proposition and user onboarding, culminating in the decision to implement a Guest Mode allowing users to create one flowchart without signing up, while gating saving, sharing, and advanced features. This aims to reduce friction and leverage product-led growth. The AI engineer is currently implementing the backend for this guest mode.
+</analysis>
+
+<product_requirements>
+SuperHumanly aims to simplify complex workflows into interactive, AI-generated flowcharts for enterprise and SME customers. It captures processes via voice, documents, and chat, using the Claude API, featuring an Apple-inspired UI, multi-process detection, Publish functionality with token-based sharing, Workspaces (now Projects) for organization, and manual node editing. Enterprise authentication and legal pages are in place.
+
+Recent development focused on:
+1.  **Dashboard UX:** Streamlining with My Workspace, collapsible Projects, and a clear Create an Interactive Flowchart action.
+2.  **AI Refinement:** Implementing an AI chat/voice interface for iterative flowchart refinement.
+3.  **Quality Control:** Auto-unpublishing published flowcharts after AI refinement for review.
+4.  **Mobile Responsiveness:** Ensuring cross-device functionality.
+5.  **PDF Export:** Accurate on-screen representation without interactive elements.
+6.  **Process Intelligence (New Pivot):** Evolving from a flowchart creator to a platform that identifies, quantifies, and recommends fixes for broken business processes, aiming to provide measurable ROI and become indispensable in enterprise workflows. The latest iteration includes node-specific issue detection, detailed explanations, and clearer AI recommendations, initially targeting TIER 1 issues like missing error handling, bottlenecks, unclear ownership, missing timeouts, and missing handoff documentation.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Frontend**: React (Hooks), TailwindCSS, Lucide React, React Flow, Zustand.
+-   **Backend/AI**: FastAPI, Claude API (Sonnet 4), PyMongo, Pydantic, JWT, Google OAuth, Redis (caching).
+-   **Database**: MongoDB (using UUIDs).
+-   **Authentication**: JWT, Google OAuth, bcrypt, httpOnly cookies.
+-   **Other**: Responsive design, PDF export, backend                          RUNNING   pid 29, uptime 0:00:02
+code-server                      STOPPED   Not started
+frontend                         STOPPING  
+mongodb                          RUNNING   pid 32, uptime 0:00:02
+nginx-code-proxy                 RUNNING   pid 28, uptime 0:00:02
+supervisor> , SSE (Server-Sent Events, temporarily disabled), Progressive Disclosure UX.
+</key_technical_concepts>
+
+<code_architecture>
+The application uses a React frontend, a FastAPI backend, and MongoDB for data storage.
+
+**Directory Structure:**
+
+-   ****: Main FastAPI application.
+    -   **Summary**: Contains core API routes, authentication logic, and AI integration.
+    -   **Changes**:  was heavily modified to implement TIER 1 issue detection and generate more detailed, less alarmist insights. A new  endpoint was added. The  model was updated to include  and .  was modified for optional auth, and a new  endpoint was created. Logic was added to gate  for guest users.
+-   ****: Provides Redis caching.
+    -   **Summary**: Used for intelligent caching to optimize AI model calls and store analysis results.
+-   ****: Centralized API calls.
+    -   **Summary**: Handles all frontend-to-backend communication.
+    -   **Changes**: Added  for the new backend endpoint.
+-   ****: Flowchart editing interface.
+    -   **Summary**: Displays the flowchart, handles interactions, and integrates various panels.
+    -   **Changes**: Integrated a segmented control toggle for Summary/Detailed view mode for intelligence. Modified to hide  by default, display a subtle badge notification based on process complexity, and pass  and  props to the panel.
+-   ****: Displays process intelligence.
+    -   **Summary**: Presents health scores, issues, and recommendations.
+    -   **Changes**: Heavily modified to implement progressive disclosure (Summary/Detailed views), handle  for filtered display (limit issues, hide ROI/Health Score/View Toggle), accept  prop and include a close button, and display a prominent AI disclaimer. Critical language in the displayed output was softened.
+-   ****: Application landing page.
+    -   **Summary**: The entry point for users, showcasing the application's value.
+    -   **Changes**: Underwent multiple iterations to simplify messaging, refocus on the core Upload document, get interactive flowchart value proposition, and reintroduce a SuperHumanly Process Intelligence badge. It was reverted once to a previous, more detailed state, and then refined again for a clearer, action-oriented hero section and outcome-focused feature cards, replacing AI with SuperHumanly.
+</code_architecture>
+
+<pending_tasks>
+-   Resolve persistent LLM budget issues and slow Claude AI response times.
+-   Implement remaining Coming Soon features (collaboration, GitHub auto-deploy, analytics, Themes, Templates, Voice UI refinement, Version history, sharing access controls).
+-   Further polish Workspaces/Projects.
+-   Enhance AI intelligence for chat (RAG and Fine-Tuning).
+-   Re-evaluate and potentially re-implement SSE streaming.
+-   Build out the User-Driven Cost Calculator in Phase 2 for the Intelligence Panel.
+-   Implement Pattern-Based Insights in Phase 3 for the Intelligence Panel.
+-   A/B test the different Process Intelligence summary approaches (Checklist, Comparative Score, Risk-Opportunity Spectrum).
+-   Implement Customize Estimate feature for intelligence costs.
+-   Refine landing page content and layout (parked for now).
+</pending_tasks>
+
+<current_work>
+Immediately prior to this summary, the AI engineer was implementing the **Guest Mode** feature to allow users to create a flowchart without requiring a login. This decision was made to reduce friction and allow users to experience the aha moment quickly, while strategically gating advanced features and saving capabilities behind a signup wall.
+
+The implementation is currently focused on the **backend**. The AI engineer has already:
+1.  Modified  in  to support optional authentication, allowing unauthenticated requests for certain actions.
+2.  Created a  utility.
+3.  Introduced a new endpoint  in  specifically for creating processes in guest mode.
+4.  Updated the  Pydantic model in  to include  (boolean) and  (string) fields to properly track guest-created processes.
+5.  Started adding logic to gate the  endpoint, ensuring guest users cannot publish their processes without signing up. The  import was confirmed to be present.
+
+The backend changes are in progress, specifically the  endpoint is being modified to check for guest users.
+</current_work>
+
+<optional_next_step>
+Restart the backend to apply the implemented guest mode changes, then proceed with the frontend implementation of guest mode.
+</optional_next_step>
