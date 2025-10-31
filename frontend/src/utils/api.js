@@ -97,6 +97,12 @@ export const api = {
     return res.data;
   },
 
+  regenerateIntelligence: async (id) => {
+    const res = await axios.post(`${API}/process/${id}/intelligence/regenerate`);
+    return res.data;
+  },
+
+
   // Workspace APIs
   getWorkspaces: async () => {
     const res = await axios.get(`${API}/workspaces`);
