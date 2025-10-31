@@ -103,9 +103,9 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
     <div className="w-96 border-l border-slate-200 bg-slate-50 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 140px)' }}>
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-slate-900">Process Intelligence</h2>
-          <div className="flex gap-2">
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-bold text-slate-900">Process Intelligence</h2>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -115,16 +115,30 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
             >
               <RefreshCw className={`w-4 h-4 ${regenerating ? 'animate-spin' : ''}`} />
             </Button>
-            <Button 
-              variant={viewMode === 'detailed' ? 'default' : 'ghost'}
-              size="sm" 
-              onClick={toggleViewMode}
-              title={viewMode === 'summary' ? 'Switch to detailed view' : 'Switch to summary view'}
+          </div>
+          
+          {/* View Mode Toggle - Segmented Control Style */}
+          <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-lg">
+            <button
+              onClick={() => viewMode !== 'summary' && toggleViewMode()}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
+                viewMode === 'summary'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              <span className="text-xs font-medium">
-                {viewMode === 'summary' ? 'Detailed' : 'Summary'}
-              </span>
-            </Button>
+              Summary
+            </button>
+            <button
+              onClick={() => viewMode !== 'detailed' && toggleViewMode()}
+              className={`flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
+                viewMode === 'detailed'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Detailed
+            </button>
           </div>
         </div>
 
