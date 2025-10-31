@@ -674,6 +674,15 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         />
       )}
 
+      {/* Process Intelligence Panel - Shows insights */}
+      {!selectedNode && showIntelligence && !readOnly && accessLevel === 'owner' && (
+        <ProcessIntelligencePanel
+          intelligence={intelligence}
+          loading={intelligenceLoading}
+          onRefresh={loadIntelligence}
+        />
+      )}
+
       {/* Modals */}
       {showPublishDialog && (
         <Dialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
