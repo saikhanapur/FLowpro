@@ -1,8 +1,27 @@
-import React from 'react';
-import { Sparkles, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Clock, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sparkles, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Clock, Activity, RefreshCw, ChevronDown, ChevronRight, AlertCircle, Zap, Users, Timer, FileText, Target, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh }) => {
+const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenerate }) => {
+  const [expandedIssues, setExpandedIssues] = useState({});
+  const [expandedScores, setExpandedScores] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+
+  const toggleIssue = (idx) => {
+    setExpandedIssues(prev => ({
+      ...prev,
+      [idx]: !prev[idx]
+    }));
+  };
+
+  const handleRegenerate = async () => {
+    setRegenerating(true);
+    try {
+      await onRegenerate();
+    } finally {
+      setRegenerating(false);
+    }
+  };
   if (loading) {
     return (
       <div className="w-96 border-l border-slate-200 bg-slate-50 p-6 flex items-center justify-center">
