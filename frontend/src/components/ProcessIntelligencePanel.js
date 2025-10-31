@@ -145,29 +145,31 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
             </div>
           </div>
           
-          {/* View Mode Toggle - Segmented Control Style */}
-          <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-lg">
-            <button
-              onClick={() => viewMode !== 'summary' && toggleViewMode()}
-              className={`flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
-                viewMode === 'summary'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Summary
-            </button>
-            <button
-              onClick={() => viewMode !== 'detailed' && toggleViewMode()}
-              className={`flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
-                viewMode === 'detailed'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Detailed
-            </button>
-          </div>
+          {/* View Mode Toggle - Segmented Control Style - Only for complex processes */}
+          {!isSimpleProcess && (
+            <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-lg">
+              <button
+                onClick={() => viewMode !== 'summary' && toggleViewMode()}
+                className={`flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
+                  viewMode === 'summary'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Summary
+              </button>
+              <button
+                onClick={() => viewMode !== 'detailed' && toggleViewMode()}
+                className={`flex-1 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
+                  viewMode === 'detailed'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Detailed
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Health Score */}
