@@ -445,8 +445,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                           )}
                         </div>
                         
-                        {/* Expand Indicator - Only in detailed view */}
-                        {viewMode === 'detailed' && (
+                        {/* Expand Indicator - Only in detailed view for complex processes */}
+                        {!isSimpleProcess && viewMode === 'detailed' && (
                           <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-medium">
                             {expandedIssues[idx] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                             <span>{expandedIssues[idx] ? 'Hide details' : 'View details'}</span>
@@ -456,8 +456,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                     </div>
                   </div>
                   
-                  {/* Expanded Details - Only in detailed view */}
-                  {viewMode === 'detailed' && expandedIssues[idx] && (
+                  {/* Expanded Details - Only in detailed view for complex processes */}
+                  {!isSimpleProcess && viewMode === 'detailed' && expandedIssues[idx] && (
                     <div className="px-4 pb-4 pt-2 border-t border-slate-200 bg-slate-50 space-y-3">
                       {/* Description */}
                       <div>
