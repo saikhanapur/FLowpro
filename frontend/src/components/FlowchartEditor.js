@@ -154,6 +154,12 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   };
 
   const handlePublish = async () => {
+    // Check if guest user trying to publish
+    if (isGuestMode) {
+      setShowGuestSignupPrompt(true);
+      return;
+    }
+    
     setPublishing(true);
     try {
       const updated = await api.publishProcess(id);
@@ -161,7 +167,12 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       setShowPublishDialog(false);
       toast.success('🎉 Process published! Now shareable with your team.');
     } catch (error) {
-      toast.error('Failed to publish process');
+      // Check if backend rejected guest publish
+      if (error.response?.status === 403) {
+        setShowGuestSignupPrompt(true);
+      } else {
+        toast.error('Failed to publish process');
+      }
     } finally {
       setPublishing(false);
     }
