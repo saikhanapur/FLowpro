@@ -370,6 +370,7 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
             </div>
           </div>
         )}
+        )}
 
         {/* Issues */}
         {intelligence.issues && intelligence.issues.length > 0 && (
