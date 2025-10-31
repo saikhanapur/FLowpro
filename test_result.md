@@ -518,8 +518,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Process Intelligence - TIER 1 Detection Backend"
-    - "Enhanced Process Intelligence - Frontend Visual UI (Phase 2)"
+    - "Guest Mode - Process Creation Without Auth"
+    - "Guest Mode - Process Listing for Guest Users"
+    - "Guest Mode - Publish Gating"
+    - "Guest Mode - Auto Migration on Signup"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
