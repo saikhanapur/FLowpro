@@ -1280,15 +1280,15 @@ DETECTION RULES:
 ✓ No data artifacts mentioned → What information is passed?
 ✓ No confirmation → How to verify handoff completed?
 
-EXAMPLE ISSUES TO FLAG:
-- Step 2 (User) → Step 3 (Call Handler): How does Call Handler know to start?
-- Step 4 (Sales) → Step 5 (Finance): What data is passed? Invoice? Customer ID?
-- No acknowledgment that next actor received the handoff
+EXAMPLE PATTERNS TO IDENTIFY:
+- Step 2 (User) → Step 3 (Call Handler): How is the Call Handler notified to begin?
+- Step 4 (Sales) → Step 5 (Finance): What data needs to be transferred?
+- Missing confirmation that next actor has received handoff
 
-IMPACT CALCULATION:
-- Information loss cost = (% info lost × Rework cost × Occurrences)
-- Handoff delay = (Average wait time for next actor to realize it's their turn)
-- Industry avg: Poor handoffs lose 20% of critical info
+IMPACT ESTIMATION:
+- Frame as potential costs, not guaranteed losses
+- Typical observation: "Undocumented handoffs may lead to information gaps"
+- Present as: "Based on observations in similar processes..."
 
 ═══════════════════════════════════════════════════════
 
@@ -1296,26 +1296,26 @@ IMPACT CALCULATION:
 
 For EACH issue detected, you MUST provide:
 
-1. THE ISSUE (What's wrong):
+1. THE ISSUE (What you observed):
    - node_id: Specific step number
    - node_title: Step name
    - issue_type: One of ["missing_error_handling", "serial_bottleneck", "unclear_ownership", "missing_timeout", "missing_handoff"]
-   - title: Short issue summary
-   - description: Detailed explanation
+   - title: Descriptive summary (avoid "Critical" or "Severe" in title)
+   - description: Factual explanation of what's missing/different
 
-2. THE IMPACT (Why it matters):
+2. THE IMPACT (Why this pattern matters):
    - severity: "critical", "high", "medium", "low"
-   - why_this_matters: Business impact explanation
-   - risk_description: What bad thing happens if not fixed
+   - why_this_matters: Explain potential benefits of addressing this
+   - risk_description: Describe possible delays or gaps (not catastrophic outcomes)
 
-3. THE EVIDENCE (Prove it's real):
-   - detected_pattern: What pattern triggered this detection
-   - industry_benchmark: Relevant industry data/standard
-   - failure_rate_estimate: % likelihood of this issue causing problems
+3. THE EVIDENCE (Common patterns):
+   - detected_pattern: What pattern you observed
+   - industry_benchmark: Frame as "common practice" not "requirement"
+   - failure_rate_estimate: Present as typical occurrence rate, not guaranteed
 
-4. THE FIX (What to do):
-   - recommendation_title: Clear action item
-   - recommendation_description: Step-by-step how to fix
+4. THE FIX (Suggested improvement):
+   - recommendation_title: Use "Consider..." or "Evaluate..." not "Must..." or "Fix..."
+   - recommendation_description: Descriptive suggestion, not directive
    - implementation_difficulty: "easy", "medium", "hard"
 
 5. THE VALUE (ROI):
