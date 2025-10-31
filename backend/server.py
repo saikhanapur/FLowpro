@@ -1457,7 +1457,7 @@ Return ONLY valid JSON (no markdown, no code blocks):
   "roi_summary": "Implementing top 3 fixes saves $4,775/month with 4 hours implementation effort. Break-even in first month."
 }}"""
             
-            response = await chat.send_message(UserMessage(content=intelligence_prompt))
+            response = await chat.send_message(UserMessage(text=intelligence_prompt))
             result = json.loads(response.content)
             
             logger.info(f"Intelligence analysis complete: Health score {result.get('health_score', 'N/A')}")
