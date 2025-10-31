@@ -2469,8 +2469,15 @@ async def get_processes(request: Request, workspace_id: Optional[str] = None):
         if user:
             # AUTHENTICATED USER - Get their processes (exclude guest processes)
             user_id = user.get('id')
-            # Use $ne (not equal) to include processes without isGuest field (existing processes)
-            query = {"userId": user_id, "isGuest": {"$ne": True}}
+            # Use $or to include processes without isGuest field (existing processes) or where isGuest is False
+            # This is more index-friendly than $ne
+            query = {
+                "userId": user_id,
+                "$or": [
+                    {"isGuest": False},
+                    {"isGuest": {"$exists": False}}
+                ]
+            }
         else:
             # GUEST MODE - Get guest processes
             guest_id = request.cookies.get("guest_session")
