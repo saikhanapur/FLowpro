@@ -484,11 +484,11 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-blue-600" />
-              AI Recommendations
+              AI Recommendations ({intelligence.recommendations.length})
             </h3>
             <div className="space-y-3">
               {intelligence.recommendations.map((rec, idx) => (
-                <div key={idx} className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200">
+                <div key={idx} className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border-2 border-blue-200">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                       <Sparkles className="w-4 h-4 text-white" />
@@ -500,10 +500,44 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                       <p className="text-xs text-slate-600 mb-2 leading-relaxed">
                         {rec.description}
                       </p>
-                      {rec.savings_potential > 0 && (
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-green-600 mb-2">
-                          <DollarSign className="w-3.5 h-3.5" />
-                          <span>Save ${rec.savings_potential.toLocaleString()}/month</span>
+                      
+                      {/* Why It Works */}
+                      {rec.why_it_works && (
+                        <div className="mb-2 p-2 bg-white/50 rounded-lg">
+                          <div className="text-xs font-semibold text-blue-700 mb-1">Why This Works</div>
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            {rec.why_it_works}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Stats Row */}
+                      <div className="flex flex-wrap items-center gap-3 mt-2">
+                        {rec.savings_potential > 0 && (
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-green-600">
+                            <DollarSign className="w-3.5 h-3.5" />
+                            <span>Save ${rec.savings_potential.toLocaleString()}/month</span>
+                          </div>
+                        )}
+                        
+                        {rec.affected_nodes && rec.affected_nodes.length > 0 && (
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-600">
+                            <Target className="w-3.5 h-3.5" />
+                            <span>Steps: {rec.affected_nodes.join(', ')}</span>
+                          </div>
+                        )}
+                        
+                        {rec.implementation_effort && (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-200 text-blue-800 text-xs font-semibold">
+                            {rec.implementation_effort}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Expected Impact */}
+                      {rec.expected_impact && (
+                        <div className="mt-2 text-xs text-slate-600 italic">
+                          Impact: {rec.expected_impact}
                         </div>
                       )}
                     </div>
