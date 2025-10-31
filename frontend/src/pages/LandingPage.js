@@ -61,23 +61,23 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 mb-8">
             <Zap className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-600">AI-Powered Process Intelligence</span>
+            <span className="text-sm font-medium text-blue-600">AI-Powered Process Visualization</span>
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
-            Find what's slowing down
+          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+            Upload your process document.
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              your company.
+              Get a visual, interactive flowchart in 30 seconds.
             </span>
           </h1>
 
           <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Upload your process. AI shows what's broken, what it costs, and how to fix it.
+            No design skills needed. Just upload, and watch your process transform into a shareable, interactive flowchart instantly.
           </p>
           
-          <p className="text-2xl font-semibold text-slate-900 mb-12">
-            Save thousands per month. See results in minutes.
+          <p className="text-lg text-slate-700 mb-12">
+            Perfect for teams who need clarity, not complexity.
           </p>
 
           <div className="flex items-center justify-center gap-4">
@@ -86,13 +86,13 @@ const LandingPage = () => {
               onClick={() => navigate('/signup')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-10 py-7 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all"
             >
-              Try it now
+              Create Your First Flowchart
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
 
           <p className="text-sm text-slate-500 mt-6">
-            No credit card required • Free 14-day trial • Cancel anytime
+            No credit card required • Free to start • Takes 30 seconds
           </p>
         </div>
       </section>
