@@ -125,13 +125,68 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
 
           {/* Score Breakdown */}
           {intelligence.score_breakdown && (
-            <div className="mt-4 pt-4 border-t border-slate-200 space-y-2">
-              {Object.entries(intelligence.score_breakdown).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between text-xs">
-                  <span className="text-slate-600 capitalize">{key.replace('_', ' ')}</span>
-                  <span className="font-semibold text-slate-800">{value}/100</span>
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <button
+                onClick={() => setExpandedScores(!expandedScores)}
+                className="w-full flex items-center justify-between text-xs font-semibold text-slate-700 mb-2 hover:text-slate-900"
+              >
+                <span>Score Breakdown</span>
+                {expandedScores ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </button>
+              
+              {expandedScores && intelligence.overall_explanation && (
+                <div className="mb-3 p-2 bg-white/50 rounded-lg">
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {intelligence.overall_explanation}
+                  </p>
                 </div>
-              ))}
+              )}
+              
+              <div className="space-y-2">
+                {Object.entries(intelligence.score_breakdown)
+                  .filter(([key]) => !key.includes('_explanation'))
+                  .map(([key, value]) => {
+                    const explanationKey = `${key}_explanation`;
+                    const explanation = intelligence.score_breakdown[explanationKey];
+                    
+                    return (
+                      <div key={key}>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-600 capitalize">{key.replace('_', ' ')}</span>
+                          <span className="font-semibold text-slate-800">{value}/100</span>
+                        </div>
+                        {expandedScores && explanation && (
+                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                            {explanation}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+              
+              {expandedScores && (intelligence.top_strength || intelligence.top_weakness) && (
+                <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+                  {intelligence.top_strength && (
+                    <div className="flex gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-xs font-semibold text-green-700">Top Strength</div>
+                        <p className="text-xs text-slate-600">{intelligence.top_strength}</p>
+                      </div>
+                    </div>
+                  )}
+                  {intelligence.top_weakness && (
+                    <div className="flex gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-xs font-semibold text-amber-700">Top Weakness</div>
+                        <p className="text-xs text-slate-600">{intelligence.top_weakness}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
