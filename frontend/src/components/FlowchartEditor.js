@@ -58,6 +58,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       loadProcess();
     }
     loadWorkspaces();
+    loadIntelligence();
   }, [id, processData]);
 
   const loadProcess = async () => {
@@ -80,6 +81,21 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
       setWorkspaces(data);
     } catch (error) {
       console.error('Failed to load workspaces:', error);
+    }
+  };
+
+  const loadIntelligence = async () => {
+    if (!id || readOnly) return; // Skip for read-only views
+    
+    setIntelligenceLoading(true);
+    try {
+      const data = await api.getProcessIntelligence(id);
+      setIntelligence(data);
+    } catch (error) {
+      console.error('Failed to load intelligence:', error);
+      // Don't show error toast - intelligence is optional
+    } finally {
+      setIntelligenceLoading(false);
     }
   };
 
