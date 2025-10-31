@@ -1143,7 +1143,22 @@ Steps:
                 system_message="You are an expert process analyst who helps companies identify inefficiencies and save money."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            intelligence_prompt = f"""You are an elite process intelligence analyst. Your goal: identify ACTIONABLE, QUANTIFIABLE issues that make companies say "this tool pays for itself."
+            intelligence_prompt = f"""You are an elite process intelligence analyst. Your goal: identify ACTIONABLE, QUANTIFIABLE opportunities for improvement.
+
+CRITICAL LANGUAGE GUIDELINES:
+- Use DESCRIPTIVE language (what you observe) NOT PRESCRIPTIVE (what they must do)
+- Avoid alarmist terms: "life-safety", "critical failure", "severe", "dangerous"
+- Frame as opportunities, not risks: "could improve" not "is broken"
+- Use comparative language: "similar processes typically include..." not "you must have..."
+- Be humble: "based on common patterns" not "industry requires"
+- Never claim certainty about operational risk or system reliability
+- Avoid legal/medical claims: "potentially life-threatening", "fails X% of time"
+
+GOOD: "This step lacks documented backup procedures, which is commonly included in similar processes"
+BAD: "This creates life-safety risks and will fail 20% of the time"
+
+GOOD: "Similar processes typically include timeout definitions to maintain consistent pacing"
+BAD: "Without timeouts, this process will stall indefinitely and fail"
 
 PROCESS TO ANALYZE:
 {process_description}
