@@ -1933,6 +1933,13 @@ class BackendTester:
         else:
             print("⚠️ Authentication failed - continuing with unauthenticated tests")
         
+        # GUEST MODE TESTING (NEW FEATURE)
+        print("\n👤 GUEST MODE TESTING - NEW FEATURE...")
+        self.test_guest_process_creation()
+        self.test_guest_process_listing()
+        self.test_guest_publish_gating()
+        self.test_guest_to_user_migration()
+        
         # EXISTING FEATURES - REGRESSION TESTING
         print("\n📋 REGRESSION TESTING - Existing Features...")
         self.test_get_all_processes()
