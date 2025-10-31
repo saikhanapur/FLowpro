@@ -1400,6 +1400,337 @@ class BackendTester:
         except Exception as e:
             self.log_result("Voice Transcription (Missing File)", False, f"Error: {str(e)}")
 
+    def test_enhanced_process_intelligence(self):
+        """Test ENHANCED PROCESS INTELLIGENCE - TIER 1 Detection Backend"""
+        print("\n🧠 Testing Enhanced Process Intelligence - TIER 1 Detection...")
+        
+        # First, authenticate as the test user
+        if not self.authenticate_test_user():
+            self.log_result("Enhanced Process Intelligence", False, "Authentication failed")
+            return
+        
+        # Get existing processes
+        try:
+            response = self.session.get(f"{self.base_url}/process", timeout=TIMEOUT)
+            if response.status_code != 200:
+                self.log_result("Enhanced Process Intelligence", False, "Could not fetch processes")
+                return
+            
+            processes = response.json()
+            if not processes:
+                # Create a test emergency process with multiple steps for intelligence testing
+                test_process = self.create_emergency_process_for_intelligence()
+                if not test_process:
+                    self.log_result("Enhanced Process Intelligence", False, "Could not create test process")
+                    return
+                process_id = test_process['id']
+            else:
+                process_id = processes[0]['id']
+            
+            # Test 1: Intelligence Generation
+            print(f"   Testing intelligence for process ID: {process_id}")
+            
+            response = self.session.get(f"{self.base_url}/process/{process_id}/intelligence", 
+                                      timeout=180)  # Longer timeout for AI processing
+            
+            if response.status_code == 200:
+                intelligence = response.json()
+                
+                # Verify response structure
+                required_fields = [
+                    'health_score', 'score_breakdown', 'overall_explanation', 
+                    'top_strength', 'top_weakness', 'issues', 'recommendations', 
+                    'benchmarks', 'total_savings_potential', 'roi_summary'
+                ]
+                
+                missing_fields = [field for field in required_fields if field not in intelligence]
+                if missing_fields:
+                    self.log_result("Intelligence Structure", False, 
+                                  f"Missing required fields: {missing_fields}")
+                    return
+                
+                # Verify score breakdown structure
+                score_breakdown = intelligence.get('score_breakdown', {})
+                score_fields = ['clarity', 'efficiency', 'reliability', 'risk_management']
+                explanation_fields = [f'{field}_explanation' for field in score_fields]
+                
+                missing_score_fields = []
+                for field in score_fields + explanation_fields:
+                    if field not in score_breakdown:
+                        missing_score_fields.append(field)
+                
+                if missing_score_fields:
+                    self.log_result("Intelligence Score Breakdown", False, 
+                                  f"Missing score fields: {missing_score_fields}")
+                else:
+                    self.log_result("Intelligence Score Breakdown", True, 
+                                  "All score breakdown fields present with explanations")
+                
+                # Test 2: TIER 1 Issue Detection
+                issues = intelligence.get('issues', [])
+                tier1_issue_types = [
+                    "missing_error_handling", "serial_bottleneck", "unclear_ownership", 
+                    "missing_timeout", "missing_handoff"
+                ]
+                
+                detected_tier1_issues = []
+                for issue in issues:
+                    issue_type = issue.get('issue_type')
+                    if issue_type in tier1_issue_types:
+                        detected_tier1_issues.append(issue_type)
+                
+                if detected_tier1_issues:
+                    self.log_result("TIER 1 Issue Detection", True, 
+                                  f"Detected TIER 1 issues: {detected_tier1_issues}")
+                else:
+                    self.log_result("TIER 1 Issue Detection", False, 
+                                  "No TIER 1 issues detected (may indicate detection logic needs improvement)")
+                
+                # Test 3: Verify Quantifiable Insights
+                quantifiable_issues = []
+                for issue in issues:
+                    cost_impact = issue.get('cost_impact_monthly')
+                    calculation_basis = issue.get('calculation_basis')
+                    industry_benchmark = issue.get('industry_benchmark')
+                    
+                    if (cost_impact and cost_impact > 0 and 
+                        calculation_basis and industry_benchmark):
+                        quantifiable_issues.append(issue.get('node_title', 'Unknown'))
+                
+                if quantifiable_issues:
+                    self.log_result("Quantifiable Insights", True, 
+                                  f"Found {len(quantifiable_issues)} issues with ROI calculations")
+                else:
+                    self.log_result("Quantifiable Insights", False, 
+                                  "No issues have quantifiable cost impacts or calculations")
+                
+                # Test 4: Health Score Explanations
+                health_score = intelligence.get('health_score')
+                overall_explanation = intelligence.get('overall_explanation', '')
+                
+                if (isinstance(health_score, (int, float)) and 0 <= health_score <= 100 and 
+                    len(overall_explanation) > 50):
+                    self.log_result("Health Score & Explanations", True, 
+                                  f"Health score: {health_score}, explanation provided")
+                else:
+                    self.log_result("Health Score & Explanations", False, 
+                                  f"Invalid health score or insufficient explanation")
+                
+                # Test 5: Test Caching (call again immediately)
+                print("   Testing intelligence caching...")
+                start_time = time.time()
+                
+                cache_response = self.session.get(f"{self.base_url}/process/{process_id}/intelligence", 
+                                                timeout=30)
+                
+                cache_time = time.time() - start_time
+                
+                if cache_response.status_code == 200 and cache_time < 5:
+                    self.log_result("Intelligence Caching", True, 
+                                  f"Cached response returned in {cache_time:.2f}s")
+                else:
+                    self.log_result("Intelligence Caching", False, 
+                                  f"Caching may not be working (took {cache_time:.2f}s)")
+                
+                # Log detailed findings for review
+                print(f"\n   📊 INTELLIGENCE ANALYSIS RESULTS:")
+                print(f"   Health Score: {health_score}")
+                print(f"   Issues Detected: {len(issues)}")
+                print(f"   TIER 1 Issues: {detected_tier1_issues}")
+                print(f"   Total Savings Potential: ${intelligence.get('total_savings_potential', 0)}")
+                print(f"   Top Weakness: {intelligence.get('top_weakness', 'N/A')}")
+                
+                self.log_result("Enhanced Process Intelligence", True, 
+                              f"Intelligence analysis complete with {len(issues)} issues detected")
+                
+            elif response.status_code == 404:
+                self.log_result("Enhanced Process Intelligence", False, 
+                              f"Process {process_id} not found")
+            elif response.status_code == 403:
+                self.log_result("Enhanced Process Intelligence", False, 
+                              "Access denied - authentication issue")
+            else:
+                self.log_result("Enhanced Process Intelligence", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                
+        except Exception as e:
+            self.log_result("Enhanced Process Intelligence", False, f"Error: {str(e)}")
+
+    def authenticate_test_user(self):
+        """Authenticate as test@superhumanly.ai"""
+        try:
+            # First try to login
+            login_payload = {
+                "email": "test@superhumanly.ai",
+                "password": "Test1234!"
+            }
+            
+            response = self.session.post(f"{self.base_url}/auth/login", 
+                                       json=login_payload, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                result = response.json()
+                token = result.get('token')
+                if token:
+                    self.session.headers.update({'Authorization': f'Bearer {token}'})
+                    self.auth_token = token
+                    print(f"   ✅ Authenticated as test@superhumanly.ai")
+                    return True
+                else:
+                    print(f"   ❌ Login successful but no token received")
+                    return False
+            else:
+                print(f"   ❌ Login failed: HTTP {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"   ❌ Authentication error: {str(e)}")
+            return False
+
+    def create_emergency_process_for_intelligence(self):
+        """Create a test emergency process with multiple steps for intelligence testing"""
+        try:
+            emergency_process = {
+                "id": str(uuid.uuid4()),
+                "name": "Emergency Response Process - Intelligence Test",
+                "description": "Emergency response process designed to test TIER 1 issue detection",
+                "status": "draft",
+                "nodes": [
+                    {
+                        "id": "node-1",
+                        "type": "trigger",
+                        "status": "trigger",
+                        "title": "Emergency Alert Received",
+                        "description": "Emergency alert comes in through various channels",
+                        "actors": ["Call Handler"],
+                        "subSteps": ["Check alert source", "Verify authenticity"],
+                        "dependencies": [],
+                        "parallelWith": [],
+                        "failures": [],
+                        "blocking": None,
+                        "currentState": "Manual verification required",
+                        "idealState": "Automated alert validation",
+                        "gap": "No automated verification system",
+                        "impact": "high",
+                        "timeEstimate": "2 minutes",
+                        "position": {"x": 100, "y": 100}
+                    },
+                    {
+                        "id": "node-2",
+                        "type": "step",
+                        "status": "current",
+                        "title": "Assess Situation",
+                        "description": "Evaluate the severity and type of emergency",
+                        "actors": ["Call Handler"],
+                        "subSteps": ["Gather information", "Determine priority"],
+                        "dependencies": ["node-1"],
+                        "parallelWith": [],
+                        "failures": ["Incomplete information", "Wrong priority assigned"],
+                        "blocking": None,
+                        "currentState": "Manual assessment with no time limit",
+                        "idealState": "Structured assessment with timeout",
+                        "gap": "No assessment timeout or escalation",
+                        "impact": "critical",
+                        "timeEstimate": "Variable - no limit",
+                        "position": {"x": 300, "y": 100}
+                    },
+                    {
+                        "id": "node-3",
+                        "type": "step",
+                        "status": "current",
+                        "title": "Notify Escalation Contacts",
+                        "description": "Contact management and relevant stakeholders",
+                        "actors": ["Call Handler"],
+                        "subSteps": ["Call manager", "Send notifications"],
+                        "dependencies": ["node-2"],
+                        "parallelWith": [],
+                        "failures": ["Manager unavailable", "Contact details outdated"],
+                        "blocking": None,
+                        "currentState": "Sequential notification process",
+                        "idealState": "Parallel notification system",
+                        "gap": "No backup contact method",
+                        "impact": "high",
+                        "timeEstimate": "4 minutes",
+                        "position": {"x": 500, "y": 100}
+                    },
+                    {
+                        "id": "node-4",
+                        "type": "step",
+                        "status": "warning",
+                        "title": "Contact Emergency Services",
+                        "description": "Call emergency services if required",
+                        "actors": ["Call Handler"],
+                        "subSteps": ["Dial emergency number", "Provide details"],
+                        "dependencies": ["node-2"],
+                        "parallelWith": [],
+                        "failures": ["Line busy", "No answer", "Wrong information provided"],
+                        "blocking": None,
+                        "currentState": "Single emergency contact method",
+                        "idealState": "Multiple contact methods with failover",
+                        "gap": "No backup emergency contact",
+                        "impact": "critical",
+                        "timeEstimate": "4 minutes",
+                        "position": {"x": 500, "y": 300}
+                    },
+                    {
+                        "id": "node-5",
+                        "type": "step",
+                        "status": "current",
+                        "title": "Provide Information",
+                        "description": "Share relevant details with emergency responders",
+                        "actors": ["Call Handler", "Emergency Services"],
+                        "subSteps": ["Confirm location", "Describe situation", "Provide contact details"],
+                        "dependencies": ["node-3", "node-4"],
+                        "parallelWith": [],
+                        "failures": ["Incomplete handoff", "Missing critical information"],
+                        "blocking": None,
+                        "currentState": "Verbal handoff only",
+                        "idealState": "Structured information transfer",
+                        "gap": "No confirmation of information received",
+                        "impact": "high",
+                        "timeEstimate": "3 minutes",
+                        "position": {"x": 700, "y": 200}
+                    }
+                ],
+                "actors": ["Call Handler", "Emergency Services", "Management", "System"],
+                "criticalGaps": [
+                    "No backup emergency contact method",
+                    "Assessment has no time limit",
+                    "Sequential notifications cause delays",
+                    "No handoff confirmation process"
+                ],
+                "improvementOpportunities": [
+                    {
+                        "description": "Implement parallel notification system",
+                        "type": "automation",
+                        "estimatedSavings": "4 minutes per incident"
+                    },
+                    {
+                        "description": "Add backup emergency contact methods",
+                        "type": "reliability",
+                        "estimatedSavings": "Prevents 8% of failed emergency calls"
+                    }
+                ],
+                "theme": "minimalist",
+                "healthScore": 65,
+                "views": 0
+            }
+            
+            response = self.session.post(f"{self.base_url}/process", 
+                                       json=emergency_process, timeout=TIMEOUT)
+            
+            if response.status_code == 200:
+                created_process = response.json()
+                print(f"   ✅ Created emergency test process: {created_process.get('name')}")
+                return created_process
+            else:
+                print(f"   ❌ Failed to create test process: HTTP {response.status_code}")
+                return None
+                
+        except Exception as e:
+            print(f"   ❌ Error creating test process: {str(e)}")
+            return None
+
     # ============ AUTHENTICATION FLOW TESTING ============
     
     def test_signup_flow(self):
