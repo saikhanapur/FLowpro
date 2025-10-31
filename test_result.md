@@ -448,7 +448,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend Smoke Test (Complete)"
+    - "Enhanced Process Intelligence - TIER 1 Detection Backend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
