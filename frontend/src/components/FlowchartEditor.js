@@ -99,6 +99,22 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     }
   };
 
+  const regenerateIntelligence = async () => {
+    if (!id || readOnly) return;
+    
+    setIntelligenceLoading(true);
+    try {
+      const data = await api.regenerateIntelligence(id);
+      setIntelligence(data);
+      toast.success('Intelligence regenerated with fresh analysis!');
+    } catch (error) {
+      console.error('Failed to regenerate intelligence:', error);
+      toast.error('Failed to regenerate intelligence');
+    } finally {
+      setIntelligenceLoading(false);
+    }
+  };
+
   const handleMoveToWorkspace = async (targetWorkspace) => {
     setMovingProcess(true);
     try {
