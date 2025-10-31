@@ -329,14 +329,18 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
         {/* Issues */}
         {intelligence.issues && intelligence.issues.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-slate-900 mb-3">Issues Detected ({intelligence.issues.length})</h3>
+            <h3 className="text-sm font-bold text-slate-900 mb-3">
+              {viewMode === 'summary' ? `Top Issues (${Math.min(3, intelligence.issues.length)})` : `Issues Detected (${intelligence.issues.length})`}
+            </h3>
             <div className="space-y-3">
-              {intelligence.issues.map((issue, idx) => (
+              {intelligence.issues
+                .slice(0, viewMode === 'summary' ? 3 : intelligence.issues.length)
+                .map((issue, idx) => (
                 <div key={idx} className="bg-white rounded-xl border-2 border-slate-200 overflow-hidden">
                   {/* Issue Header - Always Visible */}
                   <div 
                     className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
-                    onClick={() => toggleIssue(idx)}
+                    onClick={() => viewMode === 'detailed' && toggleIssue(idx)}
                   >
                     <div className="flex items-start gap-3">
                       {/* Issue Type Icon */}
@@ -354,7 +358,7 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                         )}
                         
                         {/* Issue Type Label */}
-                        {issue.issue_type && (
+                        {issue.issue_type && viewMode === 'detailed' && (
                           <div className="text-xs font-semibold text-slate-500 mb-1">
                             {getIssueTypeLabel(issue.issue_type)}
                           </div>
@@ -377,7 +381,7 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                           {issue.cost_impact_monthly > 0 && (
                             <div className="inline-flex items-center gap-1 text-xs font-semibold text-red-600">
                               <DollarSign className="w-3.5 h-3.5" />
-                              <span>${issue.cost_impact_monthly.toLocaleString()}/mo</span>
+                              <span>~${issue.cost_impact_monthly.toLocaleString()}/mo</span>
                             </div>
                           )}
                           
@@ -390,17 +394,19 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                           )}
                         </div>
                         
-                        {/* Expand Indicator */}
-                        <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-medium">
-                          {expandedIssues[idx] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                          <span>{expandedIssues[idx] ? 'Hide details' : 'View details'}</span>
-                        </div>
+                        {/* Expand Indicator - Only in detailed view */}
+                        {viewMode === 'detailed' && (
+                          <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-medium">
+                            {expandedIssues[idx] ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                            <span>{expandedIssues[idx] ? 'Hide details' : 'View details'}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                   
-                  {/* Expanded Details */}
-                  {expandedIssues[idx] && (
+                  {/* Expanded Details - Only in detailed view */}
+                  {viewMode === 'detailed' && expandedIssues[idx] && (
                     <div className="px-4 pb-4 pt-2 border-t border-slate-200 bg-slate-50 space-y-3">
                       {/* Description */}
                       <div>
@@ -448,13 +454,13 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                             )}
                             {issue.industry_benchmark && (
                               <div>
-                                <span className="text-xs font-medium text-blue-700">Industry Standard: </span>
+                                <span className="text-xs font-medium text-blue-700">Common Practice: </span>
                                 <span className="text-xs text-blue-600">{issue.industry_benchmark}</span>
                               </div>
                             )}
                             {issue.failure_rate_estimate !== undefined && (
                               <div>
-                                <span className="text-xs font-medium text-blue-700">Failure Rate: </span>
+                                <span className="text-xs font-medium text-blue-700">Est. Occurrence: </span>
                                 <span className="text-xs text-blue-600">{issue.failure_rate_estimate}%</span>
                               </div>
                             )}
@@ -492,7 +498,7 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                           <div className="flex gap-2">
                             <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                             <div>
-                              <div className="text-xs font-semibold text-amber-700 mb-1">How We Calculated This</div>
+                              <div className="text-xs font-semibold text-amber-700 mb-1">How We Estimated This</div>
                               <p className="text-xs text-amber-600 leading-relaxed font-mono">
                                 {issue.calculation_basis}
                               </p>
@@ -505,6 +511,17 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
                 </div>
               ))}
             </div>
+            
+            {/* Show More Button - Summary View Only */}
+            {viewMode === 'summary' && intelligence.issues.length > 3 && (
+              <button
+                onClick={toggleViewMode}
+                className="w-full mt-3 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <span>View All {intelligence.issues.length} Issues & Recommendations</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
         )}
 
