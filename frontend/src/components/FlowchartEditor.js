@@ -462,7 +462,10 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
                 >
                   <Sparkles className="w-4 h-4" />
                   <span className="hidden sm:inline">
-                    {intelligence?.issues?.length || 0} improvement{intelligence?.issues?.length !== 1 ? 's' : ''} found
+                    {(process?.steps?.length || 0) <= 10 
+                      ? `${Math.min(2, intelligence?.issues?.length || 0)} quick tip${Math.min(2, intelligence?.issues?.length || 0) !== 1 ? 's' : ''}`
+                      : `${intelligence?.issues?.length || 0} improvement${intelligence?.issues?.length !== 1 ? 's' : ''} found`
+                    }
                   </span>
                   <span className="sm:hidden">{intelligence?.issues?.length || 0}</span>
                 </button>
