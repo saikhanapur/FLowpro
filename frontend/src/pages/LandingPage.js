@@ -183,11 +183,11 @@ const LandingPage = () => {
             {/* Intelligence Feature 3 */}
             <div className="p-6 rounded-xl border border-slate-200 bg-white">
               <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center mb-4">
-                <Shield className="w-7 h-7 text-white" />
+                <CheckCircle className="w-6 h-6 text-emerald-600" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Track Improvements</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Implement fixes and prove ROI. Show executives exactly how much you saved.
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Get Recommendations</h3>
+              <p className="text-sm text-slate-600">
+                Receive actionable suggestions to improve efficiency and reduce delays.
               </p>
             </div>
           </div>
