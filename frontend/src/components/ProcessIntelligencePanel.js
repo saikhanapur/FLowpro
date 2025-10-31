@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Clock, Activity, RefreshCw, ChevronDown, ChevronRight, AlertCircle, Zap, Users, Timer, FileText, Target, Info } from 'lucide-react';
+import { Sparkles, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Clock, Activity, RefreshCw, ChevronDown, ChevronRight, AlertCircle, Zap, Users, Timer, FileText, Target, Info, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenerate, onClose }) => {
