@@ -22,7 +22,7 @@ import { api } from '@/utils/api';
 import { streamDocumentAnalysis } from '@/utils/sseClient';
 import { toast } from 'sonner';
 
-const ProcessCreator = ({ currentWorkspace }) => {
+const ProcessCreator = ({ currentWorkspace, isGuestMode = false }) => {
   const navigate = useNavigate();
   const [method, setMethod] = useState(null);
   const [processing, setProcessing] = useState(false);
@@ -45,13 +45,15 @@ const ProcessCreator = ({ currentWorkspace }) => {
   // Predictive pre-loading
   const [preloadedAnalysis, setPreloadedAnalysis] = useState(null);
   
-  // Project selection
+  // Project selection (disabled in guest mode)
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
 
   useEffect(() => {
-    loadWorkspaces();
-  }, []);
+    if (!isGuestMode) {
+      loadWorkspaces();
+    }
+  }, [isGuestMode]);
 
   const loadWorkspaces = async () => {
     try {
