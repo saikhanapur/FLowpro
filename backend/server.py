@@ -2216,6 +2216,47 @@ async def update_process(process_id: str, process: Process):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.get("/process/{process_id}/intelligence")
+async def get_process_intelligence(process_id: str, request: Request):
+    """Get intelligence analysis for a process"""
+    try:
+        # Get the process
+        process = await db.processes.find_one({"id": process_id}, {"_id": 0})
+        
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        # Check access
+        user = await get_current_user(request)
+        is_owner = user and user.get('id') == process.get('userId')
+        
+        if not is_owner:
+            raise HTTPException(status_code=403, detail="Access denied")
+        
+        # Check if we have cached intelligence
+        cached_intelligence = process.get('intelligence')
+        if cached_intelligence:
+            logger.info(f"Returning cached intelligence for process {process_id}")
+            return cached_intelligence
+        
+        # Generate intelligence
+        logger.info(f"Generating intelligence for process {process_id}")
+        intelligence = await ai_service.analyze_process_intelligence(process)
+        
+        # Cache it
+        await db.processes.update_one(
+            {"id": process_id},
+            {"$set": {"intelligence": intelligence, "intelligenceGeneratedAt": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return intelligence
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Intelligence analysis error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.delete("/process/{process_id}")
 async def delete_process(process_id: str):
     """Delete a process"""
