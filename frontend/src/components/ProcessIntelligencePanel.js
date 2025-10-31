@@ -51,7 +51,8 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
 
   const getSeverityColor = (severity) => {
     switch (severity) {
-      case 'high': return 'bg-red-100 text-red-700 border-red-200';
+      case 'critical': return 'bg-red-100 text-red-800 border-red-300';
+      case 'high': return 'bg-orange-100 text-orange-800 border-orange-300';
       case 'medium': return 'bg-amber-100 text-amber-700 border-amber-200';
       default: return 'bg-blue-100 text-blue-700 border-blue-200';
     }
@@ -59,9 +60,32 @@ const ProcessIntelligencePanel = ({ intelligence, loading, onRefresh, onRegenera
 
   const getSeverityIcon = (severity) => {
     switch (severity) {
+      case 'critical': return <AlertCircle className="w-4 h-4" />;
       case 'high': return <AlertTriangle className="w-4 h-4" />;
       case 'medium': return <AlertTriangle className="w-4 h-4" />;
       default: return <Activity className="w-4 h-4" />;
+    }
+  };
+
+  const getIssueTypeIcon = (issueType) => {
+    switch (issueType) {
+      case 'missing_error_handling': return <AlertCircle className="w-4 h-4" />;
+      case 'serial_bottleneck': return <Zap className="w-4 h-4" />;
+      case 'unclear_ownership': return <Users className="w-4 h-4" />;
+      case 'missing_timeout': return <Timer className="w-4 h-4" />;
+      case 'missing_handoff': return <FileText className="w-4 h-4" />;
+      default: return <Target className="w-4 h-4" />;
+    }
+  };
+
+  const getIssueTypeLabel = (issueType) => {
+    switch (issueType) {
+      case 'missing_error_handling': return 'Missing Error Handling';
+      case 'serial_bottleneck': return 'Serial Bottleneck';
+      case 'unclear_ownership': return 'Unclear Ownership';
+      case 'missing_timeout': return 'Missing Timeout';
+      case 'missing_handoff': return 'Missing Handoff';
+      default: return 'Process Issue';
     }
   };
 
