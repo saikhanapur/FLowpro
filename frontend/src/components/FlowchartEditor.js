@@ -991,6 +991,60 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         </DialogContent>
       </Dialog>
 
+      {/* Guest Signup Prompt */}
+      <Dialog open={showGuestSignupPrompt} onOpenChange={setShowGuestSignupPrompt}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Sparkles className="w-6 h-6 text-blue-600" />
+              Sign Up to Save & Share
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              You've created an amazing flowchart! To save, publish, and share it with your team, you'll need to create a free account.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+            <p className="text-sm font-semibold text-blue-900 mb-2">
+              What you'll get with a free account:
+            </p>
+            <ul className="text-sm text-blue-800 space-y-1">
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>Save unlimited flowcharts</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>Publish & share with your team</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>AI-powered process intelligence</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>Export to PDF and share links</span>
+              </li>
+            </ul>
+          </div>
+
+          <DialogFooter className="flex gap-2 sm:gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowGuestSignupPrompt(false)}
+            >
+              Maybe Later
+            </Button>
+            <Button
+              onClick={() => navigate('/signup')}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              Create Free Account
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* AI Refine Chat */}
       {showAIChat && (
         <AIRefineChat
