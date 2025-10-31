@@ -61,19 +61,23 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200 mb-8">
             <Zap className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-600">Superhuman Process Intelligence</span>
+            <span className="text-sm font-medium text-blue-600">AI-Powered Process Intelligence</span>
           </div>
 
-          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-4 leading-tight">
-            Upload a doc. Get a flowchart.
+          <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
+            Find what's slowing down
             <br />
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Instantly.
+              your company.
             </span>
           </h1>
 
-          <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Add voice context, get dynamic insights — work SuperHumanly fast.
+          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Upload your process. AI shows what's broken, what it costs, and how to fix it.
+          </p>
+          
+          <p className="text-2xl font-semibold text-slate-900 mb-12">
+            Save thousands per month. See results in minutes.
           </p>
 
           <div className="flex items-center justify-center gap-4">
