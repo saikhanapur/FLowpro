@@ -51,7 +51,8 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   // Process Intelligence state
   const [intelligence, setIntelligence] = useState(null);
   const [intelligenceLoading, setIntelligenceLoading] = useState(false);
-  const [showIntelligence, setShowIntelligence] = useState(true);
+  const [showIntelligence, setShowIntelligence] = useState(false); // Hidden by default
+  const [intelligenceBadgeVisible, setIntelligenceBadgeVisible] = useState(false);
 
   useEffect(() => {
     if (!processData) {
