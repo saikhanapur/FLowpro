@@ -399,6 +399,18 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ DOCUMENT PROCESSING FULLY RESTORED. Comprehensive testing completed after EMERGENT_LLM_KEY fix: 1) Document Upload: Successfully uploaded and extracted 1,837 characters from sample document. 2) Process Parsing: Claude API working perfectly - parsed enterprise process with 7 nodes, proper actor identification, and gap detection (AI Quality Score: 80/100). 3) Voice Transcription: Whisper API properly configured - validates file requirements and supports WebM/MP3 formats. 4) AI Consistency: Verified across multiple runs with variance ≤2 (enterprise-grade reliability). 5) Context-Enriched Parsing: Successfully incorporates additional user context. All core AI functionality is fully operational and producing high-quality results."
+
+  - task: "Enhanced Process Intelligence - TIER 1 Detection Backend"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "MAJOR BACKEND ENHANCEMENT: Completely rewrote analyze_process_intelligence prompt with detailed TIER 1 issue detection logic. New capabilities: 1) Missing Error Handling: Detects external dependencies without fallbacks, calculates failure rates (8% emergency busy, 15% manager unavailable), estimates risk costs. 2) Serial Bottleneck Detection: Identifies parallel opportunities, calculates time savings and monthly ROI. 3) Unclear Ownership: Flags generic actors, estimates delay costs (2-5 days avg). 4) Missing Timeouts: Detects indefinite waits, calculates stall costs. 5) Missing Handoff Documentation: Identifies actor changes without triggers. Enhanced output includes: node-specific issues with issue_type, detected_pattern, industry_benchmark, failure_rate_estimate, implementation_difficulty, calculation_basis for ROI. Explainable health scores with deduction rules. Comprehensive benchmarks and roi_summary. Need to test: GET /api/process/{id}/intelligence with real processes, verify Claude generates TIER 1 detections, check JSON structure, verify quantifiable ROI calculations."
     implemented: true
     working: "NA"
     file: "/app/frontend/src/components/Dashboard.js"
