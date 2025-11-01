@@ -165,7 +165,7 @@ const SimpleFlowchart = ({
           const hasGap = node.gap || node.hasGap;
 
           return (
-            <div key={node.id} className="flex flex-col items-center">
+            <div key={node.id} className="mb-6 flex flex-col items-center">
               {/* Node Card */}
               <div
                 onClick={() => onNodeClick(node)}
