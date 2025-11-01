@@ -88,6 +88,28 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   // Guest mode state
   const [showGuestSignupPrompt, setShowGuestSignupPrompt] = useState(false);
   
+  // React Flow state
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  
+  // Update React Flow nodes/edges when process changes
+  useEffect(() => {
+    if (process) {
+      const { nodes: flowNodes, edges: flowEdges } = convertToReactFlowFormat(process);
+      setNodes(flowNodes);
+      setEdges(flowEdges);
+    }
+  }, [process, setNodes, setEdges]);
+
+  // Handle node click in React Flow
+  const onNodeClick = useCallback((event, node) => {
+    // Find the original node data from process
+    const originalNode = process?.nodes?.find(n => n.id === node.id);
+    if (originalNode) {
+      setSelectedNode(originalNode);
+    }
+  }, [process]);
+  
   // Move to project state
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
