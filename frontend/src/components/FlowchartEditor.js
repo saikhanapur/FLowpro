@@ -108,6 +108,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
     const originalNode = process?.nodes?.find(n => n.id === node.id);
     if (originalNode) {
       setSelectedNode(originalNode);
+      setShowProcessDetails(true); // Open EROAD-style details panel
     }
   }, [process]);
   
