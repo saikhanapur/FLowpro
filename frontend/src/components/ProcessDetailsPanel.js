@@ -68,31 +68,31 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
           </div>
         )}
 
-        {/* Detailed Information Block */}
+        {/* Detailed Information Block - White with colored boxes */}
         {nodeData?.operationalDetails && (
-          <div className="bg-[#3A4149] rounded-lg p-5 space-y-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
             
             {/* Header with Icon */}
-            <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 pb-3 border-b border-gray-200">
+              <Database className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-white font-semibold text-base mb-1">
+                <h4 className="text-gray-900 font-semibold text-base mb-1">
                   Operational Details
                 </h4>
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-600 text-sm">
                   Required information and actions for this step
                 </p>
               </div>
             </div>
 
-            {/* Required Data */}
+            {/* Required Data - Green Box */}
             {nodeData.operationalDetails.requiredData && nodeData.operationalDetails.requiredData.length > 0 && (
-              <div>
-                <h5 className="text-white font-semibold text-sm mb-2">Required Data:</h5>
+              <div className="bg-green-50 rounded-lg border border-green-200 p-4">
+                <h5 className="text-green-900 font-semibold text-sm mb-2">Required Data:</h5>
                 <div className="space-y-1.5">
                   {nodeData.operationalDetails.requiredData.map((item, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm text-gray-300">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div key={i} className="flex items-start gap-2 text-sm text-green-800">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -100,14 +100,14 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
               </div>
             )}
 
-            {/* Specific Actions */}
+            {/* Specific Actions - Blue Box */}
             {nodeData.operationalDetails.specificActions && nodeData.operationalDetails.specificActions.length > 0 && (
-              <div>
-                <h5 className="text-white font-semibold text-sm mb-2">Actions:</h5>
+              <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
+                <h5 className="text-blue-900 font-semibold text-sm mb-2">Actions:</h5>
                 <div className="space-y-1.5">
                   {nodeData.operationalDetails.specificActions.map((item, i) => (
-                    <div key={i} className="flex items-start gap-2 text-sm text-gray-300">
-                      <Target className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <div key={i} className="flex items-start gap-2 text-sm text-blue-800">
+                      <Target className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -115,14 +115,14 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
               </div>
             )}
 
-            {/* Contact Info */}
+            {/* Contact Info - Purple Box */}
             {nodeData.operationalDetails.contactInfo && Object.keys(nodeData.operationalDetails.contactInfo).length > 0 && (
-              <div>
-                <h5 className="text-white font-semibold text-sm mb-2">Contacts:</h5>
+              <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
+                <h5 className="text-purple-900 font-semibold text-sm mb-2">Contacts:</h5>
                 <div className="space-y-1.5">
                   {Object.entries(nodeData.operationalDetails.contactInfo).map(([name, number]) => (
-                    <div key={name} className="text-sm text-gray-300">
-                      <span className="font-medium text-white">{name}:</span> {number}
+                    <div key={name} className="text-sm text-purple-800">
+                      <span className="font-medium">{name}:</span> {number}
                     </div>
                   ))}
                 </div>
@@ -131,9 +131,9 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
 
             {/* Timeline */}
             {nodeData.operationalDetails.timeline && (
-              <div className="pt-3 border-t border-gray-600">
-                <div className="text-sm text-gray-300">
-                  <span className="font-medium text-white">Timeline:</span> {nodeData.operationalDetails.timeline}
+              <div className="pt-3 border-t border-gray-200">
+                <div className="text-sm text-gray-700">
+                  <span className="font-medium text-gray-900">Timeline:</span> {nodeData.operationalDetails.timeline}
                 </div>
               </div>
             )}
