@@ -26,7 +26,7 @@ const CustomEdge = ({
   const isNoBranch = data?.condition === 'no' || data?.label === 'NO';
   const isErrorPath = data?.type === 'error' || data?.label?.toLowerCase().includes('error');
 
-  // Determine edge style based on type
+  // Minimalist edge style
   const getEdgeStyle = () => {
     if (isErrorPath) {
       return {
@@ -38,17 +38,17 @@ const CustomEdge = ({
     if (isYesBranch) {
       return {
         stroke: '#10B981',
-        strokeWidth: 3,
+        strokeWidth: 2.5,
       };
     }
     if (isNoBranch) {
       return {
         stroke: '#EF4444',
-        strokeWidth: 3,
+        strokeWidth: 2.5,
       };
     }
     return {
-      stroke: '#94A3B8',
+      stroke: '#CBD5E1',
       strokeWidth: 2,
     };
   };
@@ -65,7 +65,7 @@ const CustomEdge = ({
         markerEnd={markerEnd}
       />
       
-      {/* Edge Label (YES/NO) */}
+      {/* Minimalist edge label */}
       {data?.label && (
         <EdgeLabelRenderer>
           <div
@@ -78,10 +78,10 @@ const CustomEdge = ({
           >
             <div 
               className={`
-                px-3 py-1 rounded-full font-bold text-sm shadow-lg
+                px-2.5 py-1 rounded-full font-semibold text-xs shadow-md
                 ${isYesBranch ? 'bg-green-500 text-white' : ''}
                 ${isNoBranch ? 'bg-red-500 text-white' : ''}
-                ${!isYesBranch && !isNoBranch ? 'bg-slate-700 text-white' : ''}
+                ${!isYesBranch && !isNoBranch ? 'bg-white text-slate-700 border border-slate-300' : ''}
               `}
             >
               {data.label}
