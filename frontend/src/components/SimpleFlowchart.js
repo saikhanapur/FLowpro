@@ -13,6 +13,24 @@ const SimpleFlowchart = ({
 }) => {
   if (!process?.nodes) return null;
 
+  // Analyze which icon types are actually used in this flowchart
+  const usedIconTypes = new Set();
+  process.nodes.forEach(node => {
+    const isTrigger = node.type === 'trigger' || node.status === 'trigger';
+    const isActive = node.status === 'active' || node.status === 'complete';
+    const isWarning = node.status === 'warning';
+    const isCriticalGap = node.gap || node.hasGap;
+    const isAPIIntegration = node.title?.toLowerCase().includes('api') || 
+                             node.title?.toLowerCase().includes('integration') ||
+                             node.title?.toLowerCase().includes('database');
+
+    if (isTrigger) usedIconTypes.add('trigger');
+    if (isActive) usedIconTypes.add('active');
+    if (isWarning) usedIconTypes.add('warning');
+    if (isCriticalGap) usedIconTypes.add('criticalGap');
+    if (isAPIIntegration) usedIconTypes.add('apiIntegration');
+  });
+
   const getNodeStyle = (node) => {
     const isCritical = node.status === 'warning' || node.gap || node.hasGap;
     const isComplete = node.status === 'complete' || node.type === 'end';
