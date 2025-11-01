@@ -51,13 +51,7 @@ const IntegratedSidebar = ({
         <div className="px-6 py-4 flex items-center justify-between">
           <h2 className="text-gray-900 font-bold text-lg">Process Analysis</h2>
           <button 
-            onClick={() => {
-              if (selectedNode) {
-                onCloseNode();
-              } else if (showIntelligence) {
-                onCloseIntelligence();
-              }
-            }}
+            onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-5 h-5" />
