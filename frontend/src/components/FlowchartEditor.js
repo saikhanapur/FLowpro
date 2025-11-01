@@ -636,104 +636,49 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         )}
 
         {/* Canvas - scrollable */}
-        <div className="flex-1 overflow-auto bg-slate-50" data-testid="flowchart-canvas">
-          <div className="max-w-5xl mx-auto p-8">
-            {/* Legend */}
-            <div className="mb-8 bg-white rounded-2xl p-5 border border-slate-300/50 shadow-md flex flex-wrap gap-5 text-sm">
-              <div className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Trigger</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-lg bg-white border border-emerald-300/60 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Active/Current</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-lg bg-white border border-amber-300/60 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Warning/Issue</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-lg bg-white border border-slate-300/50 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Completed</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-rose-500 to-rose-600 shadow-sm"></div>
-                <span className="text-slate-700 font-medium">Critical Gap</span>
-              </div>
-            </div>
-
-            {/* Flowchart Nodes - Back to Original Beautiful Layout */}
-            <div className="flex flex-col items-center space-y-0">
-              {process.nodes?.map((node, idx) => (
-                <div key={node.id} className="node-container w-full max-w-4xl relative">
-                  {/* Split Edit Controls - Arrows Left, Delete Right */}
-                  {!readOnly && isEditMode && (
-                    <>
-                      {/* Left Side - Reorder Arrows */}
-                      <div className="absolute -left-14 top-1/2 -translate-y-1/2 flex flex-col gap-2 print:hidden">
-                        <button
-                          onClick={() => handleMoveNode(idx, 'up')}
-                          disabled={idx === 0 || reordering}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-blue-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
-                          title="Move Up"
-                        >
-                          <ArrowUp className="w-4 h-4 text-slate-600" />
-                        </button>
-                        
-                        <button
-                          onClick={() => handleMoveNode(idx, 'down')}
-                          disabled={idx === process.nodes.length - 1 || reordering}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-blue-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
-                          title="Move Down"
-                        >
-                          <ArrowDown className="w-4 h-4 text-slate-600" />
-                        </button>
-                      </div>
-
-                      {/* Right Side - Delete Button */}
-                      <div className="absolute -right-14 top-1/2 -translate-y-1/2 print:hidden">
-                        <button
-                          onClick={() => handleDeleteNode(node.id)}
-                          disabled={process.nodes.length === 1}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white hover:bg-red-50 shadow-sm hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150 border border-slate-200"
-                          title="Delete Step"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </button>
-                      </div>
-                    </>
-                  )}
-                  
-                  <FlowNode
-                    node={node}
-                    onClick={() => setSelectedNode(node)}
-                    isSelected={selectedNode?.id === node.id}
-                  />
-                  
-                  {idx < process.nodes.length - 1 && (
-                    <div className="flex justify-center py-1.5 arrow-connector">
-                      <svg width="32" height="40" viewBox="0 0 32 40" className="text-slate-400">
-                        <line x1="16" y1="0" x2="16" y2="28" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                        <polygon points="16,40 6,26 26,26" fill="currentColor" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {/* Add Step Button (Only in Edit Mode, Hidden in Print) */}
-              {!readOnly && isEditMode && (
-                <button
-                  onClick={handleAddNode}
-                  className="w-full max-w-4xl mt-4 py-4 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 group print:hidden"
-                >
-                  <div className="flex items-center justify-center gap-2 text-slate-600 group-hover:text-blue-600">
-                    <Plus className="w-5 h-5" />
-                    <span className="font-medium">Add Step</span>
-                  </div>
-                </button>
-              )}
-            </div>
+        <div className="flex-1 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100" data-testid="flowchart-canvas">
+          {/* React Flow Container */}
+          <div className="w-full h-full">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onNodeClick={onNodeClick}
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              defaultEdgeOptions={defaultEdgeOptions}
+              fitView
+              fitViewOptions={{ padding: 0.2 }}
+              minZoom={0.1}
+              maxZoom={1.5}
+              defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
+              className="bg-transparent"
+              proOptions={{ hideAttribution: true }}
+            >
+              <Background 
+                color="#cbd5e1" 
+                gap={20} 
+                size={1}
+                variant="dots"
+              />
+              <Controls 
+                className="!bg-white !border-slate-200 !shadow-lg"
+                showInteractive={false}
+              />
+              <MiniMap 
+                nodeColor={(node) => {
+                  switch(node.type) {
+                    case 'decision': return '#FFA500';
+                    case 'startEnd': return '#10B981';
+                    default: return '#3B82F6';
+                  }
+                }}
+                maskColor="rgba(0, 0, 0, 0.1)"
+                className="!bg-white !border-slate-200 !shadow-lg"
+              />
+            </ReactFlow>
+          </div>
 
             {/* Summary Sections */}
             {(process.criticalGaps?.length > 0 || process.improvementOpportunities?.length > 0) && (
