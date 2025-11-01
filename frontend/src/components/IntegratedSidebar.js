@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { X, ChevronRight, CheckCircle, XCircle, AlertTriangle, FileText, Zap, Target, Database, GitBranch } from 'lucide-react';
 
-const IntegratedSidebar = ({ process, selectedNode, intelligence, onClose }) => {
+const IntegratedSidebar = ({ 
+  selectedNode, 
+  process, 
+  intelligence, 
+  intelligenceLoading, 
+  showIntelligence, 
+  onCloseNode, 
+  onCloseIntelligence, 
+  onUpdateNode, 
+  onRefreshIntelligence, 
+  onRegenerateIntelligence, 
+  readOnly, 
+  accessLevel, 
+  isSimpleProcess 
+}) => {
   const [activeTab, setActiveTab] = useState('details'); // 'details' or 'gaps'
 
   // Analyze gaps from process nodes
