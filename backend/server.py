@@ -182,6 +182,14 @@ class Workspace(BaseModel):
     processCount: int = 0  # Denormalized for performance
     isDefault: bool = False  # First workspace created is default
 
+class ProcessEdge(BaseModel):
+    """Edge/connection between nodes in flowchart"""
+    id: str
+    source: str  # source node ID
+    target: str  # target node ID
+    label: Optional[str] = None  # Label on edge (e.g., "YES", "NO")
+    condition: Optional[str] = None  # Condition type (e.g., "yes", "no")
+
 class Process(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
@@ -196,6 +204,7 @@ class Process(BaseModel):
     version: int = 1
     status: str = "draft"  # draft, published, archived
     nodes: List[ProcessNode] = []
+    edges: List[ProcessEdge] = []  # NEW: Explicit edge definitions for branching
     actors: List[str] = []
     criticalGaps: List[str] = []
     improvementOpportunities: List[Dict[str, Any]] = []
