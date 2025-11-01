@@ -73,6 +73,53 @@ const SimpleFlowchart = ({
 
   return (
     <div className="w-full h-full overflow-y-auto p-8" style={{ backgroundColor: '#E8EEF5' }}>
+      {/* Legend Bar */}
+      <div className="max-w-4xl mx-auto mb-4">
+        <div className="bg-white rounded-lg shadow-sm px-6 py-3 border border-gray-200">
+          <div className="flex items-center gap-8 justify-center flex-wrap">
+            {/* Trigger */}
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
+                <Play className="w-3.5 h-3.5 text-white fill-white" />
+              </div>
+              <span className="text-sm text-gray-700 font-medium">Trigger</span>
+            </div>
+            
+            {/* Active */}
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+                <CheckCircle className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-sm text-gray-700 font-medium">Active</span>
+            </div>
+            
+            {/* Warning */}
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center">
+                <AlertTriangle className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-sm text-gray-700 font-medium">Warning</span>
+            </div>
+            
+            {/* Critical Gap */}
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center">
+                <HelpCircle className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-sm text-gray-700 font-medium">Critical Gap</span>
+            </div>
+            
+            {/* API Integration */}
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+                <Database className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-sm text-gray-700 font-medium">API Integration</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       {/* Framed Container - White box with gray border */}
       <div 
         className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8 space-y-6"
