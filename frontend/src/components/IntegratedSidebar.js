@@ -87,6 +87,18 @@ const IntegratedSidebar = ({
           >
             Gaps & Insights
           </button>
+          {showIntelligence && (
+            <button
+              onClick={() => setActiveTab('insights')}
+              className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
+                activeTab === 'insights'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              AI Quick Tips
+            </button>
+          )}
         </div>
       </div>
 
