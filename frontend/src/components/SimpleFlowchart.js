@@ -72,8 +72,15 @@ const SimpleFlowchart = ({
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="w-full h-full overflow-y-auto p-8" style={{ backgroundColor: '#E8EEF5' }}>
+      {/* Framed Container - White box with gray border */}
+      <div 
+        className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8 space-y-6"
+        style={{ 
+          border: '1px solid #D1D5DB',
+          minHeight: '600px'
+        }}
+      >
         {process.nodes.map((node, index) => {
           const style = getNodeStyle(node);
           const isSelected = selectedNodeId === node.id;
