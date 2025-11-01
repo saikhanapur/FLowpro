@@ -185,16 +185,17 @@ const SimpleFlowchart = ({
 
           return (
             <div key={node.id} className="mb-6 flex flex-col items-center">
-              {/* Node Card */}
+              {/* Node Card - STATUS-BASED COLORS */}
               <div
                 onClick={() => onNodeClick(node)}
-                className="relative cursor-pointer transition-all duration-200 hover:scale-105"
+                className="relative cursor-pointer transition-all duration-200 hover:scale-[1.02]"
                 style={{
                   width: '600px',
                   border: `2px solid ${style.borderColor}`,
                   backgroundColor: style.backgroundColor,
-                  boxShadow: isSelected ? `0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 4px ${style.dotColor}20` : '0 2px 8px rgba(0, 0, 0, 0.08)',
+                  boxShadow: isSelected ? `0 4px 16px ${style.dotColor}40` : '0 2px 8px rgba(0, 0, 0, 0.08)',
                   borderRadius: '12px',
+                  padding: '24px', // Consistent 24px padding (8px grid: 3 units)
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
                 }}
               >
@@ -204,36 +205,45 @@ const SimpleFlowchart = ({
                     className="absolute -top-2 -right-2 w-4 h-4 rounded-full border-2 border-white"
                     style={{
                       backgroundColor: style.dotColor,
-                      boxShadow: `0 0 8px ${style.dotColor}40`
+                      boxShadow: `0 0 8px ${style.dotColor}60`
                     }}
                   />
                 )}
 
                 {/* Gap Indicator */}
                 {hasGap && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500 rounded-l-xl" />
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600 rounded-l-xl" />
                 )}
 
                 {/* Content */}
-                <div className="px-6 py-5">
+                <div>
                   {/* Title with Icon */}
-                  <div className="flex items-start gap-2 mb-2">
+                  <div className="flex items-start gap-3 mb-2">
                     {style.icon && <div className="mt-0.5">{style.icon}</div>}
-                    <h3 className="text-gray-900 font-bold text-lg leading-tight flex-1">
+                    <h3 
+                      className="font-bold text-lg leading-tight flex-1"
+                      style={{ color: style.textColor }}
+                    >
                       {node.title}
                     </h3>
                   </div>
 
                   {/* Actor/User */}
                   {node.actor && (
-                    <p className="text-gray-600 text-sm mb-3">
+                    <p 
+                      className="text-sm mb-3 opacity-80"
+                      style={{ color: style.textColor }}
+                    >
                       User: {node.actor}
                     </p>
                   )}
 
                   {/* Description */}
                   {node.description && (
-                    <p className="text-gray-700 text-sm leading-relaxed">
+                    <p 
+                      className="text-sm leading-relaxed opacity-90"
+                      style={{ color: style.textColor }}
+                    >
                       {node.description}
                     </p>
                   )}
