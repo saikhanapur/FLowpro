@@ -50,13 +50,13 @@ const IntegratedSidebar = ({
 
   return (
     <div 
-      className="fixed right-0 overflow-y-auto z-50 shadow-2xl border-l border-gray-200 rounded-l-lg"
+      className="fixed right-0 overflow-y-auto z-50 shadow-lg rounded-l-lg"
       style={{
         width: '480px',
         backgroundColor: '#FFFFFF',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        top: '148px', // Align exactly with flowchart white box (header 64px + legend 60px + spacing 24px)
-        height: 'calc(100vh - 148px)', // Match flowchart container height
+        top: '164px', // Align exactly with flowchart white box top edge
+        height: 'calc(100vh - 164px - 32px)', // Match flowchart container (account for bottom padding)
         border: '1px solid #D1D5DB', // Match flowchart border
         borderRight: 'none'
       }}
