@@ -90,11 +90,12 @@ const SimpleFlowchart = ({
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto p-8" style={{ backgroundColor: '#E8EEF5' }}>
+    <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#E8EEF5' }}>
       {/* Legend Bar - Only show icons actually used in this flowchart */}
-      <div className="max-w-4xl mx-auto mb-4">
-        <div className="bg-white rounded-lg shadow-sm px-6 py-3 border border-gray-200">
-          <div className="flex items-center gap-8 justify-center flex-wrap">
+      <div className="px-8 pt-8 pb-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm px-6 py-3 border border-gray-200">
+            <div className="flex items-center gap-8 justify-center flex-wrap">
             {/* Trigger */}
             {usedIconTypes.has('trigger') && (
               <div className="flex items-center gap-2">
