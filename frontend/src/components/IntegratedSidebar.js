@@ -15,7 +15,14 @@ const IntegratedSidebar = ({
   accessLevel, 
   isSimpleProcess 
 }) => {
-  const [activeTab, setActiveTab] = useState('details'); // 'details' or 'gaps'
+  // Determine default tab based on what's being shown
+  const getDefaultTab = () => {
+    if (showIntelligence && !selectedNode) return 'insights';
+    if (selectedNode) return 'details';
+    return 'gaps';
+  };
+  
+  const [activeTab, setActiveTab] = useState(getDefaultTab());
 
   // Analyze gaps from process nodes
   const criticalGaps = process?.nodes?.filter(n => 
