@@ -588,51 +588,42 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
           </div>
         )}
 
-        {/* Canvas - scrollable */}
-        <div className="flex-1 overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100" data-testid="flowchart-canvas">
-          {/* React Flow Container */}
-          <div className="w-full h-full">
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onNodeClick={onNodeClick}
-              nodeTypes={nodeTypes}
-              edgeTypes={edgeTypes}
-              defaultEdgeOptions={defaultEdgeOptions}
-              fitView
-              fitViewOptions={{ padding: 0.2 }}
-              minZoom={0.1}
-              maxZoom={1.5}
-              defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
-              className="bg-transparent"
-              proOptions={{ hideAttribution: true }}
-            >
-              <Background 
-                color="#cbd5e1" 
-                gap={20} 
-                size={1}
-                variant="dots"
-              />
-              <Controls 
-                className="!bg-white !border-slate-200 !shadow-lg"
-                showInteractive={false}
-              />
-              <MiniMap 
-                nodeColor={(node) => {
-                  switch(node.type) {
-                    case 'decision': return '#FFA500';
-                    case 'startEnd': return '#10B981';
-                    default: return '#3B82F6';
-                  }
-                }}
-                maskColor="rgba(0, 0, 0, 0.1)"
-                className="!bg-white !border-slate-200 !shadow-lg"
-              />
-            </ReactFlow>
-          </div>
-
+        {/* Main Content Area with Integrated Sidebar */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Simple Flowchart */}
+          <SimpleFlowchart
+            process={process}
+            onNodeClick={handleNodeClick}
+            selectedNodeId={selectedNode?.id}
+            readOnly={readOnly || !isEditMode}
+            onAddNode={handleAddNode}
+            onDeleteNode={handleDeleteNode}
+            onMoveNode={handleMoveNode}
+            reordering={reordering}
+          />
+          
+          {/* Integrated Sidebar */}
+          <IntegratedSidebar
+            selectedNode={selectedNode}
+            process={process}
+            intelligence={intelligence}
+            intelligenceLoading={intelligenceLoading}
+            showIntelligence={showIntelligence}
+            onCloseNode={() => setSelectedNode(null)}
+            onCloseIntelligence={() => setShowIntelligence(false)}
+            onUpdateNode={(updatedNode) => {
+              setProcess({
+                ...process,
+                nodes: process.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
+              });
+              setHasUnsavedChanges(true);
+            }}
+            onRefreshIntelligence={loadIntelligence}
+            onRegenerateIntelligence={regenerateIntelligence}
+            readOnly={readOnly || !isEditMode}
+            accessLevel={accessLevel}
+            isSimpleProcess={(process?.steps?.length || 0) <= 10}
+          />
         </div>
       </div>
 
