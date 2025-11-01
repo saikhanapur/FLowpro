@@ -7,8 +7,7 @@ const IntegratedSidebar = ({
   intelligence, 
   intelligenceLoading, 
   showIntelligence, 
-  onCloseNode, 
-  onCloseIntelligence, 
+  onClose, 
   onUpdateNode, 
   onRefreshIntelligence, 
   onRegenerateIntelligence, 
@@ -35,7 +34,8 @@ const IntegratedSidebar = ({
     n.status === 'active'
   ).slice(0, 3) || [];
 
-  const nodeData = selectedNode || process?.nodes?.find(n => n.id === selectedNode?.id);
+  // Use selectedNode directly (it's already the full node object)
+  const nodeData = selectedNode;
 
   return (
     <div 
