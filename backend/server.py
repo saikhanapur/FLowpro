@@ -138,6 +138,16 @@ class LoginRequest(BaseModel):
 class GoogleSessionRequest(BaseModel):
     session_id: str
 
+class OperationalDetails(BaseModel):
+    """Detailed operational information for process execution"""
+    requiredData: List[str] = []  # Specific data fields to collect
+    specificActions: List[str] = []  # Exact actions/instructions
+    contactInfo: Dict[str, str] = {}  # Phone numbers, emails
+    timeline: Optional[str] = None  # Time-based requirements
+    systems: List[str] = []  # Software/tools mentioned
+    decisionCriteria: Optional[str] = None  # Conditions for branching
+    sourcePage: Optional[str] = None  # Which page this came from
+
 class ProcessNode(BaseModel):
     id: str
     type: str  # trigger, process, decision, gap
@@ -156,6 +166,7 @@ class ProcessNode(BaseModel):
     impact: Optional[str] = None
     timeEstimate: Optional[str] = None
     position: Dict[str, float] = {"x": 0, "y": 0}
+    operationalDetails: Optional[OperationalDetails] = None  # NEW: Preserve operational details
 
 class Workspace(BaseModel):
     model_config = ConfigDict(extra="ignore")
