@@ -5,23 +5,24 @@ import { AlertTriangle } from 'lucide-react';
 const DecisionNode = ({ data, selected }) => {
   return (
     <>
-      <Handle type="target" position={Position.Top} className="!bg-orange-400 !w-2 !h-2" />
+      <Handle type="target" position={Position.Top} className="!bg-slate-400 !w-2 !h-2 !border-none" />
       
-      {/* Minimalist Diamond Design */}
+      {/* SMALLER, Proportional Diamond - Matches node family */}
       <div 
         className={`
-          relative w-40 h-40 transform rotate-45
+          relative w-32 h-32 transform rotate-45
           bg-gradient-to-br from-orange-400 to-orange-500
-          shadow-xl hover:shadow-2xl
+          border-2 border-orange-600
+          shadow-lg hover:shadow-xl
           transition-all duration-300
-          ${selected ? 'ring-4 ring-orange-300 ring-offset-4' : ''}
+          ${selected ? 'ring-4 ring-orange-300 ring-offset-4 scale-105' : ''}
         `}
       >
         {/* Content Container (rotated back) */}
-        <div className="absolute inset-0 flex items-center justify-center transform -rotate-45 p-4">
+        <div className="absolute inset-0 flex items-center justify-center transform -rotate-45 p-3">
           <div className="text-center">
-            <AlertTriangle className="w-5 h-5 text-white mx-auto mb-2" />
-            <h3 className="text-white font-bold text-sm leading-tight">
+            <AlertTriangle className="w-4 h-4 text-white mx-auto mb-1.5" />
+            <h3 className="text-white font-semibold text-xs leading-tight px-1">
               {data.title || 'Decision'}
             </h3>
           </div>
