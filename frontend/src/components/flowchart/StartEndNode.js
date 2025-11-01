@@ -13,27 +13,40 @@ const StartEndNode = ({ data, selected }) => {
         <Handle type="target" position={Position.Top} className="!bg-slate-400 !w-2 !h-2 !border-none" />
       )}
       
-      {/* Consistent Design with Border */}
+      {/* EROAD Design: Clean white card with green border for start/end */}
       <div 
         className={`
-          px-7 py-3.5 rounded-full
-          bg-gradient-to-r from-emerald-500 to-green-500
-          border-2 border-emerald-600
-          shadow-lg hover:shadow-xl
-          transition-all duration-300
-          ${selected ? 'ring-2 ring-green-400 ring-offset-2 scale-105' : ''}
-          min-w-[240px]
+          bg-white rounded-lg
+          border-2 border-green-400
+          shadow-sm hover:shadow-md
+          transition-all duration-200
+          ${selected ? 'ring-2 ring-green-300 ring-offset-2' : ''}
+          w-60
         `}
+        style={{
+          width: '240px',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+        }}
       >
-        <div className="flex items-center justify-center gap-2">
-          {isStart ? (
-            <Play className="w-4 h-4 text-white fill-white" />
-          ) : (
-            <CheckCircle2 className="w-4 h-4 text-white" />
+        {/* Generous padding */}
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-center gap-2">
+            {isStart ? (
+              <Play className="w-4 h-4 text-green-600" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 text-green-600" />
+            )}
+            <h3 className="text-slate-900 font-medium text-sm">
+              {data.title || (isStart ? 'Start' : 'Complete')}
+            </h3>
+          </div>
+          
+          {/* Description if exists */}
+          {data.description && (
+            <p className="text-slate-600 text-xs leading-relaxed mt-2 text-center">
+              {data.description}
+            </p>
           )}
-          <h3 className="text-white font-semibold text-[15px]">
-            {data.title || (isStart ? 'Start' : 'Complete')}
-          </h3>
         </div>
       </div>
 

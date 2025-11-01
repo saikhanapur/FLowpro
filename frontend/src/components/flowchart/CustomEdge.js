@@ -1,5 +1,5 @@
 import React from 'react';
-import { getBezierPath, EdgeLabelRenderer } from 'reactflow';
+import { getStraightPath, EdgeLabelRenderer } from 'reactflow';
 
 const CustomEdge = ({
   id,
@@ -13,7 +13,8 @@ const CustomEdge = ({
   markerEnd,
   style = {},
 }) => {
-  const [edgePath, labelX, labelY] = getBezierPath({
+  // EROAD Design: Use straight lines instead of bezier curves
+  const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -26,7 +27,7 @@ const CustomEdge = ({
   const isNoBranch = data?.condition === 'no' || data?.label === 'NO';
   const isErrorPath = data?.type === 'error' || data?.label?.toLowerCase().includes('error');
 
-  // Minimalist edge style
+  // Simple, clean edge styling
   const getEdgeStyle = () => {
     if (isErrorPath) {
       return {
@@ -37,14 +38,14 @@ const CustomEdge = ({
     }
     if (isYesBranch) {
       return {
-        stroke: '#10B981',
-        strokeWidth: 2.5,
+        stroke: '#22C55E',
+        strokeWidth: 2,
       };
     }
     if (isNoBranch) {
       return {
         stroke: '#EF4444',
-        strokeWidth: 2.5,
+        strokeWidth: 2,
       };
     }
     return {
@@ -65,7 +66,7 @@ const CustomEdge = ({
         markerEnd={markerEnd}
       />
       
-      {/* Minimalist edge label */}
+      {/* Simple edge label */}
       {data?.label && (
         <EdgeLabelRenderer>
           <div
@@ -78,11 +79,14 @@ const CustomEdge = ({
           >
             <div 
               className={`
-                px-2.5 py-1 rounded-full font-semibold text-xs shadow-md
+                px-2 py-0.5 rounded text-xs font-medium
                 ${isYesBranch ? 'bg-green-500 text-white' : ''}
                 ${isNoBranch ? 'bg-red-500 text-white' : ''}
-                ${!isYesBranch && !isNoBranch ? 'bg-white text-slate-700 border border-slate-300' : ''}
+                ${!isYesBranch && !isNoBranch ? 'bg-slate-100 text-slate-700' : ''}
               `}
+              style={{
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+              }}
             >
               {data.label}
             </div>
