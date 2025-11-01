@@ -1,5 +1,11 @@
+import dagre from 'dagre';
+
 // Convert SuperHumanly process data to React Flow format
-// Implements intelligent layout with branching support
+// Uses Dagre algorithm for automatic, consistent layout
+
+const NODE_WIDTH = 300;
+const NODE_HEIGHT = 100;
+const DECISION_SIZE = 128;
 
 export const convertToReactFlowFormat = (process) => {
   if (!process || !process.nodes) return { nodes: [], edges: [] };
@@ -7,16 +13,7 @@ export const convertToReactFlowFormat = (process) => {
   const nodes = [];
   const edges = [];
   
-  // TIGHTER, HARMONIOUS SPACING
-  let currentY = 0;
-  const verticalSpacing = 150; // Back to 150px (was 200px)
-  const horizontalBranchSpacing = 350; // Reduced from 500px
-  const centerX = 400;
-
-  // Track nodes by ID for positioning
-  const nodePositions = new Map();
-
-  // First pass: Identify node types and create basic nodes
+  // First pass: Create nodes with proper types
   process.nodes.forEach((node, index) => {
     const isStart = node.type === 'trigger' || node.status === 'trigger' || index === 0;
     const isEnd = node.type === 'end' || index === process.nodes.length - 1;
@@ -29,18 +26,11 @@ export const convertToReactFlowFormat = (process) => {
       nodeType = 'decision';
     }
 
-    // Calculate position (will be refined for branching)
-    const position = {
-      x: centerX,
-      y: currentY
-    };
-
-    nodePositions.set(node.id, position);
-
+    // Create node with data
     nodes.push({
       id: node.id,
       type: nodeType,
-      position,
+      position: { x: 0, y: 0 }, // Will be calculated by Dagre
       data: {
         ...node,
         title: node.title,
@@ -50,37 +40,31 @@ export const convertToReactFlowFormat = (process) => {
         status: node.status,
         type: node.type,
       },
+      // Set dimensions for Dagre
+      width: isDecision ? DECISION_SIZE : NODE_WIDTH,
+      height: isDecision ? DECISION_SIZE : NODE_HEIGHT,
     });
-
-    currentY += verticalSpacing;
   });
 
   // Second pass: Create edges
   if (process.edges && process.edges.length > 0) {
     // Use explicit edges from backend
     process.edges.forEach((edge) => {
-      const edgeData = {
+      edges.push({
         id: edge.id || `edge-${edge.source}-${edge.target}`,
         source: edge.source,
         target: edge.target,
         type: 'custom',
-        animated: edge.condition === 'yes', // Animate YES paths
+        animated: edge.condition === 'yes',
         data: {
           label: edge.label,
           condition: edge.condition,
         },
-        // Use specific handle IDs for decision branches
-        ...(edge.condition === 'yes' && { sourceHandle: 'yes' }),
-        ...(edge.condition === 'no' && { sourceHandle: 'no' }),
-      };
-
-      edges.push(edgeData);
+        sourceHandle: edge.condition === 'yes' ? 'yes' : edge.condition === 'no' ? 'no' : undefined,
+      });
     });
-
-    // Adjust positions for branching layout
-    adjustBranchingLayout(nodes, edges, nodePositions, horizontalBranchSpacing, centerX);
   } else {
-    // Fallback: Create sequential edges if no explicit edges provided
+    // Fallback: Create sequential edges
     for (let i = 0; i < nodes.length - 1; i++) {
       edges.push({
         id: `edge-${i}`,
@@ -92,65 +76,58 @@ export const convertToReactFlowFormat = (process) => {
     }
   }
 
-  return { nodes, edges };
+  // Apply Dagre layout
+  return getLayoutedElements(nodes, edges);
 };
 
-// Adjust node positions for branching visualization
-const adjustBranchingLayout = (nodes, edges, nodePositions, horizontalSpacing, centerX) => {
-  const nodeMap = new Map(nodes.map(n => [n.id, n]));
-  const processedNodes = new Set();
+// Use Dagre to calculate optimal layout
+const getLayoutedElements = (nodes, edges, direction = 'TB') => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  // Find decision nodes and adjust their branch positions
-  nodes.forEach(node => {
-    if (node.type === 'decision') {
-      // Find outgoing edges
-      const yesEdge = edges.find(e => e.source === node.id && e.data?.condition === 'yes');
-      const noEdge = edges.find(e => e.source === node.id && e.data?.condition === 'no');
-
-      if (yesEdge && noEdge) {
-        const yesTarget = nodeMap.get(yesEdge.target);
-        const noTarget = nodeMap.get(noEdge.target);
-
-        // Position YES branch to the right with balanced spacing
-        if (yesTarget && !processedNodes.has(yesTarget.id)) {
-          yesTarget.position.x = centerX + horizontalSpacing;
-          yesTarget.position.y = node.position.y + 200; // Balanced vertical push
-          processedNodes.add(yesTarget.id);
-        }
-
-        // Position NO branch to the left with balanced spacing
-        if (noTarget && !processedNodes.has(noTarget.id)) {
-          noTarget.position.x = centerX - horizontalSpacing;
-          noTarget.position.y = node.position.y + 200; // Balanced vertical push
-          processedNodes.add(noTarget.id);
-        }
-      }
-    }
+  // Configure graph layout
+  dagreGraph.setGraph({
+    rankdir: direction, // TB = top to bottom, LR = left to right
+    nodesep: 80, // Horizontal spacing between nodes
+    ranksep: 150, // Vertical spacing between ranks
+    edgesep: 40, // Spacing between edges
+    marginx: 50,
+    marginy: 50,
   });
 
-  // Find merge points (nodes with multiple incoming edges)
-  const incomingEdgesCount = new Map();
-  edges.forEach(edge => {
-    const count = incomingEdgesCount.get(edge.target) || 0;
-    incomingEdgesCount.set(edge.target, count + 1);
+  // Add nodes to graph
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { 
+      width: node.width || NODE_WIDTH, 
+      height: node.height || NODE_HEIGHT 
+    });
   });
 
-  // Center merge points and add extra space
-  incomingEdgesCount.forEach((count, nodeId) => {
-    if (count > 1) {
-      const node = nodeMap.get(nodeId);
-      if (node) {
-        node.position.x = centerX; // Center position
-        // Add extra vertical space before merge point
-        node.position.y += 100;
-      }
-    }
+  // Add edges to graph
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
   });
+
+  // Calculate layout
+  dagre.layout(dagreGraph);
+
+  // Apply calculated positions to nodes
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    
+    // Dagre returns center coordinates, React Flow needs top-left
+    // So we subtract half width/height to get top-left corner
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - (node.width || NODE_WIDTH) / 2,
+        y: nodeWithPosition.y - (node.height || NODE_HEIGHT) / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
 };
 
-// Calculate auto-layout using Dagre algorithm (future enhancement)
-export const getAutoLayout = (nodes, edges) => {
-  // This will be enhanced with Dagre in Phase 2
-  // For now, return the manual layout
-  return { nodes, edges };
-};
+// Export for potential future use
+export const getAutoLayout = getLayoutedElements;
