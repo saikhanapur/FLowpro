@@ -3,9 +3,10 @@ import dagre from 'dagre';
 // Convert SuperHumanly process data to React Flow format
 // Uses Dagre algorithm for automatic, consistent layout
 
-const NODE_WIDTH = 300;
-const NODE_HEIGHT = 100;
-const DECISION_SIZE = 128;
+// EROAD Design DNA: 240px node width, consistent spacing
+const NODE_WIDTH = 240;
+const NODE_HEIGHT = 120;
+const DECISION_SIZE = 240;
 
 export const convertToReactFlowFormat = (process) => {
   if (!process || !process.nodes) return { nodes: [], edges: [] };
