@@ -60,9 +60,9 @@ const IntegratedSidebar = ({
         border: '1px solid #D1D5DB' // Match flowchart border
       }}
     >
-      {/* Header with Dynamic Title */}
-      <div className="sticky top-0 bg-white z-10 border-b border-gray-200">
-        <div className="px-6 py-4 flex items-center justify-between">
+      {/* Header - Simple, No Tabs */}
+      <div className="sticky top-0 bg-white z-10 border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
           <h2 className="text-gray-900 font-bold text-lg">
             {showingNodeDetails ? 'Step Details' : showingIntelligence ? 'AI Quick Tips' : 'Process Analysis'}
           </h2>
@@ -73,32 +73,6 @@ const IntegratedSidebar = ({
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Tabs - Only show when viewing node details */}
-        {showingNodeDetails && (
-          <div className="flex border-t border-gray-200">
-            <button
-              onClick={() => setActiveTab('details')}
-              className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
-                activeTab === 'details'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Details
-            </button>
-            <button
-              onClick={() => setActiveTab('gaps')}
-              className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
-                activeTab === 'gaps'
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Context
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Content */}
