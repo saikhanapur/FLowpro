@@ -32,26 +32,32 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
         
         {/* Selected Process Title */}
         <div>
-          <h3 className="text-white font-bold text-xl mb-1">
-            {nodeData?.title || 'Process Step'}
-          </h3>
+          <div className="flex items-center gap-2 mb-2">
+            <GitBranch className="w-5 h-5 text-blue-600" />
+            <h3 className="text-gray-900 font-bold text-xl">
+              {nodeData?.title || 'Process Step'}
+            </h3>
+          </div>
           {nodeData?.description && (
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-600 text-sm">
               {nodeData.description}
             </p>
           )}
         </div>
 
-        {/* Process Steps List */}
+        {/* Process Steps List - Boxed */}
         {process?.nodes && process.nodes.length > 0 && (
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-3">Process Steps</h4>
+          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+            <h4 className="text-gray-900 font-semibold text-sm mb-3 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-gray-600" />
+              Process Steps
+            </h4>
             <div className="space-y-2">
               {process.nodes.map((node, index) => (
                 <div 
                   key={node.id}
-                  className={`flex items-center gap-2 text-sm ${
-                    node.id === selectedNode.id ? 'text-white font-semibold' : 'text-gray-400'
+                  className={`flex items-center gap-2 text-sm px-2 py-1 rounded ${
+                    node.id === selectedNode.id ? 'bg-blue-100 text-blue-900 font-semibold' : 'text-gray-600'
                   }`}
                 >
                   <ChevronRight className="w-4 h-4 flex-shrink-0" />
