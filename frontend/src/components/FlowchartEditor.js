@@ -601,15 +601,18 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             reordering={reordering}
           />
           
-          {/* Integrated Sidebar - ONLY show when node is selected */}
-          {selectedNode && (
+          {/* Integrated Sidebar - ONLY show when node is selected OR intelligence panel */}
+          {(selectedNode || showIntelligence) && (
             <IntegratedSidebar
               selectedNode={selectedNode}
               process={process}
               intelligence={intelligence}
               intelligenceLoading={intelligenceLoading}
               showIntelligence={showIntelligence}
-              onClose={() => setSelectedNode(null)}
+              onClose={() => {
+                setSelectedNode(null);
+                setShowIntelligence(false);
+              }}
               onUpdateNode={(updatedNode) => {
                 setProcess({
                   ...process,
