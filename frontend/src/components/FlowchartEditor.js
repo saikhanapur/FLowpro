@@ -601,14 +601,14 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             reordering={reordering}
           />
           
-          {/* Integrated Sidebar - ONLY show when node is selected OR intelligence panel */}
+          {/* Integrated Sidebar - Shows different content based on context */}
           {(selectedNode || showIntelligence) && (
             <IntegratedSidebar
               selectedNode={selectedNode}
               process={process}
               intelligence={intelligence}
               intelligenceLoading={intelligenceLoading}
-              showIntelligence={showIntelligence}
+              showIntelligence={showIntelligence && !selectedNode} // Only show intelligence when NO node selected
               onClose={() => {
                 setSelectedNode(null);
                 setShowIntelligence(false);
