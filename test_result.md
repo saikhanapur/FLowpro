@@ -1114,3 +1114,134 @@ agent_communication:
       3. Test frontend guest flow end-to-end
       4. Test guest-to-user migration on signup
       5. Verify localStorage/cookie persistence
+
+  - agent: "main"
+    message: |
+      🎯 PHASE 1 COMPLETE - OPERATIONAL DETAILS EXTRACTION & CONFIDENCE SYSTEM
+      
+      USER PROBLEM:
+      AI was over-simplifying flowcharts and losing critical operational details (phone numbers, specific data fields, systems, timelines). 
+      Example: "Collect Officer Details" instead of listing all 6 required fields (Officer Name, Welfare Status, Phone, License Plate, Vehicle Issue, Location).
+      Customer challenge: How to know if flowchart captured everything without manually reviewing every node?
+      
+      ✅ SOLUTION IMPLEMENTED - PHASE 1:
+      
+      **1. Enhanced Data Model**
+      - Created `OperationalDetails` class with fields:
+        * requiredData: List[str] - Specific data fields to collect
+        * specificActions: List[str] - Exact instructions/questions
+        * contactInfo: Dict[str, str] - Phone numbers, emails
+        * timeline: Optional[str] - Time-based requirements
+        * systems: List[str] - Software/tools mentioned
+        * decisionCriteria: Optional[str] - Branching conditions
+        * sourcePage: Optional[str] - Source reference
+      
+      - Updated `ProcessNode` model to include:
+        * operationalDetails: Optional[OperationalDetails] = None
+      
+      **2. AI Prompt Enhancement (CRITICAL FIX)**
+      - Updated `_parse_single_process()` prompt with TWO-LEVEL instruction:
+        * LEVEL 1: High-level steps (for overview)
+        * LEVEL 2: Operational details (for execution)
+      
+      - New prompt explicitly instructs AI:
+        * "DO NOT summarize or abstract operational details"
+        * "If a step says 'collect 6 fields', LIST all 6 in requiredData"
+        * "Preserve phone numbers EXACTLY as written"
+        * "Extract systems, timelines, decision criteria"
+      
+      - Updated `_parse_multiple_processes()` with same operational detail extraction
+      
+      **3. New API Endpoints for Customer Confidence**
+      
+      A. **POST /api/process/extract-summary** (Pre-Generation)
+         - Extracts key elements BEFORE generating flowchart
+         - Returns ExtractionSummary:
+           * processSteps: int (how many steps found)
+           * dataFields: List[str] (all specific fields)
+           * phoneNumbers: List[str]
+           * emails: List[str]
+           * systems: List[str]
+           * decisionPoints: int
+           * actors: List[str]
+           * timelines: List[str]
+           * complexity: "low|medium|high"
+         
+         - Customer reviews summary, confirms before generation
+         - Reduces friction: verify checklist instead of full flowchart
+      
+      B. **POST /api/process/{id}/coverage-report** (Post-Generation)
+         - AI compares source document with generated flowchart
+         - Returns CoverageReport:
+           * confidenceScore: 0-100
+           * confidenceLevel: "high|medium|low"
+           * capturedElements: {"steps": X, "data_fields": Y, "contacts": Z}
+           * potentialGaps: ["Missing phone on page 3", ...]
+           * recommendations: ["Verify emergency contacts", ...]
+           * sourcePagesCovered: [1, 2, 3]
+         
+         - Customer gets explicit confidence metric
+         - AI identifies what might be missing
+      
+      **4. New Pydantic Models**
+      - ExtractionSummary: Pre-generation checklist
+      - CoverageReport: Post-generation verification
+      
+      WHAT THIS SOLVES:
+      ✅ Fleet Vehicle SOP example:
+         - BEFORE: "Collect officer details" (generic)
+         - AFTER: 
+           * Title: "Collect Officer Details"
+           * operationalDetails.requiredData: [
+               "Officer Name",
+               "Welfare Status (injured?)",
+               "Phone Number",
+               "Car License Plate Number",
+               "Vehicle Issue",
+               "Current Location"
+             ]
+           * operationalDetails.specificActions: [
+               "Ask: 'Are you harmed or injured?'",
+               "If YES: Stay on line, call 111"
+             ]
+           * operationalDetails.contactInfo: {
+               "Custom Fleet": "0800 11 63 63",
+               "AA Roadside": "09 966 9937"
+             }
+      
+      ✅ Wilsar Outage SOP example:
+         - BEFORE: "Raise P1 Ticket" (generic)
+         - AFTER:
+           * Title: "Raise P1 Ticket"
+           * operationalDetails.systems: ["MYIT", "Happyfox"]
+           * operationalDetails.specificActions: [
+               "Screenshot error messages",
+               "Attach to ticket"
+             ]
+           * operationalDetails.contactInfo: {
+               "Wilson IT": "0061 8 9415 2888 ext. 8088"
+             }
+           * operationalDetails.timeline: "Check every 30 minutes"
+      
+      CUSTOMER CONFIDENCE WORKFLOW:
+      1. Upload PDF
+      2. See extraction summary (validate key elements found)
+      3. Generate flowchart
+      4. See coverage report (AI confidence score + gaps)
+      5. Quick verification of potential gaps only
+      
+      TECHNICAL IMPLEMENTATION:
+      - Backend: server.py lines 138-148 (OperationalDetails model)
+      - Backend: server.py lines 826-912 (Enhanced AI prompt)
+      - Backend: server.py lines 2072-2244 (New endpoints)
+      - AI Model: Claude 4 Sonnet (2025-05-14)
+      - Prompt Engineering: Two-level extraction with explicit preservation rules
+      
+      NEXT STEPS - PHASE 2:
+      1. Frontend UI to display extraction summary before generation
+      2. Frontend UI to show operational details in expandable sections
+      3. Frontend UI to display coverage report with confidence score
+      4. Visual indicators (badges) on nodes with operational details
+      5. Test with complex SOPs (Fleet Vehicle, Wilsar Outage)
+      
+      STATUS: Backend Phase 1 Complete ✅ | Frontend Phase 2 Pending
