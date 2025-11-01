@@ -954,7 +954,7 @@ Return ONLY this JSON structure (no markdown, no explanations):
                     chat = LlmChat(
                         api_key=self.api_key,
                         session_id=f"parse_{uuid.uuid4()}",
-                        system_message="Extract this single process concisely. Return valid JSON only."
+                        system_message="Extract this single process with operational details. Return valid JSON only."
                     ).with_model("anthropic", "claude-4-sonnet-20250514")
                     
                     prompt = f"""Extract ONLY this process: "{process_title}"
@@ -962,7 +962,14 @@ Return ONLY this JSON structure (no markdown, no explanations):
 RELEVANT TEXT:
 {process_text[:5000]}
 
-Extract 3-5 key steps. Be CONCISE. Assign varied status for visual distinction:
+Extract 3-5 key steps. For EACH step, preserve operational details:
+- Required data fields (specific fields to collect)
+- Specific actions/instructions
+- Contact info (phone numbers, emails)
+- Systems mentioned
+- Timelines/SLAs
+
+Assign varied status for visual distinction:
 - First node: "trigger" status
 - Active/current steps: "current" status  
 - Steps with issues: "warning" status
@@ -990,7 +997,16 @@ Return ONLY this JSON (no markdown):
       "idealState": "",
       "gap": null,
       "impact": "medium",
-      "timeEstimate": null
+      "timeEstimate": null,
+      "operationalDetails": {{
+        "requiredData": ["field1", "field2"],
+        "specificActions": ["action1"],
+        "contactInfo": {{"Name": "phone"}},
+        "timeline": null,
+        "systems": ["System1"],
+        "decisionCriteria": null,
+        "sourcePage": null
+      }}
     }},
     {{
       "id": "node-2",
