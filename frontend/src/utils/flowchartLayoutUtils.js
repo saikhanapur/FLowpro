@@ -86,14 +86,14 @@ const getLayoutedElements = (nodes, edges, direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  // Configure graph layout
+  // Configure graph layout - EROAD design: clean, consistent spacing
   dagreGraph.setGraph({
     rankdir: direction, // TB = top to bottom, LR = left to right
-    nodesep: 80, // Horizontal spacing between nodes
-    ranksep: 150, // Vertical spacing between ranks
-    edgesep: 40, // Spacing between edges
-    marginx: 50,
-    marginy: 50,
+    nodesep: 60, // Horizontal spacing between nodes - tighter for cleaner look
+    ranksep: 120, // Vertical spacing between ranks - consistent
+    edgesep: 30, // Spacing between edges
+    marginx: 40,
+    marginy: 40,
   });
 
   // Add nodes to graph
