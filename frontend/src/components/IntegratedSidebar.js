@@ -305,7 +305,8 @@ const IntegratedSidebar = ({
           </div>
         )}
 
-        {activeTab === 'gaps' && (
+        {/* When showing Node Details (clicked a node) - Context Tab */}
+        {showingNodeDetails && activeTab === 'gaps' && (
           <div className="space-y-6">
             {/* Critical Gaps */}
             <div className="bg-red-50 rounded-lg border border-red-200 p-5">
