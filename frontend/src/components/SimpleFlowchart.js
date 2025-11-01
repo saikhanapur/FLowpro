@@ -38,54 +38,73 @@ const SimpleFlowchart = ({
     const isDecision = node.type === 'decision';
     const isStartEnd = node.type === 'trigger' || node.type === 'end';
 
+    // STATUS-BASED FULL CARD COLORS (not just borders)
     if (isDecision) {
       return {
-        borderColor: '#FFCC00',
-        backgroundColor: '#FFF9E6',
-        icon: <HelpCircle className="w-4 h-4 text-yellow-600" />
+        borderColor: '#F59E0B',
+        backgroundColor: '#FEF3C7',
+        textColor: '#92400E',
+        icon: <HelpCircle className="w-4 h-4 text-amber-700" />,
+        dotColor: '#F59E0B'
       };
     }
 
-    if (isStartEnd) {
+    if (isStartEnd && node.type === 'trigger') {
       return {
-        borderColor: '#34C759',
-        backgroundColor: '#E8F8ED',
-        icon: node.type === 'trigger' ? <Play className="w-4 h-4 text-green-600" /> : <CheckCircle className="w-4 h-4 text-green-600" />
+        borderColor: '#059669',
+        backgroundColor: '#D1FAE5',
+        textColor: '#065F46',
+        icon: <Play className="w-4 h-4 text-emerald-700 fill-emerald-700" />,
+        dotColor: '#059669'
+      };
+    }
+
+    if (isStartEnd && node.type === 'end') {
+      return {
+        borderColor: '#10B981',
+        backgroundColor: '#D1FAE5',
+        textColor: '#065F46',
+        icon: <CheckCircle className="w-4 h-4 text-emerald-700" />,
+        dotColor: '#10B981'
       };
     }
 
     if (isCritical) {
       return {
-        borderColor: '#FF3B30',
-        backgroundColor: '#FFE5E5',
-        icon: <AlertTriangle className="w-4 h-4 text-red-600" />,
-        dotColor: '#FF3B30'
+        borderColor: '#DC2626',
+        backgroundColor: '#FEE2E2',
+        textColor: '#991B1B',
+        icon: <AlertTriangle className="w-4 h-4 text-red-700" />,
+        dotColor: '#DC2626'
       };
     }
 
     if (isComplete) {
       return {
-        borderColor: '#34C759',
-        backgroundColor: '#E8F8ED',
-        icon: <CheckCircle className="w-4 h-4 text-green-600" />,
-        dotColor: '#34C759'
+        borderColor: '#10B981',
+        backgroundColor: '#D1FAE5',
+        textColor: '#065F46',
+        icon: <CheckCircle className="w-4 h-4 text-emerald-700" />,
+        dotColor: '#10B981'
       };
     }
 
     if (isActive) {
       return {
-        borderColor: '#007AFF',
-        backgroundColor: '#E5F2FF',
-        icon: <Database className="w-4 h-4 text-blue-600" />,
-        dotColor: '#007AFF'
+        borderColor: '#3B82F6',
+        backgroundColor: '#DBEAFE',
+        textColor: '#1E40AF',
+        icon: <Database className="w-4 h-4 text-blue-700" />,
+        dotColor: '#3B82F6'
       };
     }
 
     return {
-      borderColor: '#CCCCCC',
-      backgroundColor: '#FFFFFF',
+      borderColor: '#9CA3AF',
+      backgroundColor: '#F9FAFB',
+      textColor: '#374151',
       icon: null,
-      dotColor: '#CCCCCC'
+      dotColor: '#9CA3AF'
     };
   };
 
