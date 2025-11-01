@@ -731,6 +731,14 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         />
       )}
 
+      {/* Gaps Summary Panel - EROAD Style 3-Column */}
+      {!showProcessDetails && process && (
+        <GapsSummaryPanel
+          process={process}
+          intelligence={intelligence}
+        />
+      )}
+
       {/* Modals */}
       {showPublishDialog && (
         <Dialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
