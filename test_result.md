@@ -523,15 +523,18 @@ frontend:
 
   - task: "EROAD-Style Process Details Panel with White Background"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/ProcessDetailsPanel.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "REDESIGNED ProcessDetailsPanel to match EROAD reference: 1) Changed from dark (#2E3339) to WHITE background 2) Added Database, GitBranch icons to header 3) Created COLORED BOXED SECTIONS: Green box for Required Data with CheckCircle icons, Blue box for Actions with Target icons, Purple box for Contacts, Red/Pink box with left border for Potential Failures, Gray box for Dependencies, White box with green icon for Current State, Blue box with Zap icon for Ideal State, Yellow box with left border for Identified Gap 4) Used border-l-4 for emphasis on warning boxes 5) Better visual hierarchy with icon badges and clear section headers. Need to test: 1) Panel opens on node click 2) White background displays correctly 3) Colored boxes for each section 4) Icons display properly 5) Visual hierarchy is clear and matches EROAD design"
+      - working: false
+        agent: "testing"
+        comment: "❌ EROAD PROCESS DETAILS PANEL NOT ACCESSIBLE. Testing revealed: 1) Guest Mode Issue: Process creation redirects to signup page instead of generating flowchart, preventing access to EROAD features. 2) Existing Process Access: Direct URL access to existing processes (process-1761777797170-2) redirects to homepage, indicating authentication/routing issues. 3) No Flowchart Rendering: Unable to access any flowchart editor to test the ProcessDetailsPanel implementation. 4) Component Implementation: Code review shows proper EROAD design implementation with white background (#FFFFFF), colored boxes (green/blue/purple/red/gray/yellow), and icon badges. ISSUE: Cannot test EROAD features due to routing/authentication problems preventing access to flowchart editor."
 
   - task: "EROAD Visual Enhancements - Status Dots, Icons, Illumination"
     implemented: true
