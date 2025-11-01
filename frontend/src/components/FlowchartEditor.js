@@ -680,8 +680,6 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             </ReactFlow>
           </div>
 
-            {/* Summary Sections removed - orphaned content */}
-          </div>
         </div>
       </div>
 
