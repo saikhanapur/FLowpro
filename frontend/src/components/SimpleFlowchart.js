@@ -235,6 +235,7 @@ const SimpleFlowchart = ({
             </div>
           );
         })}
+        </div>
       </div>
     </div>
   );
