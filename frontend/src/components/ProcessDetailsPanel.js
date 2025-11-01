@@ -140,34 +140,37 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
           </div>
         )}
 
-        {/* Potential Failures Section (Mock data for demo) */}
+        {/* Potential Failures Section - Pink/Red Box */}
         {(nodeData?.status === 'warning' || nodeData?.title?.toLowerCase().includes('critical')) && (
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-3">Potential Failures</h4>
+          <div className="bg-red-50 rounded-lg border-l-4 border-red-500 p-4">
+            <h4 className="text-red-900 font-semibold text-sm mb-3 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Potential Failures
+            </h4>
             <div className="space-y-2">
-              <div className="flex items-start gap-2 text-sm text-gray-300">
-                <XCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 text-sm text-red-800">
+                <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>Missing required data → Contact responsible party</span>
               </div>
-              <div className="flex items-start gap-2 text-sm text-gray-300">
-                <XCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 text-sm text-red-800">
+                <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>Timeout exceeded → Review process timing</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Dependencies */}
+        {/* Dependencies - Gray Box */}
         {nodeData?.actor && (
-          <div>
-            <h4 className="text-white font-semibold text-sm mb-3">Dependencies</h4>
+          <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+            <h4 className="text-gray-900 font-semibold text-sm mb-3">Dependencies</h4>
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-sm text-gray-300">
+              <div className="flex items-center gap-2 text-sm text-gray-700">
                 <span>•</span>
                 <span>Actor: {nodeData.actor}</span>
               </div>
               {nodeData.operationalDetails?.systems && (
-                <div className="flex items-center gap-2 text-sm text-gray-300">
+                <div className="flex items-center gap-2 text-sm text-gray-700">
                   <span>•</span>
                   <span>Systems: {nodeData.operationalDetails.systems.join(', ')}</span>
                 </div>
@@ -176,42 +179,40 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
           </div>
         )}
 
-        {/* Current State */}
-        <div>
+        {/* Current State - White Box with Icon */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Target className="w-4 h-4 text-blue-400" />
-            <h4 className="text-white font-semibold text-sm">Current State</h4>
+            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle className="w-4 h-4 text-green-600" />
+            </div>
+            <h4 className="text-gray-900 font-semibold text-sm">Current State</h4>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-700 text-sm">
             {nodeData?.currentState || 'Manual process with standard procedures'}
           </p>
         </div>
 
-        {/* Ideal State */}
-        <div>
+        {/* Ideal State - Blue Box with Icon */}
+        <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Zap className="w-4 h-4 text-yellow-400" />
-            <h4 className="text-white font-semibold text-sm">Ideal State</h4>
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-blue-600" />
+            </div>
+            <h4 className="text-blue-900 font-semibold text-sm">Ideal State</h4>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className="text-blue-800 text-sm">
             {nodeData?.idealState || 'Automated process with real-time monitoring and alerts'}
           </p>
         </div>
 
-        {/* Identified Gap */}
+        {/* Identified Gap - Yellow Box with Warning */}
         {(nodeData?.gap || nodeData?.status === 'warning') && (
-          <div 
-            className="rounded-lg p-4"
-            style={{
-              backgroundColor: '#FFF9E6',
-              border: '1px solid #FFCC00'
-            }}
-          >
+          <div className="bg-yellow-50 rounded-lg border-l-4 border-yellow-500 p-4">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-gray-900 text-sm mb-1">Identified Gap</h4>
-                <p className="text-gray-700 text-sm">
+                <h4 className="font-semibold text-yellow-900 text-sm mb-1">Identified Gap</h4>
+                <p className="text-yellow-800 text-sm">
                   {nodeData?.gap || 'Process optimization opportunity identified'}
                 </p>
               </div>
