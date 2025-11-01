@@ -192,6 +192,20 @@
   animation: shimmer 2s infinite;
 }
 
+/* EROAD API Integration Pulse Animation */
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); 
+  }
+  50% { 
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.7); 
+  }
+}
+
+.api-highlight {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
 /* Hide Emergent branding badge */
 div[style*="Made with Emergent"],
 a[href*="emergent.sh"] {
