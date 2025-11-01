@@ -301,14 +301,15 @@ const IntegratedSidebar = ({
               </div>
               
               <div className="space-y-2">
-                {worksWell.map((node, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm text-green-900">
-                    <span className="text-green-600">•</span>
-                    <span>{node.title}</span>
-                  </div>
-                ))}
-                {worksWell.length === 0 && (
-                  <p className="text-green-700 text-sm italic">Analysis in progress</p>
+                {worksWell.length > 0 ? (
+                  worksWell.map((node, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm text-green-900">
+                      <span className="text-green-600">•</span>
+                      <span>{node.title}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-green-700 text-sm italic">No completed or active steps identified yet</p>
                 )}
               </div>
             </div>
