@@ -28,28 +28,7 @@ import ProcessIntelligencePanel from './ProcessIntelligencePanel';
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
 
-// Define custom node types
-const nodeTypes = {
-  action: ActionNode,
-  decision: DecisionNode,
-  startEnd: StartEndNode,
-};
-
-// Define custom edge types
-const edgeTypes = {
-  custom: CustomEdge,
-};
-
-// Default edge options
-const defaultEdgeOptions = {
-  type: 'custom',
-  markerEnd: {
-    type: MarkerType.ArrowClosed,
-    width: 20,
-    height: 20,
-    color: '#94A3B8',
-  },
-};
+// React Flow components removed - using SimpleFlowchart instead
 
 const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', processData, isGuestMode = false }) => {
   const { id } = useParams();
