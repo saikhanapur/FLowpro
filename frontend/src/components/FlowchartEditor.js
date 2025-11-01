@@ -36,6 +36,7 @@ import ShareModal from './ShareModal';
 import AIRefineChat from './AIRefineChat';
 import ProcessIntelligencePanel from './ProcessIntelligencePanel';
 import ProcessDetailsPanel from './ProcessDetailsPanel';
+import GapsSummaryPanel from './GapsSummaryPanel';
 
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
