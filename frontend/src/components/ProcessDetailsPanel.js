@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ChevronRight, CheckCircle, XCircle, AlertTriangle, FileText, Zap, Target } from 'lucide-react';
+import { X, ChevronRight, CheckCircle, XCircle, AlertTriangle, FileText, Zap, Target, Database, GitBranch } from 'lucide-react';
 
 const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
   if (!selectedNode) return null;
@@ -9,19 +9,19 @@ const ProcessDetailsPanel = ({ process, selectedNode, onClose }) => {
 
   return (
     <div 
-      className="fixed top-0 right-0 h-full overflow-y-auto z-50 shadow-2xl"
+      className="fixed top-0 right-0 h-full overflow-y-auto z-50 shadow-2xl border-l border-gray-200"
       style={{
         width: '420px',
-        backgroundColor: '#2E3339',
+        backgroundColor: '#FFFFFF',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
       }}
     >
       {/* Header */}
-      <div className="sticky top-0 bg-[#2E3339] z-10 px-6 py-4 border-b border-gray-700 flex items-center justify-between">
-        <h2 className="text-white font-bold text-lg">Process Details</h2>
+      <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h2 className="text-gray-900 font-bold text-lg">Process Details</h2>
         <button 
           onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-gray-400 hover:text-gray-600 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
