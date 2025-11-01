@@ -143,9 +143,16 @@ const SimpleFlowchart = ({
                 </div>
               </div>
 
-              {/* Connector Line */}
+              {/* Connector Arrow */}
               {index < process.nodes.length - 1 && (
-                <div className="w-0.5 h-12 bg-gray-300 my-2" />
+                <div className="flex items-center justify-center my-2">
+                  <svg width="24" height="48" viewBox="0 0 24 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Vertical line */}
+                    <line x1="12" y1="0" x2="12" y2="40" stroke="#3B82F6" strokeWidth="2"/>
+                    {/* Arrow head */}
+                    <polygon points="12,48 8,40 16,40" fill="#3B82F6"/>
+                  </svg>
+                </div>
               )}
             </div>
           );
