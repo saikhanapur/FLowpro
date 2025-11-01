@@ -718,6 +718,18 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         />
       )}
 
+      {/* EROAD-Style Process Details Panel */}
+      {showProcessDetails && selectedNode && (
+        <ProcessDetailsPanel
+          process={process}
+          selectedNode={selectedNode}
+          onClose={() => {
+            setShowProcessDetails(false);
+            setSelectedNode(null);
+          }}
+        />
+      )}
+
       {/* Modals */}
       {showPublishDialog && (
         <Dialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
