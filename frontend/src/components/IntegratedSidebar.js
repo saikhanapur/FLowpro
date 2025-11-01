@@ -165,8 +165,123 @@ const IntegratedSidebar = ({
           </div>
         )}
 
-        {/* When showing Node Details (clicked a node) - Details Tab */}
-        {showingNodeDetails && activeTab === 'details' && nodeData && (
+            {/* Operational Details - Compact */}
+            {nodeData.operationalDetails && (
+              <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 space-y-4">
+                <h4 className="text-gray-900 font-semibold text-sm flex items-center gap-2">
+                  <Database className="w-4 h-4 text-gray-600" />
+                  Operational Details
+                </h4>
+
+                {nodeData.operationalDetails.requiredData && nodeData.operationalDetails.requiredData.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-700">Required Data:</p>
+                    {nodeData.operationalDetails.requiredData.map((item, i) => (
+                      <div key={i} className="flex items-start gap-2 text-xs text-gray-600">
+                        <CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {nodeData.operationalDetails.specificActions && nodeData.operationalDetails.specificActions.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-700">Actions:</p>
+                    {nodeData.operationalDetails.specificActions.map((item, i) => (
+                      <div key={i} className="flex items-start gap-2 text-xs text-gray-600">
+                        <Target className="w-3 h-3 text-blue-600 flex-shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Current & Ideal State - Side by Side */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-blue-50 rounded-lg border border-blue-200 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <CheckCircle className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-blue-900 font-semibold text-xs">Current</h4>
+                </div>
+                <p className="text-blue-800 text-xs leading-snug">
+                  {nodeData.currentState || 'Manual process'}
+                </p>
+              </div>
+
+              <div className="bg-green-50 rounded-lg border border-green-200 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Zap className="w-4 h-4 text-green-600" />
+                  <h4 className="text-green-900 font-semibold text-xs">Ideal</h4>
+                </div>
+                <p className="text-green-800 text-xs leading-snug">
+                  {nodeData.idealState || 'Automated process'}
+                </p>
+              </div>
+            </div>
+
+            {/* Gap Warning - If Exists */}
+            {(nodeData.gap || nodeData.status === 'warning') && (
+              <div className="bg-red-50 rounded-lg border-l-4 border-red-500 p-3">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-red-900 text-xs mb-1">Identified Gap</h4>
+                    <p className="text-red-800 text-xs leading-snug">
+                      {nodeData.gap || 'Optimization opportunity'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Gaps Summary for Context */}
+            <div className="pt-4 border-t border-gray-200 space-y-4">
+              <h4 className="text-gray-900 font-semibold text-sm">Process Context</h4>
+              
+              {/* Critical Gaps */}
+              {criticalGaps.length > 0 && (
+                <div className="bg-red-50 rounded-lg border border-red-200 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <XCircle className="w-4 h-4 text-red-600" />
+                    <h5 className="text-red-900 font-semibold text-xs">
+                      Critical Gaps ({criticalGaps.length})
+                    </h5>
+                  </div>
+                  <div className="space-y-1.5">
+                    {criticalGaps.slice(0, 2).map((node, i) => (
+                      <div key={i} className="text-xs text-red-800">
+                        <span className="font-medium">{node.title}:</span> {node.gap || 'Issue detected'}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Works Well */}
+              {worksWell.length > 0 && (
+                <div className="bg-green-50 rounded-lg border border-green-200 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <h5 className="text-green-900 font-semibold text-xs">
+                      Works Well ({worksWell.length})
+                    </h5>
+                  </div>
+                  <div className="space-y-1">
+                    {worksWell.slice(0, 3).map((node, i) => (
+                      <div key={i} className="flex items-start gap-1.5 text-xs text-green-800">
+                        <span className="text-green-600">•</span>
+                        <span>{node.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
           <div className="space-y-6">
             {/* Selected Node Title */}
             <div>
