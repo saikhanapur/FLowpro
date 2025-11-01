@@ -601,28 +601,29 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             reordering={reordering}
           />
           
-          {/* Integrated Sidebar */}
-          <IntegratedSidebar
-            selectedNode={selectedNode}
-            process={process}
-            intelligence={intelligence}
-            intelligenceLoading={intelligenceLoading}
-            showIntelligence={showIntelligence}
-            onCloseNode={() => setSelectedNode(null)}
-            onCloseIntelligence={() => setShowIntelligence(false)}
-            onUpdateNode={(updatedNode) => {
-              setProcess({
-                ...process,
-                nodes: process.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
-              });
-              setHasUnsavedChanges(true);
-            }}
-            onRefreshIntelligence={loadIntelligence}
-            onRegenerateIntelligence={regenerateIntelligence}
-            readOnly={readOnly || !isEditMode}
-            accessLevel={accessLevel}
-            isSimpleProcess={(process?.steps?.length || 0) <= 10}
-          />
+          {/* Integrated Sidebar - ONLY show when node is selected */}
+          {selectedNode && (
+            <IntegratedSidebar
+              selectedNode={selectedNode}
+              process={process}
+              intelligence={intelligence}
+              intelligenceLoading={intelligenceLoading}
+              showIntelligence={showIntelligence}
+              onClose={() => setSelectedNode(null)}
+              onUpdateNode={(updatedNode) => {
+                setProcess({
+                  ...process,
+                  nodes: process.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
+                });
+                setHasUnsavedChanges(true);
+              }}
+              onRefreshIntelligence={loadIntelligence}
+              onRegenerateIntelligence={regenerateIntelligence}
+              readOnly={readOnly || !isEditMode}
+              accessLevel={accessLevel}
+              isSimpleProcess={(process?.steps?.length || 0) <= 10}
+            />
+          )}
         </div>
       </div>
 
