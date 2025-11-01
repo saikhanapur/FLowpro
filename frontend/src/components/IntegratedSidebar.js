@@ -50,13 +50,15 @@ const IntegratedSidebar = ({
 
   return (
     <div 
-      className="fixed right-0 overflow-y-auto z-50 shadow-2xl border-l border-gray-200"
+      className="fixed right-0 overflow-y-auto z-50 shadow-2xl border-l border-gray-200 rounded-l-lg"
       style={{
         width: '480px',
         backgroundColor: '#FFFFFF',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        top: '140px', // Start below header + legend bar for seamless look
-        height: 'calc(100vh - 140px)' // Adjust height accordingly
+        top: '148px', // Align exactly with flowchart white box (header 64px + legend 60px + spacing 24px)
+        height: 'calc(100vh - 148px)', // Match flowchart container height
+        border: '1px solid #D1D5DB', // Match flowchart border
+        borderRight: 'none'
       }}
     >
       {/* Header with Dynamic Title */}
