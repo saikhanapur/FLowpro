@@ -627,55 +627,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
         </div>
       </div>
 
-      {/* Detail Panel - Slides from Right */}
-      {selectedNode && (
-        <DetailPanel
-          node={selectedNode}
-          processId={process.id}
-          onClose={() => setSelectedNode(null)}
-          onUpdate={(updatedNode) => {
-            setProcess({
-              ...process,
-              nodes: process.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
-            });
-            setHasUnsavedChanges(true);
-          }}
-          readOnly={readOnly || !isEditMode}
-          accessLevel={accessLevel}
-        />
-      )}
-
-      {/* Process Intelligence Panel - Shows insights */}
-      {!selectedNode && showIntelligence && !readOnly && accessLevel === 'owner' && (
-        <ProcessIntelligencePanel
-          intelligence={intelligence}
-          loading={intelligenceLoading}
-          onRefresh={loadIntelligence}
-          onRegenerate={regenerateIntelligence}
-          onClose={() => setShowIntelligence(false)}
-          isSimpleProcess={(process?.steps?.length || 0) <= 10}
-        />
-      )}
-
-      {/* EROAD-Style Process Details Panel */}
-      {showProcessDetails && selectedNode && (
-        <ProcessDetailsPanel
-          process={process}
-          selectedNode={selectedNode}
-          onClose={() => {
-            setShowProcessDetails(false);
-            setSelectedNode(null);
-          }}
-        />
-      )}
-
-      {/* Gaps Summary Panel - EROAD Style 3-Column */}
-      {!showProcessDetails && process && (
-        <GapsSummaryPanel
-          process={process}
-          intelligence={intelligence}
-        />
-      )}
+      {/* Panels now integrated into sidebar */}
 
       {/* Modals */}
       {showPublishDialog && (
