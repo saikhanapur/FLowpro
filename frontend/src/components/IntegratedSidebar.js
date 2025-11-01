@@ -75,11 +75,26 @@ const IntegratedSidebar = ({
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-6 py-6">
+      {/* Content - Single Scrollable View (No Tabs) */}
+      <div className="px-6 py-6 space-y-6">
         
-        {/* When showing AI Intelligence (clicked AI badge) */}
-        {showingIntelligence && (
+        {/* When showing Node Details (clicked a node) */}
+        {showingNodeDetails && nodeData && (
+          <>
+            {/* Node Title & Description */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <GitBranch className="w-5 h-5 text-blue-600" />
+                <h3 className="text-gray-900 font-bold text-xl">
+                  {nodeData.title || 'Process Step'}
+                </h3>
+              </div>
+              {nodeData.description && (
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {nodeData.description}
+                </p>
+              )}
+            </div>
           <div className="space-y-6">
             {/* AI Insights Header */}
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-5">
