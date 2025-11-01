@@ -901,6 +901,55 @@ Return ONLY this JSON structure (no markdown, no explanations):
         "decisionCriteria": "conditions for branching if decision node",
         "sourcePage": null
       }}
+    }},
+    {{
+      "id": "node-2",
+      "type": "decision",
+      "status": "current",
+      "title": "Question to decide? (e.g., Call answered?)",
+      "description": "Decision point",
+      "actors": ["who"],
+      "subSteps": [],
+      "dependencies": [],
+      "parallelWith": [],
+      "failures": [],
+      "blocking": null,
+      "currentState": "brief",
+      "idealState": "brief",
+      "gap": null,
+      "impact": "medium",
+      "timeEstimate": null,
+      "operationalDetails": {{
+        "decisionCriteria": "What determines YES vs NO?",
+        "requiredData": [],
+        "specificActions": [],
+        "contactInfo": {{}},
+        "timeline": null,
+        "systems": [],
+        "sourcePage": null
+      }}
+    }}
+  ],
+  "edges": [
+    {{
+      "id": "edge-1",
+      "source": "node-1",
+      "target": "node-2",
+      "label": null
+    }},
+    {{
+      "id": "edge-2",
+      "source": "node-2",
+      "target": "node-3",
+      "label": "YES",
+      "condition": "yes"
+    }},
+    {{
+      "id": "edge-3",
+      "source": "node-2",
+      "target": "node-4",
+      "label": "NO",
+      "condition": "no"
     }}
   ],
   "criticalGaps": ["gap 1"],
@@ -911,7 +960,16 @@ Return ONLY this JSON structure (no markdown, no explanations):
       "estimatedSavings": "time"
     }}
   ]
-}}"""
+}}
+
+CRITICAL DECISION NODE RULES:
+- If the document has IF/THEN/ELSE logic, create a "decision" type node
+- Decision nodes should have a question as title (e.g., "Call answered?", "Error persists?")
+- Create separate edges for YES and NO branches
+- The YES branch edge should have label="YES" and condition="yes"
+- The NO branch edge should have label="NO" and condition="no"
+- Regular nodes have type="trigger" or type="process"
+- Each edge must have unique id, source, and target node IDs"""
             
             message = UserMessage(text=prompt)
             response = await chat.send_message(message)
