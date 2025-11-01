@@ -7,11 +7,11 @@ export const convertToReactFlowFormat = (process) => {
   const nodes = [];
   const edges = [];
   
-  // BETTER SPACING - Minimalist design needs breathing room
+  // TIGHTER, HARMONIOUS SPACING
   let currentY = 0;
-  const verticalSpacing = 200; // Increased from 150
-  const horizontalBranchSpacing = 500; // Increased from 400
-  const centerX = 400; // Center position
+  const verticalSpacing = 150; // Back to 150px (was 200px)
+  const horizontalBranchSpacing = 350; // Reduced from 500px
+  const centerX = 400;
 
   // Track nodes by ID for positioning
   const nodePositions = new Map();
