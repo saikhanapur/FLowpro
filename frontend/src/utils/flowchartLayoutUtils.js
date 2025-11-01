@@ -111,17 +111,17 @@ const adjustBranchingLayout = (nodes, edges, nodePositions, horizontalSpacing, c
         const yesTarget = nodeMap.get(yesEdge.target);
         const noTarget = nodeMap.get(noEdge.target);
 
-        // Position YES branch to the right with MORE spacing
+        // Position YES branch to the right with balanced spacing
         if (yesTarget && !processedNodes.has(yesTarget.id)) {
           yesTarget.position.x = centerX + horizontalSpacing;
-          yesTarget.position.y = node.position.y + 250; // Push down more
+          yesTarget.position.y = node.position.y + 200; // Balanced vertical push
           processedNodes.add(yesTarget.id);
         }
 
-        // Position NO branch to the left with MORE spacing
+        // Position NO branch to the left with balanced spacing
         if (noTarget && !processedNodes.has(noTarget.id)) {
           noTarget.position.x = centerX - horizontalSpacing;
-          noTarget.position.y = node.position.y + 250; // Push down more
+          noTarget.position.y = node.position.y + 200; // Balanced vertical push
           processedNodes.add(noTarget.id);
         }
       }
