@@ -7,10 +7,11 @@ export const convertToReactFlowFormat = (process) => {
   const nodes = [];
   const edges = [];
   
-  // Track vertical position
+  // BETTER SPACING - Minimalist design needs breathing room
   let currentY = 0;
-  const verticalSpacing = 150;
-  const horizontalBranchSpacing = 400;
+  const verticalSpacing = 200; // Increased from 150
+  const horizontalBranchSpacing = 500; // Increased from 400
+  const centerX = 400; // Center position
 
   // Track nodes by ID for positioning
   const nodePositions = new Map();
@@ -30,7 +31,7 @@ export const convertToReactFlowFormat = (process) => {
 
     // Calculate position (will be refined for branching)
     const position = {
-      x: 300, // Center X position
+      x: centerX,
       y: currentY
     };
 
@@ -77,7 +78,7 @@ export const convertToReactFlowFormat = (process) => {
     });
 
     // Adjust positions for branching layout
-    adjustBranchingLayout(nodes, edges, nodePositions, horizontalBranchSpacing);
+    adjustBranchingLayout(nodes, edges, nodePositions, horizontalBranchSpacing, centerX);
   } else {
     // Fallback: Create sequential edges if no explicit edges provided
     for (let i = 0; i < nodes.length - 1; i++) {
@@ -95,7 +96,7 @@ export const convertToReactFlowFormat = (process) => {
 };
 
 // Adjust node positions for branching visualization
-const adjustBranchingLayout = (nodes, edges, nodePositions, horizontalSpacing) => {
+const adjustBranchingLayout = (nodes, edges, nodePositions, horizontalSpacing, centerX) => {
   const nodeMap = new Map(nodes.map(n => [n.id, n]));
   const processedNodes = new Set();
 
@@ -110,15 +111,17 @@ const adjustBranchingLayout = (nodes, edges, nodePositions, horizontalSpacing) =
         const yesTarget = nodeMap.get(yesEdge.target);
         const noTarget = nodeMap.get(noEdge.target);
 
-        // Position YES branch to the right
+        // Position YES branch to the right with MORE spacing
         if (yesTarget && !processedNodes.has(yesTarget.id)) {
-          yesTarget.position.x = node.position.x + horizontalSpacing;
+          yesTarget.position.x = centerX + horizontalSpacing;
+          yesTarget.position.y = node.position.y + 250; // Push down more
           processedNodes.add(yesTarget.id);
         }
 
-        // Position NO branch to the left or keep center
+        // Position NO branch to the left with MORE spacing
         if (noTarget && !processedNodes.has(noTarget.id)) {
-          noTarget.position.x = node.position.x - horizontalSpacing / 2;
+          noTarget.position.x = centerX - horizontalSpacing;
+          noTarget.position.y = node.position.y + 250; // Push down more
           processedNodes.add(noTarget.id);
         }
       }
@@ -132,12 +135,14 @@ const adjustBranchingLayout = (nodes, edges, nodePositions, horizontalSpacing) =
     incomingEdgesCount.set(edge.target, count + 1);
   });
 
-  // Center merge points
+  // Center merge points and add extra space
   incomingEdgesCount.forEach((count, nodeId) => {
     if (count > 1) {
       const node = nodeMap.get(nodeId);
       if (node) {
-        node.position.x = 300; // Center position
+        node.position.x = centerX; // Center position
+        // Add extra vertical space before merge point
+        node.position.y += 100;
       }
     }
   });
