@@ -521,6 +521,42 @@ frontend:
         agent: "main"
         comment: "Updated Dashboard UI based on user feedback: 1) Added prominent 'Create an Interactive Flowchart' button in header 2) Removed 'Select' and 'New Workspace' buttons for cleaner UI 3) Simplified action bar to only Search + Filters 4) Updated all terminology from 'Create a process' to 'Create an Interactive Flowchart' 5) Added 'Coming Soon' banner to Templates page. Need to verify: Dashboard layout, button functionality, Templates page display, no broken features from removed buttons."
 
+  - task: "EROAD-Style Process Details Panel with White Background"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/ProcessDetailsPanel.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "REDESIGNED ProcessDetailsPanel to match EROAD reference: 1) Changed from dark (#2E3339) to WHITE background 2) Added Database, GitBranch icons to header 3) Created COLORED BOXED SECTIONS: Green box for Required Data with CheckCircle icons, Blue box for Actions with Target icons, Purple box for Contacts, Red/Pink box with left border for Potential Failures, Gray box for Dependencies, White box with green icon for Current State, Blue box with Zap icon for Ideal State, Yellow box with left border for Identified Gap 4) Used border-l-4 for emphasis on warning boxes 5) Better visual hierarchy with icon badges and clear section headers. Need to test: 1) Panel opens on node click 2) White background displays correctly 3) Colored boxes for each section 4) Icons display properly 5) Visual hierarchy is clear and matches EROAD design"
+
+  - task: "EROAD Visual Enhancements - Status Dots, Icons, Illumination"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/flowchart/ActionNode.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added EROAD visual language to nodes: 1) STATUS DOTS: Added colored dot indicator in top-right corner of each node with subtle glow effect (boxShadow with 40% opacity). Dot colors: Red for gaps/critical, Green for complete, Blue for active, Gray for default 2) ILLUMINATION: Added glow effect on selected nodes (ring with 10% opacity matching status color) 3) ICONS: Added Database icon for system/API/database nodes, AlertTriangle for critical, CheckCircle for complete, Zap for active nodes 4) GAP INDICATOR: Added red left border (w-1) on nodes with gaps (hasGap flag) 5) Enhanced hover states and transitions 6) Updated node styling to match EROAD design with proper status-based coloring. Need to test: 1) Status dots appear in top-right 2) Glow effects on selection 3) Icons display based on node type 4) Red left border on gap nodes 5) All visual enhancements work together harmoniously"
+
+  - task: "Gaps Summary Panel - 3-Column EROAD Layout"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/GapsSummaryPanel.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created NEW GapsSummaryPanel component matching EROAD 3-column reference: 1) LAYOUT: Fixed bottom panel (bottom-6, left-6, right-6) with 3 equal columns 2) CRITICAL GAPS (Red/Pink): Shows nodes with warnings/gaps, displays up to 2 gaps in pink boxes with red borders, includes gap description 3) PROCESS GAPS (Yellow): Shows medium severity issues from intelligence, displays up to 4 gaps as bullet points 4) WORKS WELL (Green): Shows completed/active nodes, displays up to 3 items as bullet points 5) STYLING: Each column has colored background (red-50, yellow-50, green-50), colored borders, icon badges in circles, bold headings with count. Integrated into FlowchartEditor.js to show when ProcessDetailsPanel is closed. Need to test: 1) Panel appears at bottom of flowchart 2) 3-column layout displays correctly 3) Gaps are properly categorized 4) Colors match EROAD reference 5) Panel toggles with ProcessDetailsPanel 6) Critical gaps show in boxes, process gaps as bullets"
+
 
 metadata:
   created_by: "main_agent"
