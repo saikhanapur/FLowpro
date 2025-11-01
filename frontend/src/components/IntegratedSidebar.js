@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, ChevronRight, CheckCircle, XCircle, AlertTriangle, FileText, Zap, Target, Database, GitBranch } from 'lucide-react';
+import React from 'react';
+import { X, CheckCircle, XCircle, AlertTriangle, Zap, Target, Database } from 'lucide-react';
 
 const IntegratedSidebar = ({ 
   selectedNode, 
@@ -8,92 +8,49 @@ const IntegratedSidebar = ({
   intelligenceLoading, 
   showIntelligence, 
   onClose, 
-  onUpdateNode, 
-  onRefreshIntelligence, 
-  onRegenerateIntelligence, 
-  readOnly, 
-  accessLevel, 
+  onRefreshIntelligence,
+  onRegenerateIntelligence,
   isSimpleProcess 
 }) => {
-  // Determine default tab based on what's being shown
-  const getDefaultTab = () => {
-    if (showIntelligence && !selectedNode) return 'insights';
-    if (selectedNode) return 'details';
-    return 'gaps';
-  };
-  
-  const [activeTab, setActiveTab] = useState(getDefaultTab());
+  const nodeData = selectedNode;
 
-  // Analyze gaps from process nodes
+  // Analyze gaps
   const criticalGaps = process?.nodes?.filter(n => 
-    n.status === 'warning' || 
-    n.gap || 
-    n.hasGap ||
-    n.title?.toLowerCase().includes('critical')
-  ) || [];
-
-  const processGaps = intelligence?.issues?.filter(i => 
-    i.severity === 'medium' || i.issue_type === 'serial_bottleneck'
+    n.status === 'warning' || n.gap || n.hasGap
   ) || [];
 
   const worksWell = process?.nodes?.filter(n => 
-    n.status === 'complete' || 
-    n.status === 'active'
+    n.status === 'active' || n.status === 'complete'
   ).slice(0, 3) || [];
 
-  // Use selectedNode directly (it's already the full node object)
-  const nodeData = selectedNode;
-  
-  // Determine what to show based on context
-  const showingNodeDetails = selectedNode && !showIntelligence;
-  const showingIntelligence = showIntelligence && !selectedNode;
-
   return (
-    <div className="fixed right-0 top-0 h-full w-[420px] bg-white shadow-2xl z-50 border-l overflow-y-auto">
-      {/* Dark gradient header - EROAD STYLE */}
-      <div className="sticky top-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white p-6 flex justify-between items-center z-10">
-        <h2 className="font-bold text-lg">
-          {showingNodeDetails ? 'Step Details' : showingIntelligence ? 'AI Quick Tips' : 'Process Analysis'}
-        </h2>
-        <button 
-          onClick={onClose}
-          className="text-white text-2xl hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
-        >
-          ×
-        </button>
+    <div className="fixed right-0 top-0 h-full w-[400px] bg-white shadow-2xl z-50 border-l border-gray-200 overflow-y-auto">
+      
+      {/* Simple White Header */}
+      <div className="sticky top-0 bg-white z-10 border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-gray-900 font-bold text-lg">
+            {showIntelligence ? 'AI Quick Tips' : 'Step Details'}
+          </h2>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Content - Single Scrollable View (No Tabs) */}
-      <div className="px-6 py-6 space-y-6">
+      {/* Content */}
+      <div className="p-6 space-y-6">
         
-        {/* When showing Node Details (clicked a node) */}
-        {showingNodeDetails && nodeData && (
-          <>
-            {/* Node Title & Description */}
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <GitBranch className="w-5 h-5 text-blue-600" />
-                <h3 className="text-gray-900 font-bold text-xl">
-                  {nodeData.title || 'Process Step'}
-                </h3>
-              </div>
-              {nodeData.description && (
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {nodeData.description}
-                </p>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* When showing AI Intelligence (clicked AI badge) */}
-        {showingIntelligence && (
+        {/* AI Intelligence View */}
+        {showIntelligence && (
           <div className="space-y-4">
-            {/* AI Insights Header */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-5">
+            <div className="bg-blue-50 rounded-lg border border-blue-200 p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-5 h-5 text-blue-600" />
-                <h3 className="text-blue-900 font-bold text-lg">AI Process Intelligence</h3>
+                <h3 className="text-blue-900 font-bold">AI Process Intelligence</h3>
               </div>
               <p className="text-blue-700 text-sm">
                 {isSimpleProcess 
@@ -102,17 +59,16 @@ const IntegratedSidebar = ({
               </p>
             </div>
 
-            {/* Intelligence Issues */}
             {intelligenceLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                 <p className="text-gray-600 text-sm mt-4">Analyzing process...</p>
               </div>
             ) : intelligence?.issues && intelligence.issues.length > 0 ? (
-              <div className="space-y-4">
-                {intelligence.issues.slice(0, isSimpleProcess ? 2 : 5).map((issue, idx) => (
+              <div className="space-y-3">
+                {intelligence.issues.map((issue, idx) => (
                   <div key={idx} className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-start gap-3 mb-2">
+                    <div className="flex items-start gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         issue.severity === 'high' ? 'bg-red-100' : 'bg-yellow-100'
                       }`}>
@@ -124,14 +80,9 @@ const IntegratedSidebar = ({
                         <h4 className="font-semibold text-gray-900 text-sm mb-1">
                           {issue.title || issue.description}
                         </h4>
-                        <p className="text-gray-600 text-xs leading-relaxed">
-                          {issue.description || issue.recommendation}
+                        <p className="text-gray-600 text-xs">
+                          {issue.recommendation || issue.description}
                         </p>
-                        {issue.cost_impact_monthly && (
-                          <div className="mt-2 text-xs text-gray-500">
-                            <span className="font-medium">Impact:</span> ~${issue.cost_impact_monthly}/month
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -145,16 +96,153 @@ const IntegratedSidebar = ({
               </div>
             )}
 
-            {/* Regenerate Button */}
-            {onRegenerateIntelligence && !readOnly && (
+            {onRegenerateIntelligence && (
               <button
                 onClick={onRegenerateIntelligence}
                 disabled={intelligenceLoading}
-                className="w-full px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors border border-blue-200"
+                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 {intelligenceLoading ? 'Analyzing...' : 'Regenerate Insights'}
               </button>
             )}
+          </div>
+        )}
+
+        {/* Node Details View */}
+        {!showIntelligence && nodeData && (
+          <div className="space-y-6">
+            {/* Node Title */}
+            <div>
+              <h3 className="text-gray-900 font-bold text-xl mb-2">
+                {nodeData.title}
+              </h3>
+              {nodeData.description && (
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {nodeData.description}
+                </p>
+              )}
+            </div>
+
+            {/* Status */}
+            {nodeData.status && (
+              <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-gray-700">STATUS:</span>
+                  <span className={`text-xs font-medium px-2 py-1 rounded ${
+                    nodeData.status === 'trigger' ? 'bg-blue-100 text-blue-700' :
+                    nodeData.status === 'active' || nodeData.status === 'complete' ? 'bg-green-100 text-green-700' :
+                    nodeData.status === 'warning' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}>
+                    {nodeData.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Actor */}
+            {nodeData.actor && (
+              <div className="bg-gray-50 rounded-lg border border-gray-200 p-3">
+                <p className="text-xs font-semibold text-gray-700 mb-1">RESPONSIBLE:</p>
+                <p className="text-sm text-gray-900">{nodeData.actor}</p>
+              </div>
+            )}
+
+            {/* Operational Details */}
+            {nodeData.operationalDetails && (
+              <div className="bg-blue-50 rounded-lg border border-blue-200 p-4 space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Database className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-blue-900 font-semibold text-sm">Operational Details</h4>
+                </div>
+
+                {nodeData.operationalDetails.requiredData && nodeData.operationalDetails.requiredData.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-blue-900 mb-1">Required Data:</p>
+                    <ul className="space-y-1">
+                      {nodeData.operationalDetails.requiredData.map((item, i) => (
+                        <li key={i} className="text-xs text-blue-800 flex items-start gap-1">
+                          <span>•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {nodeData.operationalDetails.specificActions && nodeData.operationalDetails.specificActions.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-blue-900 mb-1">Actions:</p>
+                    <ul className="space-y-1">
+                      {nodeData.operationalDetails.specificActions.map((item, i) => (
+                        <li key={i} className="text-xs text-blue-800 flex items-start gap-1">
+                          <span>•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gap Warning */}
+            {nodeData.gap && (
+              <div className="bg-red-50 rounded-lg border-l-4 border-red-500 p-4">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-red-900 text-sm mb-1">Identified Gap</h4>
+                    <p className="text-red-800 text-sm">
+                      {nodeData.gap}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Process Context */}
+            <div className="pt-4 border-t border-gray-200">
+              <h4 className="text-gray-900 font-semibold text-sm mb-3">Process Context</h4>
+              
+              {/* Critical Gaps */}
+              {criticalGaps.length > 0 && (
+                <div className="bg-red-50 rounded-lg border border-red-200 p-3 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <XCircle className="w-4 h-4 text-red-600" />
+                    <h5 className="text-red-900 font-semibold text-xs">
+                      Critical Gaps ({criticalGaps.length})
+                    </h5>
+                  </div>
+                  <div className="space-y-1">
+                    {criticalGaps.slice(0, 2).map((node, i) => (
+                      <div key={i} className="text-xs text-red-800">
+                        {node.title}: {node.gap || 'Issue detected'}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Works Well */}
+              {worksWell.length > 0 && (
+                <div className="bg-green-50 rounded-lg border border-green-200 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <h5 className="text-green-900 font-semibold text-xs">
+                      Works Well ({worksWell.length})
+                    </h5>
+                  </div>
+                  <div className="space-y-1">
+                    {worksWell.map((node, i) => (
+                      <div key={i} className="text-xs text-green-800">
+                        • {node.title}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
