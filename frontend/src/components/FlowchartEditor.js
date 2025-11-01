@@ -71,8 +71,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
   const [showIntelligence, setShowIntelligence] = useState(false); // Hidden by default
   const [intelligenceBadgeVisible, setIntelligenceBadgeVisible] = useState(false);
   
-  // EROAD-style Process Details Panel state
-  const [showProcessDetails, setShowProcessDetails] = useState(false);
+  // State cleaned up - panels now integrated
 
   useEffect(() => {
     if (!processData) {
