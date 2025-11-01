@@ -538,15 +538,18 @@ frontend:
 
   - task: "EROAD Visual Enhancements - Status Dots, Icons, Illumination"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/flowchart/ActionNode.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added EROAD visual language to nodes: 1) STATUS DOTS: Added colored dot indicator in top-right corner of each node with subtle glow effect (boxShadow with 40% opacity). Dot colors: Red for gaps/critical, Green for complete, Blue for active, Gray for default 2) ILLUMINATION: Added glow effect on selected nodes (ring with 10% opacity matching status color) 3) ICONS: Added Database icon for system/API/database nodes, AlertTriangle for critical, CheckCircle for complete, Zap for active nodes 4) GAP INDICATOR: Added red left border (w-1) on nodes with gaps (hasGap flag) 5) Enhanced hover states and transitions 6) Updated node styling to match EROAD design with proper status-based coloring. Need to test: 1) Status dots appear in top-right 2) Glow effects on selection 3) Icons display based on node type 4) Red left border on gap nodes 5) All visual enhancements work together harmoniously"
+      - working: false
+        agent: "testing"
+        comment: "❌ EROAD NODE VISUAL ENHANCEMENTS NOT TESTABLE. Testing revealed: 1) No ReactFlow Nodes: Found 0 ReactFlow nodes in flowchart editor due to routing issues. 2) Guest Mode Broken: Process creation flow redirects to signup instead of generating flowchart with enhanced nodes. 3) Authentication Issues: Cannot access existing processes to test node enhancements. 4) Code Implementation: ActionNode.js properly implements EROAD features - status dots (top-right circular indicators), icons (Database, CheckCircle, AlertTriangle, Zap), gap indicators (red left border), and glow effects on selection. ISSUE: Cannot verify visual enhancements due to inability to access functional flowchart with rendered nodes."
 
   - task: "Gaps Summary Panel - 3-Column EROAD Layout"
     implemented: true
