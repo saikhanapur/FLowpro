@@ -1,7 +1,16 @@
 import React from 'react';
 import { CheckCircle, AlertTriangle, Play, HelpCircle, Database } from 'lucide-react';
 
-const SimpleFlowchart = ({ process, onNodeClick, selectedNodeId }) => {
+const SimpleFlowchart = ({ 
+  process, 
+  onNodeClick, 
+  selectedNodeId, 
+  readOnly, 
+  onAddNode, 
+  onDeleteNode, 
+  onMoveNode, 
+  reordering 
+}) => {
   if (!process?.nodes) return null;
 
   const getNodeStyle = (node) => {
