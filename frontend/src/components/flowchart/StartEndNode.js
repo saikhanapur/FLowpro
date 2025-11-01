@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { Play, CheckCircle2 } from 'lucide-react';
+import { Play, CheckCircle } from 'lucide-react';
 
 const StartEndNode = ({ data, selected }) => {
   const isStart = data.type === 'trigger' || data.status === 'trigger';
@@ -10,40 +10,40 @@ const StartEndNode = ({ data, selected }) => {
     <>
       {/* Only show target handle if not start */}
       {!isStart && (
-        <Handle type="target" position={Position.Top} className="!bg-slate-400 !w-2 !h-2 !border-none" />
+        <Handle type="target" position={Position.Top} className="!bg-gray-400 !w-2.5 !h-2.5 !border-none" />
       )}
       
-      {/* EROAD Design: Clean white card with green border for start/end */}
+      {/* EROAD Design: Green start/end nodes */}
       <div 
-        className={`
-          bg-white rounded-lg
-          border-2 border-green-400
-          shadow-sm hover:shadow-md
-          transition-all duration-200
-          ${selected ? 'ring-2 ring-green-300 ring-offset-2' : ''}
-          w-60
-        `}
+        className="rounded-xl transition-shadow duration-200"
         style={{
-          width: '240px',
+          width: '280px',
+          border: '2px solid #34C759',
+          backgroundColor: '#E8F8ED',
+          boxShadow: selected ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 2px 8px rgba(0, 0, 0, 0.08)',
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
         }}
       >
-        {/* Generous padding */}
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-center gap-2">
+        {/* EROAD Generous Padding */}
+        <div className="px-6 py-5">
+          <div className="flex items-center gap-3">
             {isStart ? (
-              <Play className="w-4 h-4 text-green-600" />
+              <div className="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
+                <Play className="w-5 h-5 text-white fill-white" />
+              </div>
             ) : (
-              <CheckCircle2 className="w-4 h-4 text-green-600" />
+              <div className="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-white" />
+              </div>
             )}
-            <h3 className="text-slate-900 font-medium text-sm">
+            <h3 className="text-gray-900 font-bold text-base leading-tight">
               {data.title || (isStart ? 'Start' : 'Complete')}
             </h3>
           </div>
           
           {/* Description if exists */}
           {data.description && (
-            <p className="text-slate-600 text-xs leading-relaxed mt-2 text-center">
+            <p className="text-gray-700 text-sm leading-relaxed mt-3">
               {data.description}
             </p>
           )}
@@ -52,7 +52,7 @@ const StartEndNode = ({ data, selected }) => {
 
       {/* Only show source handle if not end */}
       {!isEnd && (
-        <Handle type="source" position={Position.Bottom} className="!bg-slate-400 !w-2 !h-2 !border-none" />
+        <Handle type="source" position={Position.Bottom} className="!bg-gray-400 !w-2.5 !h-2.5 !border-none" />
       )}
     </>
   );

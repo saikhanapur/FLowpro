@@ -13,7 +13,7 @@ const CustomEdge = ({
   markerEnd,
   style = {},
 }) => {
-  // EROAD Design: Use straight lines instead of bezier curves
+  // EROAD Design: Use straight lines (not bezier)
   const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
@@ -27,30 +27,30 @@ const CustomEdge = ({
   const isNoBranch = data?.condition === 'no' || data?.label === 'NO';
   const isErrorPath = data?.type === 'error' || data?.label?.toLowerCase().includes('error');
 
-  // Simple, clean edge styling
+  // EROAD Style: Simple, clean edges
   const getEdgeStyle = () => {
     if (isErrorPath) {
       return {
-        stroke: '#EF4444',
+        stroke: '#FF3B30',
         strokeWidth: 2,
         strokeDasharray: '5,5',
       };
     }
     if (isYesBranch) {
       return {
-        stroke: '#22C55E',
+        stroke: '#34C759',
         strokeWidth: 2,
       };
     }
     if (isNoBranch) {
       return {
-        stroke: '#EF4444',
+        stroke: '#FF3B30',
         strokeWidth: 2,
       };
     }
     return {
-      stroke: '#CBD5E1',
-      strokeWidth: 2,
+      stroke: '#CCCCCC',
+      strokeWidth: 1.5,
     };
   };
 
@@ -66,7 +66,7 @@ const CustomEdge = ({
         markerEnd={markerEnd}
       />
       
-      {/* Simple edge label */}
+      {/* EROAD Style: Simple edge labels */}
       {data?.label && (
         <EdgeLabelRenderer>
           <div
@@ -78,14 +78,12 @@ const CustomEdge = ({
             className="nodrag nopan"
           >
             <div 
-              className={`
-                px-2 py-0.5 rounded text-xs font-medium
-                ${isYesBranch ? 'bg-green-500 text-white' : ''}
-                ${isNoBranch ? 'bg-red-500 text-white' : ''}
-                ${!isYesBranch && !isNoBranch ? 'bg-slate-100 text-slate-700' : ''}
-              `}
+              className="px-2 py-0.5 rounded text-xs font-semibold"
               style={{
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                backgroundColor: isYesBranch ? '#34C759' : isNoBranch ? '#FF3B30' : '#FFFFFF',
+                color: isYesBranch || isNoBranch ? '#FFFFFF' : '#374151',
+                border: !isYesBranch && !isNoBranch ? '1px solid #D1D5DB' : 'none'
               }}
             >
               {data.label}
