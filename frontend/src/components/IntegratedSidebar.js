@@ -50,7 +50,9 @@ const IntegratedSidebar = ({
       style={{
         width: '480px',
         backgroundColor: '#FFFFFF',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        marginTop: '64px', // Align with header height
+        height: 'calc(100vh - 64px)' // Adjust height to account for header
       }}
     >
       {/* Header with Tabs */}
