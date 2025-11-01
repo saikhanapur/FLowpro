@@ -1,118 +1,60 @@
 import React from 'react';
-import { CheckCircle, AlertTriangle, Play, HelpCircle, Database, Zap, XCircle, AlertCircle, Info } from 'lucide-react';
+import { Zap, CheckCircle, AlertCircle, XCircle, Database, Info } from 'lucide-react';
 
 const SimpleFlowchart = ({ process, onNodeClick, selectedNodeId }) => {
   if (!process?.nodes) return null;
 
-  // EROAD Color System
-  const lineColors = {
-    slate: '#cbd5e1',
-    blue: '#60a5fa',
-    emerald: '#10b981',
-    amber: '#fbbf24',
-    rose: '#f43f5e'
+  // EXACT className strings from specification
+  const nodeStyles = {
+    trigger: "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg border-2 border-blue-400 rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer",
+    critical: "bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg border-2 border-rose-400 rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer",
+    active: "bg-white border-2 border-emerald-400 shadow-md rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer",
+    warning: "bg-white border-2 border-amber-400 shadow-md rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer",
+    default: "bg-white border-2 border-slate-300 shadow-sm rounded-xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
   };
 
-  // Layout Configuration
-  const layoutConfig = {
-    nodeWidth: 450,
-    nodeMinHeight: 100,
-    verticalSpacing: 120,
-    centerX: 450,
-  };
-
-  // Status Icon Mapping
-  const getStatusIcon = (status) => {
-    const iconSize = "w-5 h-5";
-    
-    const icons = {
-      'trigger': <Zap className={`${iconSize} text-blue-600`} />,
-      'active': <CheckCircle className={`${iconSize} text-emerald-500`} />,
-      'complete': <CheckCircle className={`${iconSize} text-emerald-500`} />,
-      'warning': <AlertCircle className={`${iconSize} text-amber-500`} />,
-      'critical': <XCircle className={`${iconSize} text-rose-500`} />,
-      'gap': <XCircle className={`${iconSize} text-rose-500`} />,
-    };
-    
-    return icons[status] || <Info className={`${iconSize} text-slate-500`} />;
-  };
-
-  // Node Styling Function
-  const getNodeStyle = (node) => {
+  const getNodeClassName = (node) => {
     const isTrigger = node.type === 'trigger' || node.status === 'trigger';
-    const isCritical = node.status === 'warning' || node.gap || node.hasGap;
-    const isActive = node.status === 'active' || node.status === 'complete';
+    const isCritical = node.gap || node.hasGap || (node.status === 'critical');
     const isWarning = node.status === 'warning';
-    
-    const baseClasses = "transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer rounded-xl p-6";
-    
-    if (isTrigger) {
-      return {
-        className: `${baseClasses} bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg border-2 border-blue-400`,
-        textColor: 'text-white',
-        descColor: 'text-white/90',
-        status: 'trigger'
-      };
-    }
-    
-    if (isCritical) {
-      return {
-        className: `${baseClasses} bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg border-2 border-rose-400`,
-        textColor: 'text-white',
-        descColor: 'text-white/90',
-        status: 'critical'
-      };
-    }
-    
-    if (isWarning) {
-      return {
-        className: `${baseClasses} bg-white border-2 border-amber-400 shadow-md`,
-        textColor: 'text-slate-800',
-        descColor: 'text-slate-600',
-        status: 'warning'
-      };
-    }
-    
-    if (isActive) {
-      return {
-        className: `${baseClasses} bg-white border-2 border-emerald-400 shadow-md`,
-        textColor: 'text-slate-800',
-        descColor: 'text-slate-600',
-        status: 'active'
-      };
-    }
-    
-    return {
-      className: `${baseClasses} bg-white border-2 border-slate-300 shadow-sm`,
-      textColor: 'text-slate-800',
-      descColor: 'text-slate-600',
-      status: 'default'
-    };
+    const isActive = node.status === 'active' || node.status === 'complete';
+
+    if (isTrigger) return nodeStyles.trigger;
+    if (isCritical) return nodeStyles.critical;
+    if (isWarning) return nodeStyles.warning;
+    if (isActive) return nodeStyles.active;
+    return nodeStyles.default;
   };
 
-  // Calculate Node Positions
-  const calculateNodePositions = (nodes) => {
-    const positions = [];
-    let currentY = 20;
-    
-    nodes.forEach((node) => {
-      positions.push({
-        id: node.id,
-        x: layoutConfig.centerX - layoutConfig.nodeWidth / 2,
-        y: currentY
-      });
-      currentY += layoutConfig.verticalSpacing;
-    });
-    
-    return positions;
+  const getIcon = (node) => {
+    const isTrigger = node.type === 'trigger' || node.status === 'trigger';
+    const isCritical = node.gap || node.hasGap;
+    const isWarning = node.status === 'warning';
+    const isActive = node.status === 'active' || node.status === 'complete';
+
+    if (isTrigger) return <Zap className="w-5 h-5" />;
+    if (isCritical) return <XCircle className="w-5 h-5" />;
+    if (isWarning) return <AlertCircle className="w-5 h-5 text-amber-500" />;
+    if (isActive) return <CheckCircle className="w-5 h-5 text-emerald-500" />;
+    return <Info className="w-5 h-5 text-slate-500" />;
   };
 
-  const nodePositions = calculateNodePositions(process.nodes);
+  const isWhiteBackground = (node) => {
+    return !(node.type === 'trigger' || node.status === 'trigger' || node.gap || node.hasGap || node.status === 'critical');
+  };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Sticky Header */}
+      <div className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-slate-200 shadow-sm z-50">
+        <div className="max-w-7xl mx-auto px-6 py-5">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+            Process Flow
+          </h1>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 py-8">
-        
         {/* Legend Bar */}
         <div className="mb-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
@@ -144,7 +86,7 @@ const SimpleFlowchart = ({ process, onNodeClick, selectedNodeId }) => {
         {/* Main Container with Grid Overlay */}
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-12 relative" style={{ minHeight: '1500px' }}>
           
-          {/* Grid background overlay */}
+          {/* Grid background overlay - CRITICAL */}
           <div 
             className="absolute inset-0 opacity-30 pointer-events-none rounded-2xl" 
             style={{
@@ -153,38 +95,41 @@ const SimpleFlowchart = ({ process, onNodeClick, selectedNodeId }) => {
             }} 
           />
 
-          {/* Nodes */}
+          {/* Flowchart Nodes with Absolute Positioning */}
           <div className="relative">
             {process.nodes.map((node, index) => {
-              const position = nodePositions[index];
-              const style = getNodeStyle(node);
+              const y = 20 + (index * 120); // 120px spacing between nodes
+              const x = 225; // Center position for 450px nodes
               const isSelected = selectedNodeId === node.id;
 
               return (
                 <React.Fragment key={node.id}>
                   {/* Node */}
                   <div
-                    className={style.className}
+                    className={getNodeClassName(node)}
                     style={{
                       position: 'absolute',
-                      left: position.x,
-                      top: position.y,
-                      width: layoutConfig.nodeWidth,
-                      minHeight: layoutConfig.nodeMinHeight,
+                      width: '450px',
+                      left: x,
+                      top: y,
+                      minHeight: '100px',
                       boxShadow: isSelected ? '0 0 0 4px rgba(59, 130, 246, 0.3)' : undefined
                     }}
                     onClick={() => onNodeClick(node)}
                   >
                     <div className="flex items-start gap-3">
+                      {/* Icon */}
                       <div className="mt-0.5 flex-shrink-0">
-                        {getStatusIcon(style.status)}
+                        {getIcon(node)}
                       </div>
+                      
+                      {/* Content */}
                       <div className="flex-1">
-                        <h3 className={`font-semibold text-base leading-tight mb-2 ${style.textColor}`}>
+                        <h3 className={`font-semibold text-base leading-tight mb-2 ${isWhiteBackground(node) ? 'text-slate-800' : 'text-white'}`}>
                           {node.title}
                         </h3>
                         {node.description && (
-                          <p className={`text-sm leading-relaxed ${style.descColor}`}>
+                          <p className={`text-sm leading-relaxed ${isWhiteBackground(node) ? 'text-slate-600' : 'text-white/90'}`}>
                             {node.description}
                           </p>
                         )}
@@ -195,28 +140,28 @@ const SimpleFlowchart = ({ process, onNodeClick, selectedNodeId }) => {
                   {/* Connection Line & Arrow */}
                   {index < process.nodes.length - 1 && (
                     <>
-                      {/* Vertical Line */}
+                      {/* Vertical Line - 2px wide */}
                       <div
                         className="absolute pointer-events-none"
                         style={{
-                          left: position.x + layoutConfig.nodeWidth / 2 - 1,
-                          top: position.y + layoutConfig.nodeMinHeight,
+                          left: x + 225 - 1, // Center of 450px node
+                          top: y + 100, // Below current node
                           width: 2,
-                          height: layoutConfig.verticalSpacing - layoutConfig.nodeMinHeight,
-                          backgroundColor: lineColors.slate
+                          height: 120 - 100, // Space to next node minus node height
+                          backgroundColor: '#cbd5e1'
                         }}
                       />
-                      {/* Arrow */}
+                      {/* Arrow - 8px tall triangle */}
                       <div
                         className="absolute pointer-events-none"
                         style={{
-                          left: position.x + layoutConfig.nodeWidth / 2 - 4,
-                          top: position.y + layoutConfig.verticalSpacing - 8,
+                          left: x + 225 - 4,
+                          top: y + 120 - 8,
                           width: 0,
                           height: 0,
                           borderLeft: '4px solid transparent',
                           borderRight: '4px solid transparent',
-                          borderTop: `8px solid ${lineColors.slate}`
+                          borderTop: '8px solid #cbd5e1'
                         }}
                       />
                     </>
