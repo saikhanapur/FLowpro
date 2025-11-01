@@ -191,3 +191,9 @@
   background-size: 1000px 100%;
   animation: shimmer 2s infinite;
 }
+
+/* Hide Emergent branding badge */
+div[style*="Made with Emergent"],
+a[href*="emergent.sh"] {
+  display: none !important;
+}
