@@ -680,42 +680,7 @@ const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', proce
             </ReactFlow>
           </div>
 
-            {/* Summary Sections */}
-            {(process.criticalGaps?.length > 0 || process.improvementOpportunities?.length > 0) && (
-              <div className="mt-8 space-y-4">
-                {/* Critical Gaps */}
-                {process.criticalGaps?.length > 0 && (
-                  <div className="bg-rose-50 border-2 border-rose-200 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-rose-900 mb-4">
-                      Critical Gaps ({process.criticalGaps.length})
-                    </h3>
-                    <ul className="space-y-2">
-                      {process.criticalGaps.map((gap, idx) => (
-                        <li key={idx} className="text-sm text-rose-800">
-                          <strong>Gap {idx + 1}:</strong> {gap}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Improvement Opportunities */}
-                {process.improvementOpportunities?.length > 0 && (
-                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-blue-900 mb-4">
-                      Improvement Opportunities
-                    </h3>
-                    <ul className="space-y-2">
-                      {process.improvementOpportunities.map((opp, idx) => (
-                        <li key={idx} className="text-sm text-blue-800">
-                          • {opp.description}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
+            {/* Summary Sections removed - orphaned content */}
           </div>
         </div>
       </div>
