@@ -224,6 +224,27 @@ class DocumentAnalysis(BaseModel):
     complexity: str  # "low", "medium", "high"
     confidence: float
     detected_steps: int
+
+class ExtractionSummary(BaseModel):
+    """Summary of key elements extracted from document - shown BEFORE flowchart generation"""
+    processSteps: int  # Number of steps identified
+    dataFields: List[str]  # Specific data fields to collect
+    phoneNumbers: List[str]  # Phone numbers found
+    emails: List[str]  # Email addresses found
+    systems: List[str]  # Systems/tools mentioned
+    decisionPoints: int  # Number of decision branches
+    actors: List[str]  # Responsible parties
+    timelines: List[str]  # Time-based requirements (e.g., "check every 30 min")
+    complexity: str  # "low", "medium", "high"
+    
+class CoverageReport(BaseModel):
+    """AI-generated report on how well the flowchart covers the source document"""
+    confidenceScore: float  # 0-100
+    confidenceLevel: str  # "high", "medium", "low"
+    capturedElements: Dict[str, int]  # {"steps": 12, "data_fields": 8, "contacts": 3}
+    potentialGaps: List[str]  # Things that might be missing
+    recommendations: List[str]  # What customer should verify
+    sourcePagesCovered: List[int]  # Which pages were used
     detected_actors: int
     suggested_questions: List[SmartQuestion]
     summary: str
