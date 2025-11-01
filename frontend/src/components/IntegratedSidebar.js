@@ -49,30 +49,18 @@ const IntegratedSidebar = ({
   const showingIntelligence = showIntelligence && !selectedNode;
 
   return (
-    <div 
-      className="fixed right-8 overflow-y-auto z-50 shadow-lg rounded-lg"
-      style={{
-        width: '360px', // Reduced from 480px (30% of typical viewport)
-        backgroundColor: '#FFFFFF',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        top: '132px', // Align with flowchart container (after legend)
-        height: 'calc(100vh - 132px - 32px)', // Match flowchart height exactly (minus top + bottom padding)
-        border: '1px solid #D1D5DB' // Match flowchart border
-      }}
-    >
-      {/* Header - Simple, No Tabs */}
-      <div className="sticky top-0 bg-white z-10 border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-gray-900 font-bold text-lg">
-            {showingNodeDetails ? 'Step Details' : showingIntelligence ? 'AI Quick Tips' : 'Process Analysis'}
-          </h2>
-          <button 
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <div className="fixed right-0 top-0 h-full w-[420px] bg-white shadow-2xl z-50 border-l overflow-y-auto">
+      {/* Dark gradient header - EROAD STYLE */}
+      <div className="sticky top-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white p-6 flex justify-between items-center z-10">
+        <h2 className="font-bold text-lg">
+          {showingNodeDetails ? 'Step Details' : showingIntelligence ? 'AI Quick Tips' : 'Process Analysis'}
+        </h2>
+        <button 
+          onClick={onClose}
+          className="text-white text-2xl hover:bg-white/10 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+        >
+          ×
+        </button>
       </div>
 
       {/* Content - Single Scrollable View (No Tabs) */}
