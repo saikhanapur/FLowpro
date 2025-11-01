@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, Share2, Save, Sparkles, CheckCircle, Edit3, Copy, Check, ArrowUp, ArrowDown, Plus, Trash2, MessageSquare, X, FolderInput, FolderOpen, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import ReactFlow, { 
+  Background, 
+  Controls, 
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  MarkerType,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+
+// Custom node components
+import ActionNode from './flowchart/ActionNode';
+import DecisionNode from './flowchart/DecisionNode';
+import StartEndNode from './flowchart/StartEndNode';
+import CustomEdge from './flowchart/CustomEdge';
+
+// Legacy components (for detail panel)
 import FlowNode from './FlowNode';
 import DetailPanel from './DetailPanel';
 import IdealStateModal from './IdealStateModal';
@@ -18,8 +35,33 @@ import ExportModal from './ExportModal';
 import ShareModal from './ShareModal';
 import AIRefineChat from './AIRefineChat';
 import ProcessIntelligencePanel from './ProcessIntelligencePanel';
+
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
+import { convertToReactFlowFormat } from '@/utils/flowchartLayoutUtils';
+
+// Define custom node types
+const nodeTypes = {
+  action: ActionNode,
+  decision: DecisionNode,
+  startEnd: StartEndNode,
+};
+
+// Define custom edge types
+const edgeTypes = {
+  custom: CustomEdge,
+};
+
+// Default edge options
+const defaultEdgeOptions = {
+  type: 'custom',
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    width: 20,
+    height: 20,
+    color: '#94A3B8',
+  },
+};
 
 const FlowchartEditor = ({ theme, readOnly = false, accessLevel = 'owner', processData, isGuestMode = false }) => {
   const { id } = useParams();
