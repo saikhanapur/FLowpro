@@ -824,29 +824,55 @@ BE THOROUGH. The preprocessing hints should guide you."""
             return await self._parse_single_process(input_text, input_type)
     
     async def _parse_single_process(self, input_text: str, input_type: str) -> Dict[str, Any]:
-        """Parse a single process from input text"""
+        """Parse a single process from input text WITH operational details"""
         try:
             chat = LlmChat(
                 api_key=self.api_key,
                 session_id=f"parse_{uuid.uuid4()}",
-                system_message="You are SuperHumanly AI. Extract ONLY the 5-8 most critical steps. Be concise. Return valid JSON only."
+                system_message="You are SuperHumanly AI, specialized in extracting process workflows WITH detailed operational information for execution."
             ).with_model("anthropic", "claude-4-sonnet-20250514")
             
-            prompt = f"""Extract ONLY the 5-8 most critical steps from this {input_type}. Be concise.
+            prompt = f"""Extract the process workflow from this {input_type} with TWO LEVELS of information:
 
+LEVEL 1 - High-level steps (for overview):
+- Extract 5-8 most critical steps
+- Keep titles concise (max 6 words)
+
+LEVEL 2 - Operational details (for execution):
+For EACH step, extract and preserve:
+
+1. **Required Data Fields**: List ALL specific data points that must be collected
+   Example: "Officer Name", "Phone Number", "License Plate", "Vehicle Issue"
+
+2. **Specific Actions**: Exact instructions, questions to ask, checks to perform
+   Example: "Ask: 'Are you harmed or injured?'", "Screenshot error messages"
+
+3. **Contact Information**: Phone numbers, email addresses (preserve exactly as written)
+   Example: "Custom Fleet: 0800 11 63 63", "Wilson IT: 0061 8 9415 2888 ext. 8088"
+
+4. **Timelines/SLAs**: Any time-based requirements
+   Example: "Check every 30 minutes", "Respond within 2 hours"
+
+5. **Systems/Tools**: Specific software, platforms, tools mentioned
+   Example: "MYIT ticketing system", "Lighthouse timeline", "Service Hub"
+
+6. **Decision Criteria**: Specific conditions for YES/NO branches
+   Example: "If call answered", "If error persists after restart"
+
+CRITICAL RULES:
+- DO NOT summarize or abstract operational details - preserve them EXACTLY as written
+- If a step says "collect 6 specific fields", LIST all 6 fields in requiredData
+- If a phone number is mentioned, include it in contactInfo
+- If a system is mentioned, include it in systems
+- If no operational details exist for a step, leave the fields empty
+
+INPUT TEXT:
 {input_text}
 
-CRITICAL: Return ONLY valid JSON. No markdown. No explanations.
-
-Extract:
-- Main process steps (5-8 max)
-- Key actors
-- Critical gaps only
-
-Return this JSON structure:
+Return ONLY this JSON structure (no markdown, no explanations):
 {{
   "processName": "string",
-  "description": "brief",
+  "description": "brief description",
   "actors": ["actor1", "actor2"],
   "nodes": [
     {{
@@ -865,7 +891,16 @@ Return this JSON structure:
       "idealState": "brief",
       "gap": null,
       "impact": "medium",
-      "timeEstimate": null
+      "timeEstimate": null,
+      "operationalDetails": {{
+        "requiredData": ["specific field 1", "specific field 2"],
+        "specificActions": ["exact action 1", "exact action 2"],
+        "contactInfo": {{"Contact Name": "phone/email"}},
+        "timeline": "time requirement if any",
+        "systems": ["System 1", "System 2"],
+        "decisionCriteria": "conditions for branching if decision node",
+        "sourcePage": null
+      }}
     }}
   ],
   "criticalGaps": ["gap 1"],
