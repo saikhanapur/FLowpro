@@ -59,10 +59,12 @@ const IntegratedSidebar = ({
         height: 'calc(100vh - 140px)' // Adjust height accordingly
       }}
     >
-      {/* Header with Tabs */}
+      {/* Header with Dynamic Title */}
       <div className="sticky top-0 bg-white z-10 border-b border-gray-200">
         <div className="px-6 py-4 flex items-center justify-between">
-          <h2 className="text-gray-900 font-bold text-lg">Process Analysis</h2>
+          <h2 className="text-gray-900 font-bold text-lg">
+            {showingNodeDetails ? 'Step Details' : showingIntelligence ? 'AI Quick Tips' : 'Process Analysis'}
+          </h2>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -71,41 +73,31 @@ const IntegratedSidebar = ({
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-t border-gray-200">
-          <button
-            onClick={() => setActiveTab('details')}
-            className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
-              activeTab === 'details'
-                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Process Details
-          </button>
-          <button
-            onClick={() => setActiveTab('gaps')}
-            className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
-              activeTab === 'gaps'
-                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-            }`}
-          >
-            Gaps & Insights
-          </button>
-          {showIntelligence && (
+        {/* Tabs - Only show when viewing node details */}
+        {showingNodeDetails && (
+          <div className="flex border-t border-gray-200">
             <button
-              onClick={() => setActiveTab('insights')}
+              onClick={() => setActiveTab('details')}
               className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
-                activeTab === 'insights'
+                activeTab === 'details'
                   ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
               }`}
             >
-              AI Quick Tips
+              Details
             </button>
-          )}
-        </div>
+            <button
+              onClick={() => setActiveTab('gaps')}
+              className={`flex-1 px-6 py-3 text-sm font-semibold transition-colors ${
+                activeTab === 'gaps'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              Context
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Content */}
