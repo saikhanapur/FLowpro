@@ -43,16 +43,20 @@ const IntegratedSidebar = ({
 
   // Use selectedNode directly (it's already the full node object)
   const nodeData = selectedNode;
+  
+  // Determine what to show based on context
+  const showingNodeDetails = selectedNode && !showIntelligence;
+  const showingIntelligence = showIntelligence && !selectedNode;
 
   return (
     <div 
-      className="fixed top-0 right-0 h-full overflow-y-auto z-50 shadow-2xl border-l border-gray-200"
+      className="fixed right-0 overflow-y-auto z-50 shadow-2xl border-l border-gray-200"
       style={{
         width: '480px',
         backgroundColor: '#FFFFFF',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        marginTop: '64px', // Align with header height
-        height: 'calc(100vh - 64px)' // Adjust height to account for header
+        top: '140px', // Start below header + legend bar for seamless look
+        height: 'calc(100vh - 140px)' // Adjust height accordingly
       }}
     >
       {/* Header with Tabs */}
