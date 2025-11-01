@@ -52,7 +52,7 @@ const IntegratedSidebar = ({
     <div 
       className="fixed right-8 overflow-y-auto z-50 shadow-lg rounded-lg"
       style={{
-        width: '480px',
+        width: '360px', // Reduced from 480px (30% of typical viewport)
         backgroundColor: '#FFFFFF',
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
         top: '132px', // Align with flowchart container (after legend)
