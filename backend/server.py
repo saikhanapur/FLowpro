@@ -2108,6 +2108,148 @@ async def parse_process(input_data: ProcessInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@api_router.post("/process/extract-summary", response_model=ExtractionSummary)
+async def extract_summary(input_data: ProcessInput):
+    """
+    Extract summary of key elements from document BEFORE generating flowchart.
+    Shows customer what was found to build confidence.
+    """
+    try:
+        logger.info(f"Extracting summary from {input_data.inputType}")
+        
+        chat = LlmChat(
+            api_key=os.environ.get("LLM_API_KEY"),
+            session_id=f"extract_{uuid.uuid4()}",
+            system_message="You are an expert at extracting key operational elements from process documents."
+        ).with_model("anthropic", "claude-4-sonnet-20250514")
+        
+        prompt = f"""Analyze this {input_data.inputType} and extract a summary of ALL key operational elements.
+
+INPUT TEXT:
+{input_data.text}
+
+Extract and count:
+1. **Process Steps**: How many distinct process steps/actions are described?
+2. **Data Fields**: List ALL specific data fields that must be collected (e.g., "Officer Name", "Phone Number")
+3. **Phone Numbers**: Extract ALL phone numbers mentioned
+4. **Emails**: Extract ALL email addresses mentioned
+5. **Systems/Tools**: List ALL systems, software, or tools mentioned (e.g., "MYIT", "Service Hub")
+6. **Decision Points**: Count how many decision/branching points exist (IF/ELSE)
+7. **Actors**: List ALL responsible parties/roles mentioned
+8. **Timelines**: List ANY time-based requirements (e.g., "check every 30 min")
+9. **Complexity**: Assess overall complexity as "low" (simple, <5 steps), "medium" (5-10 steps), or "high" (>10 steps or complex branching)
+
+CRITICAL: Be thorough. List EVERY specific element found.
+
+Return ONLY this JSON (no markdown):
+{{
+  "processSteps": number,
+  "dataFields": ["Field 1", "Field 2", ...],
+  "phoneNumbers": ["0800 11 63 63", ...],
+  "emails": ["email@example.com", ...],
+  "systems": ["System1", "System2", ...],
+  "decisionPoints": number,
+  "actors": ["Actor1", "Actor2", ...],
+  "timelines": ["Timeline1", ...],
+  "complexity": "low|medium|high"
+}}"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        
+        # Parse JSON
+        response_text = response.strip()
+        if response_text.startswith('```'):
+            start = response_text.find('{')
+            end = response_text.rfind('}')
+            if start != -1 and end != -1:
+                response_text = response_text[start:end+1]
+        
+        summary = json.loads(response_text)
+        return ExtractionSummary(**summary)
+        
+    except Exception as e:
+        logger.error(f"Error extracting summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/process/{process_id}/coverage-report", response_model=CoverageReport)
+async def generate_coverage_report(process_id: str, input_data: ProcessInput):
+    """
+    Generate AI-powered coverage report AFTER flowchart generation.
+    Compares source document with generated flowchart to identify gaps.
+    """
+    try:
+        logger.info(f"Generating coverage report for process {process_id}")
+        
+        # Get the generated process
+        process = await db.processes.find_one({"id": process_id})
+        if not process:
+            raise HTTPException(status_code=404, detail="Process not found")
+        
+        chat = LlmChat(
+            api_key=os.environ.get("LLM_API_KEY"),
+            session_id=f"coverage_{uuid.uuid4()}",
+            system_message="You are an expert at verifying process documentation completeness."
+        ).with_model("anthropic", "claude-4-sonnet-20250514")
+        
+        # Extract node titles and operational details for comparison
+        node_info = []
+        for node in process.get('nodes', []):
+            node_summary = {
+                "title": node.get('title'),
+                "description": node.get('description'),
+                "operationalDetails": node.get('operationalDetails', {})
+            }
+            node_info.append(node_summary)
+        
+        prompt = f"""Compare the SOURCE DOCUMENT with the GENERATED FLOWCHART to verify completeness.
+
+SOURCE DOCUMENT:
+{input_data.text[:5000]}
+
+GENERATED FLOWCHART NODES:
+{json.dumps(node_info, indent=2)}
+
+Analyze and return:
+1. **Confidence Score** (0-100): How confident are you that the flowchart captures everything important?
+2. **Confidence Level**: "high" (90-100%), "medium" (70-89%), "low" (<70%)
+3. **Captured Elements**: Count of steps, data fields, contacts, systems captured
+4. **Potential Gaps**: List anything important in the source that's NOT in the flowchart
+5. **Recommendations**: What should the customer manually verify?
+
+Return ONLY this JSON (no markdown):
+{{
+  "confidenceScore": number (0-100),
+  "confidenceLevel": "high|medium|low",
+  "capturedElements": {{
+    "steps": number,
+    "data_fields": number,
+    "contacts": number,
+    "systems": number
+  }},
+  "potentialGaps": ["Gap 1", "Gap 2", ...],
+  "recommendations": ["Verify X", "Check Y", ...],
+  "sourcePagesCovered": [1, 2, 3]
+}}"""
+        
+        message = UserMessage(text=prompt)
+        response = await chat.send_message(message)
+        
+        # Parse JSON
+        response_text = response.strip()
+        if response_text.startswith('```'):
+            start = response_text.find('{')
+            end = response_text.rfind('}')
+            if start != -1 and end != -1:
+                response_text = response_text[start:end+1]
+        
+        report = json.loads(response_text)
+        return CoverageReport(**report)
+        
+    except Exception as e:
+        logger.error(f"Error generating coverage report: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.patch("/process/{process_id}/publish", response_model=Process)
 async def publish_process(process_id: str):
     """
