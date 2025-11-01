@@ -11,23 +11,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import ReactFlow, { 
-  Background, 
-  Controls, 
-  MiniMap,
-  useNodesState,
-  useEdgesState,
-  MarkerType,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
 
-// Custom node components
-import ActionNode from './flowchart/ActionNode';
-import DecisionNode from './flowchart/DecisionNode';
-import StartEndNode from './flowchart/StartEndNode';
-import CustomEdge from './flowchart/CustomEdge';
+// NEW: Simple scrollable flowchart (no React Flow)
+import SimpleFlowchart from './SimpleFlowchart';
+import IntegratedSidebar from './IntegratedSidebar';
 
-// Legacy components (for detail panel)
+// Legacy components
 import FlowNode from './FlowNode';
 import DetailPanel from './DetailPanel';
 import IdealStateModal from './IdealStateModal';
@@ -35,12 +24,9 @@ import ExportModal from './ExportModal';
 import ShareModal from './ShareModal';
 import AIRefineChat from './AIRefineChat';
 import ProcessIntelligencePanel from './ProcessIntelligencePanel';
-import ProcessDetailsPanel from './ProcessDetailsPanel';
-import GapsSummaryPanel from './GapsSummaryPanel';
 
 import { api } from '@/utils/api';
 import { toast } from 'sonner';
-import { convertToReactFlowFormat } from '@/utils/flowchartLayoutUtils';
 
 // Define custom node types
 const nodeTypes = {
