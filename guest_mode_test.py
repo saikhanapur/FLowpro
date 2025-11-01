@@ -11,7 +11,7 @@ import os
 import time
 
 # Configuration
-BASE_URL = "https://processmind-1.preview.emergentagent.com/api"
+BASE_URL = "https://processmapper-1.preview.emergentagent.com/api"
 TIMEOUT = 60
 
 class GuestModeTester:

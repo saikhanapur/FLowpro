@@ -8,7 +8,7 @@ import requests
 import json
 import time
 
-BASE_URL = "https://processmind-1.preview.emergentagent.com/api"
+BASE_URL = "https://processmapper-1.preview.emergentagent.com/api"
 TIMEOUT = 60
 
 def test_ai_quality_and_consistency():
